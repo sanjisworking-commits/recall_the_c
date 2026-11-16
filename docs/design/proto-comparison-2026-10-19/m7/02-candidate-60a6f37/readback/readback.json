@@ -1,0 +1,5500 @@
+{
+  "sha": "8066ef7",
+  "saves": [
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "add_ndps": "303 /playground",
+      "add_uapa": "303 /playground",
+      "scope_bns": "303 /playground",
+      "sections_bns": "303 /playground",
+      "remove_uapa": "303 /playground",
+      "progress": "not a member"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "add_ndps": "303 /playground/laws/ndps",
+      "add_uapa": "303 /playground/laws/uapa",
+      "scope_bns": "303 /playground/laws/bns/sections",
+      "sections_bns": "303 /playground/laws/bns",
+      "remove_uapa": "303 /playground/roster",
+      "progress": "s1 learned, s2 ladder"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "add_ndps": "303 /playground/laws/ndps",
+      "add_uapa": "303 /playground/laws/uapa",
+      "scope_bns": "303 /playground/laws/bns/sections",
+      "sections_bns": "303 /playground/laws/bns",
+      "remove_uapa": "303 /playground/roster",
+      "progress": "s1 learned, s2 ladder"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "add_ndps": "303 /playground/laws/ndps",
+      "add_uapa": "303 /playground/laws/uapa",
+      "scope_bns": "303 /playground/laws/bns/sections",
+      "sections_bns": "303 /playground/laws/bns",
+      "remove_uapa": "303 /playground/roster",
+      "progress": "s1 learned, s2 ladder"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "add_ndps": "303 /playground",
+      "add_uapa": "303 /playground",
+      "scope_bns": "303 /playground",
+      "sections_bns": "303 /playground",
+      "remove_uapa": "303 /playground",
+      "progress": "not a member"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "add_ndps": "303 ed=new_law_temporarily_unavailable",
+      "add_uapa": "303 ed=new_law_temporarily_unavailable",
+      "scope_bns": "303 ed=new_law_temporarily_unavailable",
+      "sections_bns": "303 /laws/bns",
+      "remove_uapa": "303 /playground/roster",
+      "progress": "not a member"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "add_ndps": "303 /playground",
+      "add_uapa": "303 /playground",
+      "scope_bns": "303 /playground",
+      "sections_bns": "303 /playground",
+      "remove_uapa": "303 /playground",
+      "progress": "not a member"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "add_ndps": "303 /playground",
+      "add_uapa": "303 /playground",
+      "scope_bns": "303 /playground",
+      "sections_bns": "303 /playground",
+      "remove_uapa": "303 /playground",
+      "progress": "not a member"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "add_ndps": "303 /playground/laws/ndps",
+      "add_uapa": "303 /playground/laws/uapa",
+      "scope_bns": "303 /playground/laws/bns/sections",
+      "sections_bns": "303 /playground/laws/bns",
+      "remove_uapa": "303 /playground/roster",
+      "progress": "s1 learned, s2 ladder"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "add_ndps": "303 /playground/laws/ndps",
+      "add_uapa": "303 /playground/laws/uapa",
+      "scope_bns": "303 /playground/laws/bns/sections",
+      "sections_bns": "303 /playground/laws/bns",
+      "remove_uapa": "303 /playground/roster",
+      "progress": "s1 learned, s2 ladder"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "add_ndps": "303 /playground/laws/ndps",
+      "add_uapa": "303 /playground/laws/uapa",
+      "scope_bns": "303 /playground/laws/bns/sections",
+      "sections_bns": "303 /playground/laws/bns",
+      "remove_uapa": "303 /playground/roster",
+      "progress": "s1 learned, s2 ladder"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "add_ndps": "303 /playground/laws/ndps",
+      "add_uapa": "303 /playground/laws/uapa",
+      "scope_bns": "303 /playground/laws/bns/sections",
+      "sections_bns": "303 /playground/laws/bns",
+      "remove_uapa": "303 /playground/roster",
+      "progress": "s1 learned, s2 ladder"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "add_ndps": "303 /playground",
+      "add_uapa": "303 /playground",
+      "scope_bns": "303 /playground",
+      "sections_bns": "303 /playground",
+      "remove_uapa": "303 /playground",
+      "progress": "not a member"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "add_ndps": "303 ed=new_law_temporarily_unavailable",
+      "add_uapa": "303 ed=new_law_temporarily_unavailable",
+      "scope_bns": "303 ed=new_law_temporarily_unavailable",
+      "sections_bns": "303 /laws/bns",
+      "remove_uapa": "303 /playground/roster",
+      "progress": "not a member"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "add_ndps": "303 /playground",
+      "add_uapa": "303 /playground",
+      "scope_bns": "303 /playground",
+      "sections_bns": "303 /playground",
+      "remove_uapa": "303 /playground",
+      "progress": "not a member"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "add_ndps": "303 /playground",
+      "add_uapa": "303 /playground",
+      "scope_bns": "303 /playground",
+      "sections_bns": "303 /playground",
+      "remove_uapa": "303 /playground",
+      "progress": "not a member"
+    }
+  ],
+  "rows": [
+    {
+      "state": "guest",
+      "tier_model": "monthly",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Sign in to build your law-learning Playground.",
+        "Sign in to use Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "sign_in_required"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e85e43c010d9fe88"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "free",
+      "tier_model": "monthly",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your RecallC account already includes the complete Constitution."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "not_subscribed"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b58d74409fc30d7b"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "November"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\"",
+        "data-plus-playground-phone",
+        "data-plus-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 16,
+      "month_copy": [
+        "\"> My Playground Playground November 0 of 10 \u00b7 November Playgrou",
+        "ayground November 0 of 10 \u00b7 November Playground month November M",
+        "November 0 of 10 \u00b7 November Playground month November Manage November Ad",
+        "\u00b7 November Playground month November Manage November Add a law M",
+        "round month November Manage November Add a law Manage December \u203a",
+        "e November Add a law Manage December \u203a Your November Playground",
+        "law Manage December \u203a Your November Playground is empty Add law",
+        "Add laws you want to learn this month. Your saved progress stays",
+        "wse laws Browse laws Manage November \u00a7 Verbatim, always. Every p",
+        "t text, word for word. Plan next month Manage December \u2014 choose wh",
+        "ord. Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month Manage December \u2014 choose wh",
+        "ues. Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month November 0 of 10 laws 10 sp"
+      ],
+      "rollover_links": 3,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "10eb7dba59bd3ebf"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "November"
+      ],
+      "h2": [
+        "In Playground this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\"",
+        "data-plus-playground-phone",
+        "data-plus-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "10"
+        ]
+      ],
+      "month_copy_count": 18,
+      "month_copy": [
+        "\"> My Playground Playground November 2 of 10 \u00b7 November Playgrou",
+        "ayground November 2 of 10 \u00b7 November Playground month November M",
+        "November 2 of 10 \u00b7 November Playground month November Manage November Ad",
+        "\u00b7 November Playground month November Manage November Add a law M",
+        "round month November Manage November Add a law Manage December \u203a",
+        "e November Add a law Manage December \u203a Browse laws Manage Novemb",
+        "cember \u203a Browse laws Manage November \u00a7 Verbatim, always. Every p",
+        "tions learned In Playground this month Up next BNS The Bharatiya N",
+        "ead Bare Act Manage Removed this month UAPA The Unlawful Activitie",
+        "t, 1967 Not started Removed this month Progress saved 66 sections",
+        "Add back Read Bare Act Plan next month Manage December \u2014 choose wh",
+        "Act Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month Manage December \u2014 choose wh",
+        "ues. Plan next month Manage December \u2014 choose what continues. Pl"
+      ],
+      "rollover_links": 3,
+      "law_cards": [
+        "bns:in_playground",
+        "ndps:in_playground",
+        "uapa:removed_this_month"
+      ],
+      "pg_kind": [],
+      "sha256": "0dae5fc663f9b0e2"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "November Playground"
+      ],
+      "h2": [
+        "Active this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "10"
+        ]
+      ],
+      "month_copy_count": 8,
+      "month_copy": [
+        "\u2190 Playground My Playground November Playground 3 of 10 used 7 r",
+        "g 2 in Playground 1 removed this month \u00b7 space still used 7 availa",
+        "ss. It doesn\u2019t free a space this month, and adding it back doesn\u2019t",
+        "n\u2019t use another one. Active this month 2 BNS The Bharatiya Nyaya S",
+        "ontinue Read Remove Removed this month 1 UAPA The Unlawful Activit",
+        "evention) Act, 1967 Removed this month Progress saved Add back Pla",
+        "rogress saved Add back Plan next month Manage December \u2014 choose wh",
+        "back Plan next month Manage December \u2014 choose what continues. \u203a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "06ba39626e0a85a0"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "November Playground"
+      ],
+      "h2": [
+        "Add PSS to November?",
+        "Active this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "10"
+        ]
+      ],
+      "month_copy_count": 11,
+      "month_copy": [
+        "\u2190 Playground My Playground November Playground 3 of 10 used 7 r",
+        "g 2 in Playground 1 removed this month \u00b7 space still used 7 availa",
+        "ss. It doesn\u2019t free a space this month, and adding it back doesn\u2019t",
+        "another one. PSS Add PSS to November? 3 of 10 used 7 remaining 2",
+        "This will use 1 of your 10 law spaces for November. You&#39;ll ha",
+        "1 of your 10 law spaces for November. You&#39;ll have 6 spaces r",
+        "to Playground Cancel Active this month 2 BNS The Bharatiya Nyaya S",
+        "ontinue Read Remove Removed this month 1 UAPA The Unlawful Activit",
+        "evention) Act, 1967 Removed this month Progress saved Add back Pla",
+        "rogress saved Add back Plan next month Manage December \u2014 choose wh",
+        "back Plan next month Manage December \u2014 choose what continues. \u203a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "dda8b10c729b730f"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "November Playground"
+      ],
+      "h2": [
+        "Add UAPA back to November?",
+        "Active this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "10"
+        ]
+      ],
+      "month_copy_count": 9,
+      "month_copy": [
+        "\u2190 Playground My Playground November Playground 3 of 10 used 7 r",
+        "g 2 in Playground 1 removed this month \u00b7 space still used 7 availa",
+        "ss. It doesn\u2019t free a space this month, and adding it back doesn\u2019t",
+        "one. UAPA Add UAPA back to November? 3 of 10 used 7 remaining 2",
+        "sed. Add back Cancel Active this month 2 BNS The Bharatiya Nyaya S",
+        "ontinue Read Remove Removed this month 1 UAPA The Unlawful Activit",
+        "evention) Act, 1967 Removed this month Progress saved Add back Pla",
+        "rogress saved Add back Plan next month Manage December \u2014 choose wh",
+        "back Plan next month Manage December \u2014 choose what continues. \u203a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "9114b425bbc85338"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Remove from November"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 4,
+      "month_copy": [
+        "main\"> NDPS Act Remove from November Your progress will be saved",
+        "saved. This does not free a law space this month. Remove from Nov",
+        "s does not free a law space this month. Remove from November Cance",
+        "ace this month. Remove from November Cancel"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "7dd0369da0a0b0bc"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your December Playground"
+      ],
+      "h2": [
+        "The Bharatiya Nyaya Sanhita, 2023",
+        "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+        "The Unlawful Activities (Prevention) Act, 1967"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 6,
+      "month_copy": [
+        "s=\"main\"> \u2190 Playground Plan next month Your December Playground Co",
+        "ground Plan next month Your December Playground Continue with la",
+        "er Playground Continue with last month\u2019s laws, or make room for so",
+        "ething new. Keep \u2014 Uses one December space. Remove \u2014 No December",
+        "December space. Remove \u2014 No December space. Progress stays saved",
+        "planned Continue with these December 0 of 10 planned 10 spaces a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "52febbe77238e31a"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "The NDPS Act, 1985"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "e Act The NDPS Act, 1985 In November Playground 0/128 Not starte"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "580416bdaf5adf54"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Choose what to learn"
+      ],
+      "h2": [
+        "CHAPTER I \u00b7 Preliminary",
+        "CHAPTER II \u00b7 Of Punishments",
+        "CHAPTER III \u00b7 General Exceptions",
+        "CHAPTER IV \u00b7 Of Abetment, Criminal Conspiracy and Attempt",
+        "CHAPTER V \u00b7 Of Offences Against Woman and Child",
+        "CHAPTER VI \u00b7 Of Offences Affecting the Human Body",
+        "CHAPTER VII \u00b7 Of Offences Against the State",
+        "CHAPTER VIII \u00b7 Of Offences Relating to the Army, Navy and Air Force",
+        "CHAPTER IX \u00b7 Of Offences Relating to Elections",
+        "CHAPTER X \u00b7 Of Offences Relating to Coin, Currency-Notes, Bank-Notes, and Government Stamps",
+        "CHAPTER XI \u00b7 Of Offences Against the Public Tranquillity",
+        "CHAPTER XII \u00b7 Of Offences By or Relating to Public Servants",
+        "CHAPTER XIII \u00b7 Of Contempts of the Lawful Authority of Public Servants",
+        "CHAPTER XIV \u00b7 Of False Evidence and Offences Against Public Justice",
+        "CHAPTER XV \u00b7 Of Offences Affecting the Public Health, Safety, Convenience, Decency and Morals",
+        "CHAPTER XVI \u00b7 Of Offences Relating to Religion",
+        "CHAPTER XVII \u00b7 Of Offences Against Property",
+        "CHAPTER XVIII \u00b7 Of Offences Relating to Documents and to Property Marks",
+        "CHAPTER XIX \u00b7 Of Criminal Intimidation, Insult, Annoyance, Defamation, Etc.",
+        "CHAPTER XX \u00b7 Repeal and Savings"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "c771ac37dfa9a9fc"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [],
+      "h2": [
+        "First, read it once."
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "339c785d418716ad"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Section learned."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "582b8ce5a80a78be"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Mastered, verbatim."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "542604632433cf1a"
+    },
+    {
+      "state": "plus",
+      "tier_model": "monthly",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 303,
+      "location": "/playground/laws/bns"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "November"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "30"
+        ]
+      ],
+      "month_copy_count": 16,
+      "month_copy": [
+        "\"> My Playground Playground November 0 of 30 \u00b7 November Playgrou",
+        "ayground November 0 of 30 \u00b7 November Playground month November M",
+        "November 0 of 30 \u00b7 November Playground month November Manage November Ad",
+        "\u00b7 November Playground month November Manage November Add a law M",
+        "round month November Manage November Add a law Manage December \u203a",
+        "e November Add a law Manage December \u203a Your November Playground",
+        "law Manage December \u203a Your November Playground is empty Add law",
+        "Add laws you want to learn this month. Your saved progress stays",
+        "wse laws Browse laws Manage November \u00a7 Verbatim, always. Every p",
+        "t text, word for word. Plan next month Manage December \u2014 choose wh",
+        "ord. Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month Manage December \u2014 choose wh",
+        "ues. Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month November 0 of 30 laws 30 sp"
+      ],
+      "rollover_links": 3,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b2101177289b1df0"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "November"
+      ],
+      "h2": [
+        "In Playground this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "30"
+        ]
+      ],
+      "month_copy_count": 18,
+      "month_copy": [
+        "\"> My Playground Playground November 2 of 30 \u00b7 November Playgrou",
+        "ayground November 2 of 30 \u00b7 November Playground month November M",
+        "November 2 of 30 \u00b7 November Playground month November Manage November Ad",
+        "\u00b7 November Playground month November Manage November Add a law M",
+        "round month November Manage November Add a law Manage December \u203a",
+        "e November Add a law Manage December \u203a Browse laws Manage Novemb",
+        "cember \u203a Browse laws Manage November \u00a7 Verbatim, always. Every p",
+        "tions learned In Playground this month Up next BNS The Bharatiya N",
+        "ead Bare Act Manage Removed this month UAPA The Unlawful Activitie",
+        "t, 1967 Not started Removed this month Progress saved 66 sections",
+        "Add back Read Bare Act Plan next month Manage December \u2014 choose wh",
+        "Act Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month Manage December \u2014 choose wh",
+        "ues. Plan next month Manage December \u2014 choose what continues. Pl"
+      ],
+      "rollover_links": 3,
+      "law_cards": [
+        "bns:in_playground",
+        "ndps:in_playground",
+        "uapa:removed_this_month"
+      ],
+      "pg_kind": [],
+      "sha256": "0174a2627d52e10d"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "November Playground"
+      ],
+      "h2": [
+        "Active this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "30"
+        ]
+      ],
+      "month_copy_count": 8,
+      "month_copy": [
+        "\u2190 Playground My Playground November Playground 3 of 30 used 27",
+        "g 2 in Playground 1 removed this month \u00b7 space still used 27 avail",
+        "ss. It doesn\u2019t free a space this month, and adding it back doesn\u2019t",
+        "n\u2019t use another one. Active this month 2 BNS The Bharatiya Nyaya S",
+        "ontinue Read Remove Removed this month 1 UAPA The Unlawful Activit",
+        "evention) Act, 1967 Removed this month Progress saved Add back Pla",
+        "rogress saved Add back Plan next month Manage December \u2014 choose wh",
+        "back Plan next month Manage December \u2014 choose what continues. \u203a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "33f6e8abd6692484"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "November Playground"
+      ],
+      "h2": [
+        "Add PSS to November?",
+        "Active this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "30"
+        ]
+      ],
+      "month_copy_count": 11,
+      "month_copy": [
+        "\u2190 Playground My Playground November Playground 3 of 30 used 27",
+        "g 2 in Playground 1 removed this month \u00b7 space still used 27 avail",
+        "ss. It doesn\u2019t free a space this month, and adding it back doesn\u2019t",
+        "another one. PSS Add PSS to November? 3 of 30 used 27 remaining",
+        "This will use 1 of your 30 law spaces for November. You&#39;ll ha",
+        "1 of your 30 law spaces for November. You&#39;ll have 26 spaces",
+        "to Playground Cancel Active this month 2 BNS The Bharatiya Nyaya S",
+        "ontinue Read Remove Removed this month 1 UAPA The Unlawful Activit",
+        "evention) Act, 1967 Removed this month Progress saved Add back Pla",
+        "rogress saved Add back Plan next month Manage December \u2014 choose wh",
+        "back Plan next month Manage December \u2014 choose what continues. \u203a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "5bb005e83354b1d0"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "November Playground"
+      ],
+      "h2": [
+        "Add UAPA back to November?",
+        "Active this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "30"
+        ]
+      ],
+      "month_copy_count": 9,
+      "month_copy": [
+        "\u2190 Playground My Playground November Playground 3 of 30 used 27",
+        "g 2 in Playground 1 removed this month \u00b7 space still used 27 avail",
+        "ss. It doesn\u2019t free a space this month, and adding it back doesn\u2019t",
+        "one. UAPA Add UAPA back to November? 3 of 30 used 27 remaining",
+        "sed. Add back Cancel Active this month 2 BNS The Bharatiya Nyaya S",
+        "ontinue Read Remove Removed this month 1 UAPA The Unlawful Activit",
+        "evention) Act, 1967 Removed this month Progress saved Add back Pla",
+        "rogress saved Add back Plan next month Manage December \u2014 choose wh",
+        "back Plan next month Manage December \u2014 choose what continues. \u203a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17c172ba0c1c3549"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Remove from November"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 4,
+      "month_copy": [
+        "main\"> NDPS Act Remove from November Your progress will be saved",
+        "saved. This does not free a law space this month. Remove from Nov",
+        "s does not free a law space this month. Remove from November Cance",
+        "ace this month. Remove from November Cancel"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "9b095224a187131c"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your December Playground"
+      ],
+      "h2": [
+        "The Bharatiya Nyaya Sanhita, 2023",
+        "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+        "The Unlawful Activities (Prevention) Act, 1967"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "30"
+        ]
+      ],
+      "month_copy_count": 6,
+      "month_copy": [
+        "s=\"main\"> \u2190 Playground Plan next month Your December Playground Co",
+        "ground Plan next month Your December Playground Continue with la",
+        "er Playground Continue with last month\u2019s laws, or make room for so",
+        "ething new. Keep \u2014 Uses one December space. Remove \u2014 No December",
+        "December space. Remove \u2014 No December space. Progress stays saved",
+        "planned Continue with these December 0 of 30 planned 30 spaces a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "a5001b0fba1c1942"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "The NDPS Act, 1985"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "e Act The NDPS Act, 1985 In November Playground 0/128 Not starte"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "8bf8381ef14f5120"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Choose what to learn"
+      ],
+      "h2": [
+        "CHAPTER I \u00b7 Preliminary",
+        "CHAPTER II \u00b7 Of Punishments",
+        "CHAPTER III \u00b7 General Exceptions",
+        "CHAPTER IV \u00b7 Of Abetment, Criminal Conspiracy and Attempt",
+        "CHAPTER V \u00b7 Of Offences Against Woman and Child",
+        "CHAPTER VI \u00b7 Of Offences Affecting the Human Body",
+        "CHAPTER VII \u00b7 Of Offences Against the State",
+        "CHAPTER VIII \u00b7 Of Offences Relating to the Army, Navy and Air Force",
+        "CHAPTER IX \u00b7 Of Offences Relating to Elections",
+        "CHAPTER X \u00b7 Of Offences Relating to Coin, Currency-Notes, Bank-Notes, and Government Stamps",
+        "CHAPTER XI \u00b7 Of Offences Against the Public Tranquillity",
+        "CHAPTER XII \u00b7 Of Offences By or Relating to Public Servants",
+        "CHAPTER XIII \u00b7 Of Contempts of the Lawful Authority of Public Servants",
+        "CHAPTER XIV \u00b7 Of False Evidence and Offences Against Public Justice",
+        "CHAPTER XV \u00b7 Of Offences Affecting the Public Health, Safety, Convenience, Decency and Morals",
+        "CHAPTER XVI \u00b7 Of Offences Relating to Religion",
+        "CHAPTER XVII \u00b7 Of Offences Against Property",
+        "CHAPTER XVIII \u00b7 Of Offences Relating to Documents and to Property Marks",
+        "CHAPTER XIX \u00b7 Of Criminal Intimidation, Insult, Annoyance, Defamation, Etc.",
+        "CHAPTER XX \u00b7 Repeal and Savings"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "2d0d11404721571f"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [],
+      "h2": [
+        "First, read it once."
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "400f21f78530f044"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Section learned."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "c48d94c53858e82b"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Mastered, verbatim."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "0800b65c69e1ade9"
+    },
+    {
+      "state": "pro",
+      "tier_model": "monthly",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 303,
+      "location": "/playground/laws/bns"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "November"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 17,
+      "month_copy": [
+        "\"> My Playground Playground November 0 laws \u00b7 November Playgroun",
+        "layground November 0 laws \u00b7 November Playground month November M",
+        "November 0 laws \u00b7 November Playground month November Manage November Ad",
+        "\u00b7 November Playground month November Manage November Add a law M",
+        "round month November Manage November Add a law Manage December \u203a",
+        "e November Add a law Manage December \u203a Your November Playground",
+        "law Manage December \u203a Your November Playground is empty Add law",
+        "Add laws you want to learn this month. Your saved progress stays",
+        "wse laws Browse laws Manage November \u00a7 Verbatim, always. Every p",
+        "t text, word for word. Plan next month Manage December \u2014 choose wh",
+        "ord. Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month Manage December \u2014 choose wh",
+        "ues. Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month November 0 laws this month"
+      ],
+      "rollover_links": 3,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "eb9bf70b8029057d"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "November"
+      ],
+      "h2": [
+        "In Playground this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 18,
+      "month_copy": [
+        "\"> My Playground Playground November 2 laws \u00b7 November Playgroun",
+        "layground November 2 laws \u00b7 November Playground month November M",
+        "November 2 laws \u00b7 November Playground month November Manage November Ad",
+        "\u00b7 November Playground month November Manage November Add a law M",
+        "round month November Manage November Add a law Manage December \u203a",
+        "e November Add a law Manage December \u203a Browse laws Manage Novemb",
+        "cember \u203a Browse laws Manage November \u00a7 Verbatim, always. Every p",
+        "tions learned In Playground this month Up next BNS The Bharatiya N",
+        "ead Bare Act Manage Removed this month UAPA The Unlawful Activitie",
+        "t, 1967 Not started Removed this month Progress saved 66 sections",
+        "Add back Read Bare Act Plan next month Manage December \u2014 choose wh",
+        "Act Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month Manage December \u2014 choose wh",
+        "ues. Plan next month Manage December \u2014 choose what continues. Pl"
+      ],
+      "rollover_links": 3,
+      "law_cards": [
+        "bns:in_playground",
+        "ndps:in_playground",
+        "uapa:removed_this_month"
+      ],
+      "pg_kind": [],
+      "sha256": "9fbc372707a7e04e"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "November Playground"
+      ],
+      "h2": [
+        "Active this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 8,
+      "month_copy": [
+        "\u2190 Playground My Playground November Playground 3 laws this mont",
+        "November Playground 3 laws this month Unlimited Removing a law sa",
+        "ss. It doesn\u2019t free a space this month, and adding it back doesn\u2019t",
+        "n\u2019t use another one. Active this month 2 BNS The Bharatiya Nyaya S",
+        "ontinue Read Remove Removed this month 1 UAPA The Unlawful Activit",
+        "evention) Act, 1967 Removed this month Progress saved Add back Pla",
+        "rogress saved Add back Plan next month Manage December \u2014 choose wh",
+        "back Plan next month Manage December \u2014 choose what continues. \u203a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "8d6beab77905f738"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "November Playground"
+      ],
+      "h2": [
+        "Add PSS to November Playground?",
+        "Active this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 10,
+      "month_copy": [
+        "\u2190 Playground My Playground November Playground 3 laws this mont",
+        "November Playground 3 laws this month Unlimited Removing a law sa",
+        "ss. It doesn\u2019t free a space this month, and adding it back doesn\u2019t",
+        "another one. PSS Add PSS to November Playground? 3 laws this mon",
+        "November Playground? 3 laws this month Unlimited Add to Playground",
+        "to Playground Cancel Active this month 2 BNS The Bharatiya Nyaya S",
+        "ontinue Read Remove Removed this month 1 UAPA The Unlawful Activit",
+        "evention) Act, 1967 Removed this month Progress saved Add back Pla",
+        "rogress saved Add back Plan next month Manage December \u2014 choose wh",
+        "back Plan next month Manage December \u2014 choose what continues. \u203a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "18e34513f383cbe8"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "November Playground"
+      ],
+      "h2": [
+        "Add UAPA back to November?",
+        "Active this month",
+        "BNS",
+        "NDPS Act",
+        "Removed this month",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 10,
+      "month_copy": [
+        "\u2190 Playground My Playground November Playground 3 laws this mont",
+        "November Playground 3 laws this month Unlimited Removing a law sa",
+        "ss. It doesn\u2019t free a space this month, and adding it back doesn\u2019t",
+        "one. UAPA Add UAPA back to November? 3 laws this month Unlimite",
+        "PA back to November? 3 laws this month Unlimited Your progress wil",
+        "sed. Add back Cancel Active this month 2 BNS The Bharatiya Nyaya S",
+        "ontinue Read Remove Removed this month 1 UAPA The Unlawful Activit",
+        "evention) Act, 1967 Removed this month Progress saved Add back Pla",
+        "rogress saved Add back Plan next month Manage December \u2014 choose wh",
+        "back Plan next month Manage December \u2014 choose what continues. \u203a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "f346d7076a86981f"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Remove from November"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 4,
+      "month_copy": [
+        "main\"> NDPS Act Remove from November Your progress will be saved",
+        "saved. This does not free a law space this month. Remove from Nov",
+        "s does not free a law space this month. Remove from November Cance",
+        "ace this month. Remove from November Cancel"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "9bd02b640e6cc306"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your December Playground"
+      ],
+      "h2": [
+        "The Bharatiya Nyaya Sanhita, 2023",
+        "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+        "The Unlawful Activities (Prevention) Act, 1967"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 6,
+      "month_copy": [
+        "s=\"main\"> \u2190 Playground Plan next month Your December Playground Co",
+        "ground Plan next month Your December Playground Continue with la",
+        "er Playground Continue with last month\u2019s laws, or make room for so",
+        "ething new. Keep \u2014 Uses one December space. Remove \u2014 No December",
+        "December space. Remove \u2014 No December space. Progress stays saved",
+        "planned Continue with these December 0 planned Unlimited Add new"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "8ca2ac1ef01a2920"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "The NDPS Act, 1985"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "e Act The NDPS Act, 1985 In November Playground 0/128 Not starte"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "152f4f3d33ca1b19"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Choose what to learn"
+      ],
+      "h2": [
+        "CHAPTER I \u00b7 Preliminary",
+        "CHAPTER II \u00b7 Of Punishments",
+        "CHAPTER III \u00b7 General Exceptions",
+        "CHAPTER IV \u00b7 Of Abetment, Criminal Conspiracy and Attempt",
+        "CHAPTER V \u00b7 Of Offences Against Woman and Child",
+        "CHAPTER VI \u00b7 Of Offences Affecting the Human Body",
+        "CHAPTER VII \u00b7 Of Offences Against the State",
+        "CHAPTER VIII \u00b7 Of Offences Relating to the Army, Navy and Air Force",
+        "CHAPTER IX \u00b7 Of Offences Relating to Elections",
+        "CHAPTER X \u00b7 Of Offences Relating to Coin, Currency-Notes, Bank-Notes, and Government Stamps",
+        "CHAPTER XI \u00b7 Of Offences Against the Public Tranquillity",
+        "CHAPTER XII \u00b7 Of Offences By or Relating to Public Servants",
+        "CHAPTER XIII \u00b7 Of Contempts of the Lawful Authority of Public Servants",
+        "CHAPTER XIV \u00b7 Of False Evidence and Offences Against Public Justice",
+        "CHAPTER XV \u00b7 Of Offences Affecting the Public Health, Safety, Convenience, Decency and Morals",
+        "CHAPTER XVI \u00b7 Of Offences Relating to Religion",
+        "CHAPTER XVII \u00b7 Of Offences Against Property",
+        "CHAPTER XVIII \u00b7 Of Offences Relating to Documents and to Property Marks",
+        "CHAPTER XIX \u00b7 Of Criminal Intimidation, Insult, Annoyance, Defamation, Etc.",
+        "CHAPTER XX \u00b7 Repeal and Savings"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "7feb5d357231d90b"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [],
+      "h2": [
+        "First, read it once."
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "1a1d84817107fa45"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Section learned."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "0f4b3e3df8478108"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Mastered, verbatim."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "4d4f3bc350e3f398"
+    },
+    {
+      "state": "max",
+      "tier_model": "monthly",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 303,
+      "location": "/playground/laws/bns"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 2,
+      "month_copy": [
+        "ground Playground 0 of 10 \u00b7 November Resume Playground 0 of 10 l",
+        "ord for word. My Playground November 0 of 10 laws 10 spaces avai"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "0a5677badc3bf630"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 2,
+      "month_copy": [
+        "ground Playground 0 of 10 \u00b7 November Resume Playground 0 of 10 l",
+        "ord for word. My Playground November 0 of 10 laws 10 spaces avai"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "0a5677badc3bf630"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "paused",
+      "tier_model": "monthly",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6cee4fbc4170a5d2"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "November"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 16,
+      "month_copy": [
+        "on My Playground Playground November 0 of 10 \u00b7 November Playgrou",
+        "ayground November 0 of 10 \u00b7 November Playground month November M",
+        "November 0 of 10 \u00b7 November Playground month November Manage November Ad",
+        "\u00b7 November Playground month November Manage November Add a law M",
+        "round month November Manage November Add a law Manage December \u203a",
+        "e November Add a law Manage December \u203a Your November Playground",
+        "law Manage December \u203a Your November Playground is empty Add law",
+        "Add laws you want to learn this month. Your saved progress stays",
+        "wse laws Browse laws Manage November \u00a7 Verbatim, always. Every p",
+        "t text, word for word. Plan next month Manage December \u2014 choose wh",
+        "ord. Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month Manage December \u2014 choose wh",
+        "ues. Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month November 0 of 10 laws 10 sp"
+      ],
+      "rollover_links": 3,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b3c1e1a4db6fa5e0"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "November"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 16,
+      "month_copy": [
+        "on My Playground Playground November 0 of 10 \u00b7 November Playgrou",
+        "ayground November 0 of 10 \u00b7 November Playground month November M",
+        "November 0 of 10 \u00b7 November Playground month November Manage November Ad",
+        "\u00b7 November Playground month November Manage November Add a law M",
+        "round month November Manage November Add a law Manage December \u203a",
+        "e November Add a law Manage December \u203a Your November Playground",
+        "law Manage December \u203a Your November Playground is empty Add law",
+        "Add laws you want to learn this month. Your saved progress stays",
+        "wse laws Browse laws Manage November \u00a7 Verbatim, always. Every p",
+        "t text, word for word. Plan next month Manage December \u2014 choose wh",
+        "ord. Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month Manage December \u2014 choose wh",
+        "ues. Plan next month Manage December \u2014 choose what continues. Pl",
+        "choose what continues. Plan next month November 0 of 10 laws 10 sp"
+      ],
+      "rollover_links": 3,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b3c1e1a4db6fa5e0"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "November Playground"
+      ],
+      "h2": [
+        "Active this month",
+        "Removed this month"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 8,
+      "month_copy": [
+        "\u2190 Playground My Playground November Playground 0 of 10 used 10",
+        "ss. It doesn\u2019t free a space this month, and adding it back doesn\u2019t",
+        "n\u2019t use another one. Active this month 0 No laws in November yet.",
+        "ive this month 0 No laws in November yet. Removed this month 0 N",
+        "ws in November yet. Removed this month 0 Nothing removed this mont",
+        "his month 0 Nothing removed this month. Plan next month Manage Dec",
+        "ng removed this month. Plan next month Manage December \u2014 choose wh",
+        "nth. Plan next month Manage December \u2014 choose what continues. \u203a"
+      ],
+      "rollover_links": 1,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b2ba3ec3d40ab04a"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Adding new laws is temporarily unavailable"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "new_law_temporarily_unavailable"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "2867d139deec4c68"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Adding new laws is temporarily unavailable"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "new_law_temporarily_unavailable"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "2867d139deec4c68"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 303,
+      "location": "/playground/roster"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your December Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 6,
+      "month_copy": [
+        "s=\"main\"> \u2190 Playground Plan next month Your December Playground Co",
+        "ground Plan next month Your December Playground Continue with la",
+        "er Playground Continue with last month\u2019s laws, or make room for so",
+        "ething new. Keep \u2014 Uses one December space. Remove \u2014 No December",
+        "December space. Remove \u2014 No December space. Progress stays saved",
+        "o carry-forward candidates. December 0 of 10 planned 10 spaces a"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "727a97f73eb39bc4"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 303,
+      "location": "/laws/ndps"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 303,
+      "location": "/laws/bns"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 303,
+      "location": "/laws/bns"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 303,
+      "location": "/laws/bns"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 303,
+      "location": "/laws/bns"
+    },
+    {
+      "state": "pending",
+      "tier_model": "monthly",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 303,
+      "location": "/laws/bns"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused",
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [
+        "data-expired-pg-desktop",
+        "data-expired-pg-phone",
+        "data-expired-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 2,
+      "month_copy": [
+        "ground Playground 0 of 10 \u00b7 November Your Playground is paused Y",
+        "ord for word. My Playground November 0 of 10 laws 10 spaces avai"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "3d6e0b5fea5aa15c"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused",
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [
+        "data-expired-pg-desktop",
+        "data-expired-pg-phone",
+        "data-expired-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 2,
+      "month_copy": [
+        "ground Playground 0 of 10 \u00b7 November Your Playground is paused Y",
+        "ord for word. My Playground November 0 of 10 laws 10 spaces avai"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "3d6e0b5fea5aa15c"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "expired",
+      "tier_model": "monthly",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe08a36217389f91"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped",
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [
+        "data-halted-pg-desktop",
+        "data-halted-pg-phone",
+        "data-halted-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 2,
+      "month_copy": [
+        "ground Playground 0 of 10 \u00b7 November Resume Playground 0 of 10 l",
+        "ord for word. My Playground November 0 of 10 laws 10 spaces avai"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "7f63d3f1bb3c9d5c"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped",
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [
+        "data-halted-pg-desktop",
+        "data-halted-pg-phone",
+        "data-halted-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "10"
+        ]
+      ],
+      "month_copy_count": 2,
+      "month_copy": [
+        "ground Playground 0 of 10 \u00b7 November Resume Playground 0 of 10 l",
+        "ord for word. My Playground November 0 of 10 laws 10 spaces avai"
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "7f63d3f1bb3c9d5c"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "halted",
+      "tier_model": "monthly",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e6d04e5e81769994"
+    },
+    {
+      "state": "guest",
+      "tier_model": "choices",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Sign in to build your law-learning Playground.",
+        "Sign in to use Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "sign_in_required"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 1,
+      "month_copy": [
+        "yground works 1 Add laws to your month \u2014 up to your plan\u2019s spaces."
+      ],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e85e43c010d9fe88"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "Laws"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "3"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "9c71527328361d32"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "Laws"
+      ],
+      "h2": [
+        "In Playground",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "3"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [
+        "bns:in_playground",
+        "ndps:in_playground",
+        "uapa:removed_this_month"
+      ],
+      "pg_kind": [],
+      "sha256": "dc684c7a861d57b5"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "3"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "0a80e9ff7b23fc93"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "All three law choices used"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "free_choices_exhausted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "14c5a6d479ca2345"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Add UAPA again?",
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "3"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "83032361086dd46d"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Remove from Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "45eeb30a13de3035"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 303,
+      "location": "/playground/roster"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "The NDPS Act, 1985"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "bcc9c8f4842e5fe3"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Choose what to learn"
+      ],
+      "h2": [
+        "CHAPTER I \u00b7 Preliminary",
+        "CHAPTER II \u00b7 Of Punishments",
+        "CHAPTER III \u00b7 General Exceptions",
+        "CHAPTER IV \u00b7 Of Abetment, Criminal Conspiracy and Attempt",
+        "CHAPTER V \u00b7 Of Offences Against Woman and Child",
+        "CHAPTER VI \u00b7 Of Offences Affecting the Human Body",
+        "CHAPTER VII \u00b7 Of Offences Against the State",
+        "CHAPTER VIII \u00b7 Of Offences Relating to the Army, Navy and Air Force",
+        "CHAPTER IX \u00b7 Of Offences Relating to Elections",
+        "CHAPTER X \u00b7 Of Offences Relating to Coin, Currency-Notes, Bank-Notes, and Government Stamps",
+        "CHAPTER XI \u00b7 Of Offences Against the Public Tranquillity",
+        "CHAPTER XII \u00b7 Of Offences By or Relating to Public Servants",
+        "CHAPTER XIII \u00b7 Of Contempts of the Lawful Authority of Public Servants",
+        "CHAPTER XIV \u00b7 Of False Evidence and Offences Against Public Justice",
+        "CHAPTER XV \u00b7 Of Offences Affecting the Public Health, Safety, Convenience, Decency and Morals",
+        "CHAPTER XVI \u00b7 Of Offences Relating to Religion",
+        "CHAPTER XVII \u00b7 Of Offences Against Property",
+        "CHAPTER XVIII \u00b7 Of Offences Relating to Documents and to Property Marks",
+        "CHAPTER XIX \u00b7 Of Criminal Intimidation, Insult, Annoyance, Defamation, Etc.",
+        "CHAPTER XX \u00b7 Repeal and Savings"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "ce2717e22087e4e3"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [],
+      "h2": [
+        "First, read it once."
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "260d20f664c34676"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Section learned."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "f28ee2de610a59c8"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Mastered, verbatim."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "5a59712228d1a200"
+    },
+    {
+      "state": "free",
+      "tier_model": "choices",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 303,
+      "location": "/playground/laws/bns"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "Laws"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\"",
+        "data-plus-playground-phone",
+        "data-plus-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "2d53d58cf0023646"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "Laws"
+      ],
+      "h2": [
+        "In Playground",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\"",
+        "data-plus-playground-phone",
+        "data-plus-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [
+        "bns:in_playground",
+        "ndps:in_playground",
+        "uapa:removed_this_month"
+      ],
+      "pg_kind": [],
+      "sha256": "01f716cf04fc39aa"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "36c447c52be1ee84"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Add PSS to your Playground?",
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "aace9aee5c48f3c5"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Add UAPA again?",
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "5b36876d28679e7e"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Remove from Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fc6e9ac2719363f5"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 303,
+      "location": "/playground/roster"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "The NDPS Act, 1985"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "3d95687117ccf60a"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Choose what to learn"
+      ],
+      "h2": [
+        "CHAPTER I \u00b7 Preliminary",
+        "CHAPTER II \u00b7 Of Punishments",
+        "CHAPTER III \u00b7 General Exceptions",
+        "CHAPTER IV \u00b7 Of Abetment, Criminal Conspiracy and Attempt",
+        "CHAPTER V \u00b7 Of Offences Against Woman and Child",
+        "CHAPTER VI \u00b7 Of Offences Affecting the Human Body",
+        "CHAPTER VII \u00b7 Of Offences Against the State",
+        "CHAPTER VIII \u00b7 Of Offences Relating to the Army, Navy and Air Force",
+        "CHAPTER IX \u00b7 Of Offences Relating to Elections",
+        "CHAPTER X \u00b7 Of Offences Relating to Coin, Currency-Notes, Bank-Notes, and Government Stamps",
+        "CHAPTER XI \u00b7 Of Offences Against the Public Tranquillity",
+        "CHAPTER XII \u00b7 Of Offences By or Relating to Public Servants",
+        "CHAPTER XIII \u00b7 Of Contempts of the Lawful Authority of Public Servants",
+        "CHAPTER XIV \u00b7 Of False Evidence and Offences Against Public Justice",
+        "CHAPTER XV \u00b7 Of Offences Affecting the Public Health, Safety, Convenience, Decency and Morals",
+        "CHAPTER XVI \u00b7 Of Offences Relating to Religion",
+        "CHAPTER XVII \u00b7 Of Offences Against Property",
+        "CHAPTER XVIII \u00b7 Of Offences Relating to Documents and to Property Marks",
+        "CHAPTER XIX \u00b7 Of Criminal Intimidation, Insult, Annoyance, Defamation, Etc.",
+        "CHAPTER XX \u00b7 Repeal and Savings"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "22bfc9df111f3473"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [],
+      "h2": [
+        "First, read it once."
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "5bae5c2c9f800a4a"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Section learned."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "d6952cd188bfdaaf"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Mastered, verbatim."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "e23b26a0c8089ee2"
+    },
+    {
+      "state": "plus",
+      "tier_model": "choices",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 303,
+      "location": "/playground/laws/bns"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "Laws"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "5968fa2ff3d8723f"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "Laws"
+      ],
+      "h2": [
+        "In Playground",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [
+        "bns:in_playground",
+        "ndps:in_playground",
+        "uapa:removed_this_month"
+      ],
+      "pg_kind": [],
+      "sha256": "71be423d0e08259a"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "90908c6f8916467d"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Add PSS to your Playground?",
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "c4b1858ac8fdff36"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Add UAPA again?",
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "a9a3a2856b4881d4"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Remove from Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "c610919eb34dfdae"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 303,
+      "location": "/playground/roster"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "The NDPS Act, 1985"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "0d1280d068bdeed2"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Choose what to learn"
+      ],
+      "h2": [
+        "CHAPTER I \u00b7 Preliminary",
+        "CHAPTER II \u00b7 Of Punishments",
+        "CHAPTER III \u00b7 General Exceptions",
+        "CHAPTER IV \u00b7 Of Abetment, Criminal Conspiracy and Attempt",
+        "CHAPTER V \u00b7 Of Offences Against Woman and Child",
+        "CHAPTER VI \u00b7 Of Offences Affecting the Human Body",
+        "CHAPTER VII \u00b7 Of Offences Against the State",
+        "CHAPTER VIII \u00b7 Of Offences Relating to the Army, Navy and Air Force",
+        "CHAPTER IX \u00b7 Of Offences Relating to Elections",
+        "CHAPTER X \u00b7 Of Offences Relating to Coin, Currency-Notes, Bank-Notes, and Government Stamps",
+        "CHAPTER XI \u00b7 Of Offences Against the Public Tranquillity",
+        "CHAPTER XII \u00b7 Of Offences By or Relating to Public Servants",
+        "CHAPTER XIII \u00b7 Of Contempts of the Lawful Authority of Public Servants",
+        "CHAPTER XIV \u00b7 Of False Evidence and Offences Against Public Justice",
+        "CHAPTER XV \u00b7 Of Offences Affecting the Public Health, Safety, Convenience, Decency and Morals",
+        "CHAPTER XVI \u00b7 Of Offences Relating to Religion",
+        "CHAPTER XVII \u00b7 Of Offences Against Property",
+        "CHAPTER XVIII \u00b7 Of Offences Relating to Documents and to Property Marks",
+        "CHAPTER XIX \u00b7 Of Criminal Intimidation, Insult, Annoyance, Defamation, Etc.",
+        "CHAPTER XX \u00b7 Repeal and Savings"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "dca857723177c5d5"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [],
+      "h2": [
+        "First, read it once."
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "59ac4cb8a2656e7d"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Section learned."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "31ac044df0e56aa2"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Mastered, verbatim."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "ab9a8d0d69a69bf5"
+    },
+    {
+      "state": "pro",
+      "tier_model": "choices",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 303,
+      "location": "/playground/laws/bns"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "Laws"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "9f15e39fd69e6190"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "Laws"
+      ],
+      "h2": [
+        "In Playground",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [
+        "bns:in_playground",
+        "ndps:in_playground",
+        "uapa:removed_this_month"
+      ],
+      "pg_kind": [],
+      "sha256": "032e04d6ece6a898"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "5f16312371da7c6c"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Add PSS to your Playground?",
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "4a7820cb3ed8fe79"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Add UAPA again?",
+        "Active",
+        "BNS",
+        "NDPS Act",
+        "Previously chosen \u2014 add again anytime",
+        "UAPA"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "3",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "d656f7f4c39db107"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Remove from Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "0f04d1f539c87ab9"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 303,
+      "location": "/playground/roster"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "The NDPS Act, 1985"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "1b63e672cc4d35c2"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Choose what to learn"
+      ],
+      "h2": [
+        "CHAPTER I \u00b7 Preliminary",
+        "CHAPTER II \u00b7 Of Punishments",
+        "CHAPTER III \u00b7 General Exceptions",
+        "CHAPTER IV \u00b7 Of Abetment, Criminal Conspiracy and Attempt",
+        "CHAPTER V \u00b7 Of Offences Against Woman and Child",
+        "CHAPTER VI \u00b7 Of Offences Affecting the Human Body",
+        "CHAPTER VII \u00b7 Of Offences Against the State",
+        "CHAPTER VIII \u00b7 Of Offences Relating to the Army, Navy and Air Force",
+        "CHAPTER IX \u00b7 Of Offences Relating to Elections",
+        "CHAPTER X \u00b7 Of Offences Relating to Coin, Currency-Notes, Bank-Notes, and Government Stamps",
+        "CHAPTER XI \u00b7 Of Offences Against the Public Tranquillity",
+        "CHAPTER XII \u00b7 Of Offences By or Relating to Public Servants",
+        "CHAPTER XIII \u00b7 Of Contempts of the Lawful Authority of Public Servants",
+        "CHAPTER XIV \u00b7 Of False Evidence and Offences Against Public Justice",
+        "CHAPTER XV \u00b7 Of Offences Affecting the Public Health, Safety, Convenience, Decency and Morals",
+        "CHAPTER XVI \u00b7 Of Offences Relating to Religion",
+        "CHAPTER XVII \u00b7 Of Offences Against Property",
+        "CHAPTER XVIII \u00b7 Of Offences Relating to Documents and to Property Marks",
+        "CHAPTER XIX \u00b7 Of Criminal Intimidation, Insult, Annoyance, Defamation, Etc.",
+        "CHAPTER XX \u00b7 Repeal and Savings"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "23bb77047766e7fe"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [],
+      "h2": [
+        "First, read it once."
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "c23d626556888d16"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Section learned."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "79db8c513f7c25e6"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Mastered, verbatim."
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "fe9a641c5641073c"
+    },
+    {
+      "state": "max",
+      "tier_model": "choices",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 303,
+      "location": "/playground/laws/bns"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "a3274caa8ec769bd"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "a3274caa8ec769bd"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "paused",
+      "tier_model": "choices",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground subscription paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "subscription_paused"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17651e2d26e59bfc"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "Laws"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b7e0b5884bf7fff6"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Playground",
+        "Laws"
+      ],
+      "h2": [],
+      "markers": [
+        "data-open-playground-phone",
+        "data-open-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "b7e0b5884bf7fff6"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Manage laws"
+      ],
+      "h2": [
+        "Active",
+        "Previously chosen \u2014 add again anytime"
+      ],
+      "markers": [],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "38bb95323e555c52"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Adding new laws is temporarily unavailable"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "new_law_temporarily_unavailable"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "ed5d1f62d03ba86c"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Adding new laws is temporarily unavailable"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "new_law_temporarily_unavailable"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "ed5d1f62d03ba86c"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 303,
+      "location": "/playground/roster"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 303,
+      "location": "/playground/roster"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 303,
+      "location": "/laws/ndps"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 303,
+      "location": "/laws/bns"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 303,
+      "location": "/laws/bns"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 303,
+      "location": "/laws/bns"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 303,
+      "location": "/laws/bns"
+    },
+    {
+      "state": "pending",
+      "tier_model": "choices",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 303,
+      "location": "/laws/bns"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused",
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [
+        "data-expired-pg-desktop",
+        "data-expired-pg-phone",
+        "data-expired-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "5d816caedce9afc0"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused",
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [
+        "data-expired-pg-desktop",
+        "data-expired-pg-phone",
+        "data-expired-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "5d816caedce9afc0"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "expired",
+      "tier_model": "choices",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Your Playground is paused"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "paid_period_ended"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "6b14e0947aa1d5cd"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "home_empty",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped",
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [
+        "data-halted-pg-desktop",
+        "data-halted-pg-phone",
+        "data-halted-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "7fa19f7b8190477c"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "home",
+      "path": "/playground",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped",
+        "Playground"
+      ],
+      "h2": [],
+      "markers": [
+        "data-halted-pg-desktop",
+        "data-halted-pg-phone",
+        "data-halted-playground=\"desktop\""
+      ],
+      "gate": [],
+      "roster_used_limit": [
+        [
+          "0",
+          "unlimited"
+        ]
+      ],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "7fa19f7b8190477c"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "roster",
+      "path": "/playground/roster",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "roster_add",
+      "path": "/playground/roster?add=pss",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "roster_readd",
+      "path": "/playground/roster?add=uapa",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "remove",
+      "path": "/playground/roster/ndps/remove",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "rollover",
+      "path": "/playground/roster/next",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "law",
+      "path": "/playground/laws/ndps",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "sections",
+      "path": "/playground/laws/bns/sections",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "learn_read",
+      "path": "/playground/laws/bns/sections/1/learn/read",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "learned",
+      "path": "/playground/laws/bns/sections/1/learned",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "mastered",
+      "path": "/playground/laws/bns/sections/2/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    },
+    {
+      "state": "halted",
+      "tier_model": "choices",
+      "route": "act_mastered",
+      "path": "/playground/laws/bns/mastered",
+      "status": 200,
+      "location": "",
+      "h1": [
+        "Payment retries have stopped"
+      ],
+      "h2": [],
+      "markers": [],
+      "gate": [
+        "payment_halted"
+      ],
+      "roster_used_limit": [],
+      "month_copy_count": 0,
+      "month_copy": [],
+      "rollover_links": 0,
+      "law_cards": [],
+      "pg_kind": [],
+      "sha256": "17064b047c7e3440"
+    }
+  ]
+}

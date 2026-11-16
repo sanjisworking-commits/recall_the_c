@@ -1,0 +1,722 @@
+{
+ "label": "plus-choices",
+ "base": "http://127.0.0.1:8927",
+ "captured_at": "2026-11-16T08:21:39+0530",
+ "rows": [
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 5,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 4.51,
+   "texts": 13,
+   "tabTrail": [
+    {
+     "t": "Manage laws",
+     "ring": true
+    },
+    {
+     "t": "Add a law",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Manage laws",
+     "ring": true
+    },
+    {
+     "t": "Add a law",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Manage laws",
+     "ring": true
+    },
+    {
+     "t": "Add a law",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 5,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 7.14,
+   "texts": 13,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 10,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "MY PLAYGROUND",
+     "r": 2.74
+    },
+    {
+     "t": "IN PLAYGROUND",
+     "r": 2.74
+    },
+    {
+     "t": "PREVIOUSLY CHOSEN \u2014 ADD AGAIN ANYTIME",
+     "r": 2.74
+    },
+    {
+     "t": "PLAYGROUND",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 45,
+   "tabTrail": [
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Manage",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Manage",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Browse laws",
+     "ring": true
+    },
+    {
+     "t": "Manage laws",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 10,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.29,
+   "texts": 45,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "roster",
+   "path": "/playground/roster",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Manage laws \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 8,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "MY PLAYGROUND",
+     "r": 2.74
+    },
+    {
+     "t": "ACTIVE",
+     "r": 2.38
+    },
+    {
+     "t": "PREVIOUSLY CHOSEN \u2014 ADD AGAIN ANYTIME",
+     "r": 2.38
+    }
+   ],
+   "minRatio": 2.38,
+   "texts": 33,
+   "tabTrail": [
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "roster",
+   "path": "/playground/roster",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Manage laws \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 8,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 4.5,
+   "texts": 33,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "roster",
+   "path": "/playground/roster",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Manage laws \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 8,
+   "smallTargets": [
+    {
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 32
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "MY PLAYGROUND",
+     "r": 2.74
+    },
+    {
+     "t": "ACTIVE",
+     "r": 2.38
+    },
+    {
+     "t": "PREVIOUSLY CHOSEN \u2014 ADD AGAIN ANYTIME",
+     "r": 2.38
+    }
+   ],
+   "minRatio": 2.38,
+   "texts": 33,
+   "tabTrail": [
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "roster",
+   "path": "/playground/roster",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Manage laws \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 8,
+   "smallTargets": [
+    {
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 32
+    }
+   ],
+   "lowContrast": [],
+   "minRatio": 4.5,
+   "texts": 33,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "readd",
+   "path": "/playground/roster?add=uapa",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Manage laws \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 10,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "MY PLAYGROUND",
+     "r": 2.74
+    },
+    {
+     "t": "UAPA",
+     "r": 3.24
+    },
+    {
+     "t": "ACTIVE",
+     "r": 2.38
+    },
+    {
+     "t": "PREVIOUSLY CHOSEN \u2014 ADD AGAIN ANYTIME",
+     "r": 2.38
+    }
+   ],
+   "minRatio": 2.38,
+   "texts": 43,
+   "tabTrail": [
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "readd",
+   "path": "/playground/roster?add=uapa",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Manage laws \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 10,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 4.5,
+   "texts": 43,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "readd",
+   "path": "/playground/roster?add=uapa",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Manage laws \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 10,
+   "smallTargets": [
+    {
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 32
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "MY PLAYGROUND",
+     "r": 2.74
+    },
+    {
+     "t": "UAPA",
+     "r": 3.24
+    },
+    {
+     "t": "ACTIVE",
+     "r": 2.38
+    },
+    {
+     "t": "PREVIOUSLY CHOSEN \u2014 ADD AGAIN ANYTIME",
+     "r": 2.38
+    }
+   ],
+   "minRatio": 2.38,
+   "texts": 43,
+   "tabTrail": [
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read",
+     "ring": true
+    },
+    {
+     "t": "Remove",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "readd",
+   "path": "/playground/roster?add=uapa",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Manage laws \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 10,
+   "smallTargets": [
+    {
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 32
+    }
+   ],
+   "lowContrast": [],
+   "minRatio": 4.5,
+   "texts": 43,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "remove",
+   "path": "/playground/roster/ndps/remove",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Remove from Playground \u00b7 Playground",
+   "hScroll": false,
+   "controls": 2,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "NDPS ACT",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 3.24,
+   "texts": 6,
+   "tabTrail": [
+    {
+     "t": "Remove from Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "Remove from Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "Remove from Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "Remove from Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "remove",
+   "path": "/playground/roster/ndps/remove",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Remove from Playground \u00b7 Playground",
+   "hScroll": false,
+   "controls": 2,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 6,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "remove",
+   "path": "/playground/roster/ndps/remove",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Remove from Playground \u00b7 Playground",
+   "hScroll": false,
+   "controls": 2,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "NDPS ACT",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 3.24,
+   "texts": 6,
+   "tabTrail": [
+    {
+     "t": "Remove from Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "remove",
+   "path": "/playground/roster/ndps/remove",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Remove from Playground \u00b7 Playground",
+   "hScroll": false,
+   "controls": 2,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 6,
+   "tabTrail": [],
+   "exceptions": []
+  }
+ ]
+}

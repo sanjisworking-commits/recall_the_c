@@ -1,0 +1,190 @@
+{
+ "label": "pro",
+ "base": "http://127.0.0.1:8927",
+ "captured_at": "2026-11-16T08:23:28+0530",
+ "rows": [
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 6,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 4.51,
+   "texts": 13,
+   "tabTrail": [
+    {
+     "t": "Manage November",
+     "ring": true
+    },
+    {
+     "t": "Add a law",
+     "ring": true
+    },
+    {
+     "t": "Manage December \u203a",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Manage November",
+     "ring": true
+    },
+    {
+     "t": "Add a law",
+     "ring": true
+    },
+    {
+     "t": "Manage December \u203a",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Manage November",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 6,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.29,
+   "texts": 13,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 11,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "MY PLAYGROUND",
+     "r": 2.74
+    },
+    {
+     "t": "IN PLAYGROUND THIS MONTH",
+     "r": 2.74
+    },
+    {
+     "t": "REMOVED THIS MONTH",
+     "r": 2.74
+    },
+    {
+     "t": "PLAN NEXT MONTH",
+     "r": 3.24
+    },
+    {
+     "t": "NOVEMBER",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 47,
+   "tabTrail": [
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Manage",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Manage",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "PLAN NEXT MONTH Manage December \u2014 choose",
+     "ring": true
+    },
+    {
+     "t": "Browse laws",
+     "ring": true
+    },
+    {
+     "t": "Manage November",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 11,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.29,
+   "texts": 47,
+   "tabTrail": [],
+   "exceptions": []
+  }
+ ]
+}

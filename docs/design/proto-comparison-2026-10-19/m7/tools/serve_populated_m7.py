@@ -112,6 +112,15 @@ def main() -> None:
             USER, tier=spec["tier"], status=spec["status"], billing_period_start=_TODAY - timedelta(days=20),
             billing_period_end=_TODAY + timedelta(days=10), is_current=True)
     saves = _populate(app, args.scenario)
+    # A paid account registers a device on each new session and is limited to two.
+    # The populate client above was one; remove the tool's own device rows so the
+    # capture session and the page-probe session are the account's two devices.
+    devices = getattr(app.state, "device_service", None)
+    if devices is not None:
+        conn = devices._repo._conn
+        for table in ("user_device_session", "user_device_replacement", "user_device"):
+            conn.execute(f"DELETE FROM {table}")
+        conn.commit()
     print(f"populated Playground ready on http://127.0.0.1:{args.port} tier={args.tier} model={args.tier_model} "
           f"scenario={args.scenario} saves={saves}", flush=True)
     uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="warning")

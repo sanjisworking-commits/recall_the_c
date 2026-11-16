@@ -1,0 +1,166 @@
+{
+ "label": "free-choices-2of3",
+ "base": "http://127.0.0.1:8927",
+ "captured_at": "2026-11-16T08:19:24+0530",
+ "rows": [
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 4,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 4.51,
+   "texts": 11,
+   "tabTrail": [
+    {
+     "t": "Manage laws",
+     "ring": true
+    },
+    {
+     "t": "Add a law",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Manage laws",
+     "ring": true
+    },
+    {
+     "t": "Add a law",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Manage laws",
+     "ring": true
+    },
+    {
+     "t": "Add a law",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 4,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 7.14,
+   "texts": 11,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 7,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "MY PLAYGROUND",
+     "r": 2.74
+    },
+    {
+     "t": "IN PLAYGROUND",
+     "r": 2.74
+    },
+    {
+     "t": "PREVIOUSLY CHOSEN \u2014 ADD AGAIN ANYTIME",
+     "r": 2.74
+    },
+    {
+     "t": "LAW CHOICES \u00b7 FREE",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 37,
+   "tabTrail": [
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Manage",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Browse laws",
+     "ring": true
+    },
+    {
+     "t": "Manage laws",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Playground \u00b7 Recall the C",
+   "hScroll": false,
+   "controls": 7,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.29,
+   "texts": 37,
+   "tabTrail": [],
+   "exceptions": []
+  }
+ ]
+}
