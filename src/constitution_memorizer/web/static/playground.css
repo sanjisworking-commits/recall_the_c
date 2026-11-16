@@ -4110,27 +4110,30 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 }
 
 /* Plus desktop Playground home (CTA map plus/06-screen). Phone Plus
-   is plus/03-screen on [data-plus-playground-phone] at ≤560px. Guest
-   intro, Free Gate, and Pro home stay on their own wrappers. */
+   is plus/03-screen on [data-open-playground-phone] at ≤560px. Guest
+   intro and Free Gate stay on their own wrappers. M7a (Q7): the rules key
+   on the shared open-Playground marker, carried by every account whose
+   Playground is open (Plus, Pro, Max, pending; RecallC Free under the
+   choices model); Plus keeps `data-plus-playground` as well. */
 @media (max-width: 560px) {
-  [data-plus-playground] .plus-pg-desk-only {
+  [data-open-playground] .plus-pg-desk-only {
     display: none !important;
   }
 }
 
 @media (min-width: 561px) {
-  [data-plus-playground] .plus-pg-desk-hide {
+  [data-open-playground] .plus-pg-desk-hide {
     display: none !important;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] {
+  .pg-home-grid[data-open-playground="desktop"] {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 300px;
     gap: 32px;
     align-items: start;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-home-kicker {
+  .pg-home-grid[data-open-playground="desktop"] .pg-home-kicker {
     display: block;
     margin: 0 0 6px;
     letter-spacing: 0.1em;
@@ -4140,7 +4143,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-mid);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] h1.plus-pg-month {
+  .pg-home-grid[data-open-playground="desktop"] h1.plus-pg-month {
     display: block;
     font-family: var(--pg-font-display);
     font-size: 34px;
@@ -4152,11 +4155,11 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-ink);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-month-strip {
+  .pg-home-grid[data-open-playground="desktop"] .pg-month-strip {
     display: none;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-home-empty {
+  .pg-home-grid[data-open-playground="desktop"] .pg-home-empty {
     margin-top: 26px;
     padding: 28px;
     max-width: 560px;
@@ -4165,7 +4168,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     border-radius: var(--pg-radius-card);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-home-empty-title {
+  .pg-home-grid[data-open-playground="desktop"] .pg-home-empty-title {
     font-family: var(--pg-font-display);
     font-size: 24px;
     font-weight: 500;
@@ -4175,17 +4178,17 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     margin: 0 0 8px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-home-empty .pg-lede:not(.pg-home-empty-title) {
+  .pg-home-grid[data-open-playground="desktop"] .pg-home-empty .pg-lede:not(.pg-home-empty-title) {
     margin: 0 0 20px;
     font-size: 14.5px;
     line-height: 1.6;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-home-empty .pg-actions {
+  .pg-home-grid[data-open-playground="desktop"] .pg-home-empty .pg-actions {
     margin: 0;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-home-tiles {
+  .pg-home-grid[data-open-playground="desktop"] .pg-home-tiles {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
@@ -4194,19 +4197,19 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     background: transparent;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .ProgressSummary-cell {
+  .pg-home-grid[data-open-playground="desktop"] .ProgressSummary-cell {
     padding: 14px 16px;
     background: var(--pg-paper);
     border: 1px solid var(--pg-hairline);
     border-radius: 12px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .ProgressSummary-value {
+  .pg-home-grid[data-open-playground="desktop"] .ProgressSummary-value {
     font-size: 26px;
     font-weight: 600;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .ProgressSummary-label {
+  .pg-home-grid[data-open-playground="desktop"] .ProgressSummary-label {
     margin-top: 3px;
     font-size: 12.5px;
     font-weight: 500;
@@ -4215,13 +4218,13 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-muted);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-section-head {
+  .pg-home-grid[data-open-playground="desktop"] .pg-section-head {
     display: block;
     margin: 26px 0 10px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-section-head h2,
-  .pg-home-grid[data-plus-playground="desktop"] > div > h2 {
+  .pg-home-grid[data-open-playground="desktop"] .pg-section-head h2,
+  .pg-home-grid[data-open-playground="desktop"] > div > h2 {
     margin: 26px 0 10px;
     font-family: var(--pg-font-ui);
     font-size: 10.5px;
@@ -4231,13 +4234,13 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-mid);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-law-grid {
+  .pg-home-grid[data-open-playground="desktop"] .pg-law-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .LawCard {
+  .pg-home-grid[data-open-playground="desktop"] .LawCard {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -4245,79 +4248,79 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     border-radius: var(--pg-radius-card);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .LawCard--emphasised {
+  .pg-home-grid[data-open-playground="desktop"] .LawCard--emphasised {
     border: 1px solid var(--pg-hairline);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .LawCard-kicker {
+  .pg-home-grid[data-open-playground="desktop"] .LawCard-kicker {
     color: var(--pg-teal);
     letter-spacing: 0.1em;
     font-weight: 600;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .LawCard-title {
+  .pg-home-grid[data-open-playground="desktop"] .LawCard-title {
     font-size: 20px;
     font-weight: 500;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .LawCard[data-membership="in_playground"] .LawStatusBadge[data-status="in_playground"] {
+  .pg-home-grid[data-open-playground="desktop"] .LawCard[data-membership="in_playground"] .LawStatusBadge[data-status="in_playground"] {
     display: none;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .LawCard-meta {
+  .pg-home-grid[data-open-playground="desktop"] .LawCard-meta {
     display: block;
     margin: 0;
     font-size: 13px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .LawStatusBadge,
-  .pg-home-grid[data-plus-playground="desktop"] .DueBadge {
+  .pg-home-grid[data-open-playground="desktop"] .LawStatusBadge,
+  .pg-home-grid[data-open-playground="desktop"] .DueBadge {
     text-transform: none;
     letter-spacing: 0;
     border-radius: 6px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .DueBadge[data-due="today"] {
+  .pg-home-grid[data-open-playground="desktop"] .DueBadge[data-due="today"] {
     border: 1.5px solid var(--pg-ink);
     font-weight: 700;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-note {
+  .pg-home-grid[data-open-playground="desktop"] .pg-note {
     margin: 0;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-note a {
+  .pg-home-grid[data-open-playground="desktop"] .pg-note a {
     color: var(--pg-teal);
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-note a::after {
+  .pg-home-grid[data-open-playground="desktop"] .pg-note a::after {
     content: " →";
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-card-actions--desktop {
+  .pg-home-grid[data-open-playground="desktop"] .pg-card-actions--desktop {
     display: flex;
     margin-top: auto;
     padding-top: 4px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-card-actions--phone {
+  .pg-home-grid[data-open-playground="desktop"] .pg-card-actions--phone {
     display: none !important;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .TrustMark strong {
+  .pg-home-grid[data-open-playground="desktop"] .pg-aside .TrustMark strong {
     display: block;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .TrustMark span:last-child {
+  .pg-home-grid[data-open-playground="desktop"] .pg-aside .TrustMark span:last-child {
     display: flex;
     flex-direction: column;
     gap: 2px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-aside {
+  .pg-home-grid[data-open-playground="desktop"] .pg-aside {
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -4328,29 +4331,29 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     background: transparent;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .plus-pg-aside-card,
-  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .TrustMark {
+  .pg-home-grid[data-open-playground="desktop"] .plus-pg-aside-card,
+  .pg-home-grid[data-open-playground="desktop"] .pg-aside .TrustMark {
     padding: 20px;
     background: var(--pg-paper);
     border: 1px solid var(--pg-hairline);
     border-radius: var(--pg-radius-card);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .TrustMark {
+  .pg-home-grid[data-open-playground="desktop"] .pg-aside .TrustMark {
     padding: 16px 18px;
     margin: 0;
     gap: 12px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .plus-pg-aside-card > .pg-eyebrow {
+  .pg-home-grid[data-open-playground="desktop"] .plus-pg-aside-card > .pg-eyebrow {
     margin: 0 0 6px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-counts {
+  .pg-home-grid[data-open-playground="desktop"] .RosterCapacity-counts {
     display: block;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-counts > span:first-child {
+  .pg-home-grid[data-open-playground="desktop"] .RosterCapacity-counts > span:first-child {
     display: block;
     font-family: var(--pg-font-display);
     font-size: 26px;
@@ -4358,7 +4361,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     line-height: 1.1;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-remaining {
+  .pg-home-grid[data-open-playground="desktop"] .RosterCapacity-remaining {
     display: block;
     margin-top: 4px;
     font-size: 13.5px;
@@ -4366,19 +4369,19 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-muted);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend {
+  .pg-home-grid[data-open-playground="desktop"] .RosterCapacity-legend {
     flex-direction: column;
     gap: 6px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend span {
+  .pg-home-grid[data-open-playground="desktop"] .RosterCapacity-legend span {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 12.5px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend span::before {
+  .pg-home-grid[data-open-playground="desktop"] .RosterCapacity-legend span::before {
     content: "";
     flex: none;
     width: 10px;
@@ -4387,16 +4390,16 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     box-sizing: border-box;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend span:first-child::before {
+  .pg-home-grid[data-open-playground="desktop"] .RosterCapacity-legend span:first-child::before {
     background: var(--pg-ink);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend span:last-child::before {
+  .pg-home-grid[data-open-playground="desktop"] .RosterCapacity-legend span:last-child::before {
     background: transparent;
     border-color: var(--pg-hairline);
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend span:not(:first-child):not(:last-child)::before {
+  .pg-home-grid[data-open-playground="desktop"] .RosterCapacity-legend span:not(:first-child):not(:last-child)::before {
     background: repeating-linear-gradient(
       -45deg,
       var(--pg-ink),
@@ -4406,21 +4409,21 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     );
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .pg-actions {
+  .pg-home-grid[data-open-playground="desktop"] .pg-aside .pg-actions {
     flex-direction: column;
     gap: 8px;
     margin: 16px 0 0;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .pg-btn {
+  .pg-home-grid[data-open-playground="desktop"] .pg-aside .pg-btn {
     width: 100%;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] a.pg-plan-row {
+  .pg-home-grid[data-open-playground="desktop"] a.pg-plan-row {
     margin-top: 26px;
   }
 
-  .pg-home-grid[data-plus-playground="desktop"] a.pg-plan-row::after {
+  .pg-home-grid[data-open-playground="desktop"] a.pg-plan-row::after {
     content: "›";
     font-size: 16px;
     color: var(--pg-faint);
@@ -4433,47 +4436,47 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
    ≥561 block above is unchanged. No CSS order. Guest / Free Gate /
    Expired / Halted / Pro stay on their own wrappers. */
 @media (max-width: 560px) {
-  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone]) {
+  body.is-authed[data-mscreen="playground"]:has([data-open-playground-phone]) {
     overflow-x: hidden;
   }
 
-  body.is-authed.playground-app:has([data-plus-playground-phone]) .page-wrap,
-  body.is-authed.playground-app:has([data-plus-playground-phone]) .sheet,
-  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone]) .PlaygroundShell {
+  body.is-authed.playground-app:has([data-open-playground-phone]) .page-wrap,
+  body.is-authed.playground-app:has([data-open-playground-phone]) .sheet,
+  body.is-authed[data-mscreen="playground"]:has([data-open-playground-phone]) .PlaygroundShell {
     background: var(--pg-page);
   }
 
-  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone]) .PlaygroundShell {
+  body.is-authed[data-mscreen="playground"]:has([data-open-playground-phone]) .PlaygroundShell {
     max-width: none;
     overflow-x: hidden;
     padding: 12px var(--m-gutter, 18px) calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
   }
 
-  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone]) .mobile-tabbar {
+  body.is-authed[data-mscreen="playground"]:has([data-open-playground-phone]) .mobile-tabbar {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
   }
 
-  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone]) .mobile-tab.is-active {
+  body.is-authed[data-mscreen="playground"]:has([data-open-playground-phone]) .mobile-tab.is-active {
     color: var(--pg-ink);
   }
 
-  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone])
+  body.is-authed[data-mscreen="playground"]:has([data-open-playground-phone])
     .mobile-tab.is-active
     .mobile-tab-icon {
     fill: currentColor;
   }
 
-  [data-plus-playground-phone] {
+  [data-open-playground-phone] {
     overflow-x: hidden;
     min-width: 0;
   }
 
-  [data-plus-playground-phone] .pg-home-kicker {
+  [data-open-playground-phone] .pg-home-kicker {
     display: none;
   }
 
-  [data-plus-playground-phone] .pg-home-title.plus-pg-desk-hide {
+  [data-open-playground-phone] .pg-home-title.plus-pg-desk-hide {
     display: inline;
     margin: 0;
     font-family: var(--pg-font-display);
@@ -4485,7 +4488,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-ink);
   }
 
-  [data-plus-playground-phone] .pg-home-month {
+  [data-open-playground-phone] .pg-home-month {
     display: inline;
     margin: 0 0 0 8px;
     font-family: var(--pg-font-ui);
@@ -4495,7 +4498,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-muted);
   }
 
-  [data-plus-playground-phone] .pg-month-strip {
+  [data-open-playground-phone] .pg-month-strip {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
     align-items: center;
@@ -4508,7 +4511,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     box-sizing: border-box;
   }
 
-  [data-plus-playground-phone] .plus-pg-period-label {
+  [data-open-playground-phone] .plus-pg-period-label {
     grid-column: 1;
     grid-row: 1;
     min-width: 0;
@@ -4518,8 +4521,8 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-muted);
   }
 
-  [data-plus-playground-phone] .pg-month-strip > a:nth-of-type(1),
-  [data-plus-playground-phone] .pg-month-strip > a:nth-of-type(2) {
+  [data-open-playground-phone] .pg-month-strip > a:nth-of-type(1),
+  [data-open-playground-phone] .pg-month-strip > a:nth-of-type(2) {
     grid-row: 1;
     display: inline-flex;
     align-items: center;
@@ -4539,7 +4542,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     box-sizing: border-box;
   }
 
-  [data-plus-playground-phone] .pg-month-strip > a:nth-of-type(3) {
+  [data-open-playground-phone] .pg-month-strip > a:nth-of-type(3) {
     grid-column: 1 / -1;
     grid-row: 2;
     display: inline-flex;
@@ -4553,17 +4556,17 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     text-decoration: none;
   }
 
-  [data-plus-playground-phone] > p.pg-actions,
-  [data-plus-playground-phone] > div.plus-pg-desk-hide,
-  [data-plus-playground-phone] > .pg-plan-row {
+  [data-open-playground-phone] > p.pg-actions,
+  [data-open-playground-phone] > div.plus-pg-desk-hide,
+  [data-open-playground-phone] > .pg-plan-row {
     display: none !important;
   }
 
-  [data-plus-playground-phone] .pg-home-empty {
+  [data-open-playground-phone] .pg-home-empty {
     margin: 4px 0 16px;
   }
 
-  [data-plus-playground-phone] .pg-home-empty-title {
+  [data-open-playground-phone] .pg-home-empty-title {
     margin: 0 0 6px;
     font-family: var(--pg-font-display);
     font-size: 18px;
@@ -4572,15 +4575,15 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-ink);
   }
 
-  [data-plus-playground-phone] .pg-section-head {
+  [data-open-playground-phone] .pg-section-head {
     display: none;
   }
 
-  [data-plus-playground-phone] .pg-law-grid {
+  [data-open-playground-phone] .pg-law-grid {
     display: block;
   }
 
-  [data-plus-playground-phone] .LawCard {
+  [data-open-playground-phone] .LawCard {
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -4592,24 +4595,24 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     box-sizing: border-box;
   }
 
-  [data-plus-playground-phone] .LawCard:first-child {
+  [data-open-playground-phone] .LawCard:first-child {
     margin-top: 0;
   }
 
-  [data-plus-playground-phone] .LawCard--emphasised {
+  [data-open-playground-phone] .LawCard--emphasised {
     border: 1px solid var(--pg-hairline);
   }
 
-  [data-plus-playground-phone] .LawCard-kicker,
-  [data-plus-playground-phone] .LawCard-full,
-  [data-plus-playground-phone] .LawCard-meta,
-  [data-plus-playground-phone] .LawStatusBadge,
-  [data-plus-playground-phone] .DueBadge,
-  [data-plus-playground-phone] .LawCard > p:not(.LawCard-full):not(.LawCard-meta):not(.pg-note) {
+  [data-open-playground-phone] .LawCard-kicker,
+  [data-open-playground-phone] .LawCard-full,
+  [data-open-playground-phone] .LawCard-meta,
+  [data-open-playground-phone] .LawStatusBadge,
+  [data-open-playground-phone] .DueBadge,
+  [data-open-playground-phone] .LawCard > p:not(.LawCard-full):not(.LawCard-meta):not(.pg-note) {
     display: none;
   }
 
-  [data-plus-playground-phone] .LawCard-title {
+  [data-open-playground-phone] .LawCard-title {
     margin: 0;
     font-family: var(--pg-font-display);
     font-size: 18px;
@@ -4618,19 +4621,19 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-ink);
   }
 
-  [data-plus-playground-phone] .LawCard-bar {
+  [data-open-playground-phone] .LawCard-bar {
     height: 2px;
     margin: 10px 0 12px;
     border-radius: 0;
     background: var(--pg-hairline);
   }
 
-  [data-plus-playground-phone] .pg-card-actions--phone {
+  [data-open-playground-phone] .pg-card-actions--phone {
     display: flex;
     margin: 0;
   }
 
-  [data-plus-playground-phone] .pg-card-actions--phone .pg-btn {
+  [data-open-playground-phone] .pg-card-actions--phone .pg-btn {
     width: 100%;
     min-height: 44px;
     box-sizing: border-box;
@@ -7901,4 +7904,38 @@ label.pg-plan-card:has(.pg-plan-radio:focus-visible) {
 .cal-si-upgrade-cta:focus-visible {
   outline: 2px solid var(--pg-ink, var(--ink));
   outline-offset: 2px;
+}
+
+/* ── M7a · Playground home without the month model ─────────────────────────
+   Shown only when the view says the period model does not apply (``choices``):
+   the phone strip's note, the RecallC Free limit paragraph and its upgrade
+   action in the aside card. The layout itself is the open-Playground home
+   (`data-open-playground`), shared by every account whose Playground is open. */
+.pg-strip-note {
+  margin: -8px 2px 14px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--pg-muted);
+}
+
+.pg-limit-note {
+  margin: 14px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--pg-muted);
+}
+
+.pg-upgrade-actions {
+  margin: 14px 0 0;
+}
+
+.pg-upgrade-actions .pg-btn {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 561px) {
+  .pg-home-grid[data-open-playground="desktop"] .pg-upgrade-actions + .pg-actions {
+    margin-top: 10px;
+  }
 }

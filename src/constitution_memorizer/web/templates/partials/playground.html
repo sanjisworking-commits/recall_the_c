@@ -51,6 +51,12 @@
     {% if cap.legend_removed %}<span>{{ cap.legend_removed }}</span>{% endif %}
     <span>{{ cap.legend_available }}</span>
   </p>
+  {% elif not cap.month_model %}
+  <p class="RosterCapacity-legend">
+    <span>{{ cap.legend_in }}</span>
+    {% if cap.legend_removed %}<span>{{ cap.legend_removed }}</span>{% endif %}
+    <span>{{ cap.legend_available }}</span>
+  </p>
   {% endif %}
 </div>
 {% endmacro %}
