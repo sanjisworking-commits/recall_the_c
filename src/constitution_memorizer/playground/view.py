@@ -2175,7 +2175,9 @@ def build_home_view(
         ),
         permanent=permanent,
         month_model=month_model,
-        tier_label=playground_tier_word(getattr(access, "snapshot", None)),
+        # The tier word belongs to an open Playground; a read-only home
+        # (paused, expired, halted) keeps the plain "Unlimited" it shows today.
+        tier_label="" if read_only else playground_tier_word(getattr(access, "snapshot", None)),
     )
     next_start, _end = next_playground_month_bounds()
     next_month = playground_month_name(next_start)
