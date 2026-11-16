@@ -456,6 +456,49 @@ def test_f13_paid_add_sheet_under_monthly_is_unchanged(tmp_path: Path, state: st
 
 
 # --------------------------------------------------------------------------- #
+# F14 — paid re-add wording on the Act head and in the sheet (W18)             #
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("state", ["plus", "pro"])
+def test_f14_paid_readd_under_choices_uses_the_home_wording(tmp_path: Path, state: str) -> None:
+    client = _populated(tmp_path, state, "choices")
+    head = _text(_main(client.get("/laws/uapa").text))
+    assert "Previously chosen" in head and "Add again" in head
+    assert "Your saved progress comes back with it." in head
+    for gone in ("Removed this month", "Add back", "No extra space used"):
+        assert gone not in head, gone
+    html = client.get(add_path("uapa")).text
+    assert 'data-pg-kind="re_add"' in html
+    panel = _panel(html)
+    assert "Your saved progress comes back with it." in panel
+    assert ">Add again</button>" in panel
+    for gone in ("Add back", "No extra space used", "Your progress will be saved."):
+        assert gone not in panel, gone
+    # a paid account is told nothing about choices
+    assert "uses no choice" not in panel and "uses no choice" not in head
+    assert 'data-step="confirm"' in html  # the confirmation step stays
+
+
+@pytest.mark.parametrize("state", ["plus", "pro"])
+def test_f14_paid_readd_under_monthly_is_unchanged(tmp_path: Path, state: str) -> None:
+    client = _populated(tmp_path, state, "monthly")
+    head = _text(_main(client.get("/laws/uapa").text))
+    assert "Removed this month" in head and "Add back" in head and "No extra space used." in head
+    assert "Previously chosen" not in head and "Add again" not in head
+    panel = _panel(client.get(add_path("uapa")).text)
+    assert "Your progress will be saved." in panel and "No extra space used." in panel
+    assert ">Add back</button>" in panel
+
+
+def test_f14_free_readd_keeps_the_m2r_wording(tmp_path: Path) -> None:
+    client = _populated(tmp_path, "free", "choices")
+    head = _text(_main(client.get("/laws/uapa").text))
+    assert "Previously chosen" in head and "Add again" in head
+    assert "One of your chosen laws — adding it again uses no choice." in head
+    panel = _panel(client.get(add_path("uapa")).text)
+    assert "adding it again uses no choice" in panel and ">Add again</button>" in panel
+
+
+# --------------------------------------------------------------------------- #
 # F08 — GETs write nothing under ``choices``                                   #
 # --------------------------------------------------------------------------- #
 @pytest.mark.parametrize("state", ["free", "plus"])
