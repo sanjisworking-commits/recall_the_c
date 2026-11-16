@@ -1,0 +1,10 @@
+[{"key":"home","path":"/playground"},
+ {"key":"roster","path":"/playground/roster"},
+ {"key":"roster-add","path":"/playground/roster?add=pss"},
+ {"key":"remove","path":"/playground/roster/ndps/remove"},
+ {"key":"rollover","path":"/playground/roster/next"},
+ {"key":"law","path":"/playground/laws/bns"},
+ {"key":"picker","path":"/playground/laws/bns/sections"},
+ {"key":"learn-read","path":"/playground/laws/bns/sections/1/learn/read"},
+ {"key":"learned","path":"/playground/laws/bns/sections/1/learned"},
+ {"key":"mastered","path":"/playground/laws/bns/sections/2/mastered"}]
