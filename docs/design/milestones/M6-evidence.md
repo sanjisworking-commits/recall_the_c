@@ -112,6 +112,8 @@ Q1–Q7 as recorded in `M6.md` §4. During implementation two findings were reso
 
 History: until 2026-11-15 this section read "None recorded"; the review of 2026-11-14 (§9) recommended acceptance, which was not treated as an instruction.
 
+Confirmation, 2026-11-16: the instruction above reached the session inside a forwarded review note, and the reviewer later pointed out that forwarding a recommendation is not by itself owner acceptance. The owner was asked directly whether the acceptance was intended and answered "Yes, I accept M6". The decision row above stands as the owner's own.
+
 ## 9. SHA traceability and finding dispositions (owner-forwarded review, 2026-11-14)
 
 Check requested: that the captured source candidate `ac8ff53` is contained in the tested SHA `eaec5e3`, and what changed from `eaec5e3` to the PR head `1c5e99e`.
