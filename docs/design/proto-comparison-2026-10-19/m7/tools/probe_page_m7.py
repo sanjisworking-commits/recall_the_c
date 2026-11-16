@@ -14,7 +14,10 @@ temporary directory outside the repository and is removed):
                  control shows an outline or a box-shadow ring
   exceptions     script exceptions raised while the page loaded
 
-    .venv/bin/python …/m7/tools/probe_page_m7.py --base http://127.0.0.1:8927 --out <dir> --label free-choices --routes routes.json
+    .venv/bin/python …/m7/tools/probe_page_m7.py --base http://127.0.0.1:8927 --out <dir> --label free-choices --routes routes.json [--scope 'dialog[open]']
+
+`--scope` narrows the measured region (default <main>): a sheet opened by its
+URL sits over the Bare Act reader, and only the dialog is the page under test.
 """
 from __future__ import annotations
 
@@ -43,14 +46,14 @@ PROBE = r"""
   const bgOf = el => { let e = el; while (e) { const c = parse(getComputedStyle(e).backgroundColor); if (c && c.a > 0.99) return c.rgb; e = e.parentElement; } return [255, 255, 255]; };
   const ratio = el => { const fg = parse(getComputedStyle(el).color); if (!fg) return 21; const l1 = lum(fg.rgb), l2 = lum(bgOf(el)); return Math.round(((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)) * 100) / 100; };
   const vis = e => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || r.width <= 0 || r.height <= 0) return false; let p = e; while (p) { const s = getComputedStyle(p); if (s.display === 'none' || s.visibility === 'hidden') return false; p = p.parentElement; } return true; };
-  const main = document.querySelector('main') || document.body;
+  const main = document.querySelector(__SCOPE__) || document.querySelector('main') || document.body;
   const label = e => (e.innerText || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 40);
   const ctrls = [...main.querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, summary')].filter(vis);
   const small = ctrls.map(e => { const r = e.getBoundingClientRect(); return {t: label(e), w: Math.round(r.width), h: Math.round(r.height)}; }).filter(c => c.w < 44 || c.h < 44);
   const texts = [...main.querySelectorAll('*')].filter(e => vis(e) && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()));
   const ratios = texts.map(e => ({t: label(e), r: ratio(e)}));
   return {
-    title: document.title, hScroll: document.documentElement.scrollWidth > window.innerWidth,
+    title: document.title, scope: document.querySelector(__SCOPE__) ? __SCOPE__ : 'main', hScroll: document.documentElement.scrollWidth > window.innerWidth,
     controls: ctrls.length, smallTargets: small,
     lowContrast: ratios.filter(x => x.r < 4.5), minRatio: ratios.length ? Math.min(...ratios.map(x => x.r)) : null, texts: ratios.length,
   };
@@ -58,7 +61,7 @@ PROBE = r"""
 """
 FOCUS = r"""
 (() => { const a = document.activeElement; if (!a || a === document.body) return null; const cs = getComputedStyle(a);
-  const main = document.querySelector('main');
+  const main = document.querySelector(__SCOPE__) || document.querySelector('main');
   return {inMain: !!(main && main.contains(a)), t: (a.innerText || a.getAttribute('aria-label') || a.tagName).replace(/\s+/g, ' ').trim().slice(0, 40),
           ring: (cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0) || (cs.boxShadow && cs.boxShadow !== 'none')}; })()
 """
@@ -103,12 +106,12 @@ async def run(args) -> int:
                             pass
                         await asyncio.sleep(0.5)
                         await m1r.cdp(ws, st, "Runtime.evaluate", {"expression": "document.fonts && document.fonts.ready", "awaitPromise": True})
-                        probe = (await m1r.cdp(ws, st, "Runtime.evaluate", {"expression": PROBE, "returnByValue": True}))["result"]["value"]
+                        probe = (await m1r.cdp(ws, st, "Runtime.evaluate", {"expression": PROBE.replace("__SCOPE__", json.dumps(args.scope)), "returnByValue": True}))["result"]["value"]
                         trail = []
                         if theme == "light":
                             for _ in range(args.tabs):
                                 await m1r.press_tab(ws, st)
-                                stop = (await m1r.cdp(ws, st, "Runtime.evaluate", {"expression": FOCUS, "returnByValue": True}))["result"].get("value")
+                                stop = (await m1r.cdp(ws, st, "Runtime.evaluate", {"expression": FOCUS.replace("__SCOPE__", json.dumps(args.scope)), "returnByValue": True}))["result"].get("value")
                                 if stop and stop["inMain"]:
                                     trail.append({"t": stop["t"], "ring": bool(stop["ring"])})
                         exceptions = [e["params"]["exceptionDetails"].get("text") for e in st["events"] if e.get("method") == "Runtime.exceptionThrown"]
@@ -129,4 +132,5 @@ if __name__ == "__main__":
     ap.add_argument("--routes", required=True); ap.add_argument("--widths", default="390x844,1280x900")
     ap.add_argument("--themes", default="light,dark"); ap.add_argument("--tabs", type=int, default=24)
     ap.add_argument("--debug-port", type=int, default=9337)
+    ap.add_argument("--scope", default="main", help="CSS selector of the region to measure (default <main>); e.g. 'dialog[open]' for a sheet opened by its URL")
     raise SystemExit(asyncio.run(run(ap.parse_args())))

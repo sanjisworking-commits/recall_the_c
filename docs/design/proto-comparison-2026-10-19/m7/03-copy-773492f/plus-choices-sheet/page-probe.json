@@ -1,0 +1,567 @@
+{
+ "label": "plus-choices-sheet",
+ "base": "http://127.0.0.1:8927",
+ "captured_at": "2026-11-16T10:12:42+0530",
+ "rows": [
+  {
+   "key": "add-new",
+   "path": "/playground/laws/pss/add",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "\u2715",
+     "r": 3.24
+    },
+    {
+     "t": "PLAYGROUND",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 3.24,
+   "texts": 6,
+   "tabTrail": [
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-new",
+   "path": "/playground/laws/pss/add",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 6,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "add-new",
+   "path": "/playground/laws/pss/add",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "\u2715",
+     "r": 3.24
+    },
+    {
+     "t": "PLAYGROUND",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 3.24,
+   "texts": 6,
+   "tabTrail": [
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add to Playground",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-new",
+   "path": "/playground/laws/pss/add",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 6,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "add-again",
+   "path": "/playground/laws/uapa/add",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Add to Playground \u00b7 The Unlawful Activities (Prevention) Act, 1967",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "\u2715",
+     "r": 3.24
+    },
+    {
+     "t": "PLAYGROUND",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 3.24,
+   "texts": 8,
+   "tabTrail": [
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-again",
+   "path": "/playground/laws/uapa/add",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Add to Playground \u00b7 The Unlawful Activities (Prevention) Act, 1967",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 8,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "add-again",
+   "path": "/playground/laws/uapa/add",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Add to Playground \u00b7 The Unlawful Activities (Prevention) Act, 1967",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "\u2715",
+     "r": 3.24
+    },
+    {
+     "t": "PLAYGROUND",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 3.24,
+   "texts": 8,
+   "tabTrail": [
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add back",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-again",
+   "path": "/playground/laws/uapa/add",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Add to Playground \u00b7 The Unlawful Activities (Prevention) Act, 1967",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 8,
+   "tabTrail": [],
+   "exceptions": []
+  }
+ ]
+}

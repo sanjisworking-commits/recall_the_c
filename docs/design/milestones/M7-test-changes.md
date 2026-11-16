@@ -1,6 +1,6 @@
 # M7a — test changes (branch `pg-m7a-playground-home`, PR #245)
 
-Every assertion changed by M7a, with the decision it follows. No assertion was weakened: each re-pinned line still checks the same thing for the decided value, and where a check moved it gained a companion assertion. Source commits `4bc0fd4`, `60a6f37`, `0829d45`, `ea47eab`; tests commits `fe554c5`, `18e9f02`, `fa05a2c`, `8066ef7`.
+Every assertion changed by M7a, with the decision it follows. No assertion was weakened: each re-pinned line still checks the same thing for the decided value, and where a check moved it gained a companion assertion. Source commits `4bc0fd4`, `60a6f37`, `0829d45`, `ea47eab`, `773492f`; tests commits `fe554c5`, `18e9f02`, `fa05a2c`, `8066ef7`, `09bc48d`, `c89dd05`.
 
 ## A. Mechanical asset re-pin (`fe554c5`)
 
@@ -42,7 +42,7 @@ The two `or` forms are gone (each now asserts one thing). The assertions that Pr
 
 ## E. New module
 
-`tests/test_playground_family.py` — 49 tests.
+`tests/test_playground_family.py` — 58 tests.
 
 | Row | Covers |
 |---|---|
@@ -56,6 +56,8 @@ The two `or` forms are gone (each now asserts one thing). The assertions that Pr
 | F09 | under both models, a second account cannot open, learn or remove a law the first account added; the first account's membership is untouched |
 | F10 | stylesheet keyed on the shared marker, no `[data-plus-playground` selector left, the M7a block and the capacity-cell rule; rollover links behind `home.month_model` / `month_model`; templates never read the flag |
 | F11 | `capacity_view` strings for the monthly, paid-`choices` and Free-`choices` branches |
+| F12 (`09bc48d`) | the guest line under both models (no count of choices, no price, the other three steps unchanged); the "How it works" macro rendered under both models (steps 1 and 3 per model, step 2 unchanged, default argument = monthly); the template global returns the signed-in account's snapshot model under both models; the gate template calls the helper and never reads the flag |
+| F13 (`09bc48d`) | Plus and Pro Add sheet under `choices`, for a new law and a re-add: eyebrow "Playground", "joins your Playground", no month, the confirm step and its form still present, no price; under `monthly` the month eyebrow and "joins this month's Playground" unchanged |
 
 The family module derives its month words from the suite's pinned Playground clock (`tests/conftest.py::PLAYGROUND_TEST_NOW`).
 
@@ -65,6 +67,26 @@ The family module derives its month words from the suite's pinned Playground clo
 
 The same module's `test_t8_template_bytes_match_unwrapped_render` renders `playground_remove.html` with the pre-M7a context (`law_id`, `month_name`, `short_title`). It failed on `18e9f02` with `'remove_copy' is undefined`; the template now falls back to the monthly strings (`0829d45`) and the test is unchanged.
 
-## G. Not run locally
+## G. M2-R paid-sheet assertion (`09bc48d`, finding W15)
+
+`tests/test_act_head_m2r.py::test_paid_confirm_step_is_unchanged_under_choices` (Plus and Pro).
+
+| Was | Now |
+|---|---|
+| `"joins this month's Playground — learnable, verbatim." in panel` | `"joins your Playground — learnable, verbatim." in panel`; `'<p class="pg-eyebrow">Playground</p>' in panel`; `"this month" not in panel` |
+
+The test's purpose — the confirmation step stays for Plus and Pro under `choices` because 5-14 is not approved — is unchanged: `data-pg-kind="eligible_to_add"`, no Free warning, and `data-step="confirm"` are asserted as before. Only the sentence it used to recognise the paid sheet moved to the wording recommended in the owner-forwarded review of 2026-11-16.
+
+## H. Gate template-source pin (`c89dd05`, Q9d)
+
+`tests/test_signed_in_playground_screen6.py::test_signed_in_pg_gate_does_not_touch_accepted_screens`.
+
+| Was | Now |
+|---|---|
+| `"how_it_works()" in gate_html` | `"{{ how_it_works(pg_month_model) }}" in gate_html` |
+
+The assertion still says the gate calls the macro. That the macro's default argument produces the monthly block is pinned by F12. The test failed on `09bc48d` (locally and in CI run 43805603278); a targeted run had not included this module — the third template-source pin the full suite caught in this milestone, after the two of §F.
+
+## I. Not run locally
 
 Playwright-gated tests in the re-pinned modules skip locally (Playwright is not installed); their selectors still target markers Plus keeps. They are counted as skipped, not passed.
