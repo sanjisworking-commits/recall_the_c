@@ -356,6 +356,106 @@ def test_f06_f07_copy_tables() -> None:
 
 
 # --------------------------------------------------------------------------- #
+# F12 — "How Playground works" and the guest line (Q9d)                        #
+# --------------------------------------------------------------------------- #
+GUEST_MONTHLY = "Add laws to your month — up to your plan’s spaces."
+GUEST_CHOICES = "Add the laws you want to learn to your Playground."
+
+
+def test_f12_guest_line_follows_the_period_model(tmp_path: Path) -> None:
+    monthly = _client(tmp_path / "m", "guest", tier_model="monthly").get("/playground").text
+    choices = _client(tmp_path / "c", "guest", tier_model="choices").get("/playground").text
+    assert GUEST_MONTHLY in monthly and GUEST_CHOICES not in monthly
+    assert GUEST_CHOICES in choices and GUEST_MONTHLY not in choices
+    assert _month_hits(choices) == []
+    # nothing is promised to a guest: no count of choices, no price
+    intro = choices.split("data-guest-pg-intro", 1)[1].split("</section>", 1)[0]
+    assert "choice" not in intro.lower() and "₹" not in intro
+    assert "Learn each section verbatim through six recall modes." in intro  # the other steps are unchanged
+
+
+def test_f12_how_it_works_follows_the_period_model(tmp_path: Path) -> None:
+    # the block is printed by gates that have no step list of their own; render the macro itself
+    env = _client(tmp_path, "guest").app.state.templates.env
+    macro = env.from_string('{% from "partials/playground.html" import how_it_works %}{{ how_it_works(m) }}')
+    monthly, choices = macro.render(m=True), macro.render(m=False)
+    assert monthly == env.from_string('{% from "partials/playground.html" import how_it_works %}{{ how_it_works() }}').render()
+    assert "<strong>Choose your laws each month</strong>" in monthly
+    assert "Your Playground holds them for the calendar month." in monthly
+    assert "<strong>Next month, decide what to keep</strong>" in monthly
+    assert "<strong>Choose your laws</strong>" in choices
+    assert "They stay in your Playground until you remove them." in choices
+    assert "<strong>Remove and add back anytime</strong>" in choices
+    assert "Your saved progress comes back with the law." in choices
+    assert "<strong>Progress never disappears</strong>" in choices  # step 2 unchanged
+    assert MONTH_RE.search(_text(choices)) is None and choices.count("HowPlaygroundWorks-row") == monthly.count("HowPlaygroundWorks-row")
+
+
+@pytest.mark.parametrize("tier_model", ["monthly", "choices"])
+def test_f12_signed_in_account_reads_its_snapshot(tmp_path: Path, tier_model: str) -> None:
+    from starlette.requests import Request
+
+    from constitution_memorizer.web.shell import shell_playground_month_model
+
+    client = _client(tmp_path, "plus", tier_model=tier_model)
+    seen: list[bool] = []
+    original = client.app.state.templates.env.globals["playground_month_model"]
+    assert original is shell_playground_month_model
+
+    def spy(request: Request) -> bool:
+        value = original(request)
+        seen.append(value)
+        return value
+
+    client.app.state.templates.env.globals["playground_month_model"] = spy
+    try:
+        client.get("/playground?stage=plans")
+    finally:
+        client.app.state.templates.env.globals["playground_month_model"] = original
+    assert seen and all(v is (tier_model == "monthly") for v in seen)
+
+
+def test_f12_templates_read_the_snapshot_helper_not_the_flag() -> None:
+    gate = (TEMPLATES / "playground_gate.html").read_text(encoding="utf-8")
+    assert "playground_month_model(request)" in gate
+    assert "tier_model" not in gate and "choices_model" not in gate
+    partial = (TEMPLATES / "partials" / "playground.html").read_text(encoding="utf-8")
+    assert "{% macro how_it_works(month_model=true) %}" in partial
+
+
+# --------------------------------------------------------------------------- #
+# F13 — the paid Add sheet names no month under ``choices`` (W15)              #
+# --------------------------------------------------------------------------- #
+def _panel(html: str) -> str:
+    return html.split("data-pg-add", 1)[1].split("</form>", 1)[0]
+
+
+@pytest.mark.parametrize("state", ["plus", "pro"])
+def test_f13_paid_add_sheet_under_choices(tmp_path: Path, state: str) -> None:
+    client = _populated(tmp_path, state, "choices")
+    for law, kind in (("pss", "eligible_to_add"), ("uapa", "re_add")):
+        html = client.get(add_path(law)).text
+        assert f'data-pg-kind="{kind}"' in html
+        panel = _panel(html)
+        assert '<p class="pg-eyebrow">Playground</p>' in panel
+        assert "joins your Playground — learnable, verbatim. The reader itself never changes." in panel
+        assert "this month" not in panel and THIS_MONTH not in _text(panel)
+        # the confirmation step is preserved (5-14 not approved)
+        assert 'data-step="confirm"' in html and 'data-skip-confirm="false"' in html
+        assert "data-pg-add-confirm" in html and 'name="confirm"' in panel
+        assert "₹" not in panel
+
+
+@pytest.mark.parametrize("state", ["plus", "pro"])
+def test_f13_paid_add_sheet_under_monthly_is_unchanged(tmp_path: Path, state: str) -> None:
+    client = _populated(tmp_path, state, "monthly")
+    panel = _panel(client.get(add_path("pss")).text)
+    assert f'<p class="pg-eyebrow">{THIS_MONTH}</p>' in panel
+    assert "joins this month's Playground — learnable, verbatim. The reader itself never changes." in panel
+    assert "joins your Playground" not in panel
+
+
+# --------------------------------------------------------------------------- #
 # F08 — GETs write nothing under ``choices``                                   #
 # --------------------------------------------------------------------------- #
 @pytest.mark.parametrize("state", ["free", "plus"])

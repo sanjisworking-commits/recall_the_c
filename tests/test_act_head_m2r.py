@@ -303,7 +303,11 @@ def test_paid_confirm_step_is_unchanged_under_choices(tmp_path: Path, tier: str)
     assert "choices used" not in cta
     panel = _panel(client.get(add_path("ndps")).text)
     assert 'data-pg-kind="eligible_to_add"' in panel
-    assert "joins this month's Playground — learnable, verbatim." in panel
+    # M7a (W15, owner-forwarded review 2026-11-16): under ``choices`` the paid sheet
+    # names no month — eyebrow "Playground", "joins your Playground"; the step stays.
+    assert "joins your Playground — learnable, verbatim." in panel
+    assert '<p class="pg-eyebrow">Playground</p>' in panel
+    assert "this month" not in panel
     assert "pg-add-warning" not in panel and "free_confirm" not in panel
     assert 'data-step="confirm"' in panel  # 5-14 not approved: the confirm step stays
 
