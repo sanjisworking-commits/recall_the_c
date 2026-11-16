@@ -1,0 +1,102 @@
+{
+ "label": "candidate",
+ "base": "http://127.0.0.1:8929",
+ "path": "/playground/laws/bns/sections",
+ "captured_at": "2026-11-16T14:30:56+0530",
+ "steps": [
+  {
+   "step": "0 initial",
+   "sectionChecked": false,
+   "sectionIndeterminate": false,
+   "ariaChecked": "false",
+   "checkState": "none",
+   "clausesTicked": [],
+   "clauseCount": 6,
+   "submitsSection": false,
+   "submitsUnits": 0,
+   "counter": "3",
+   "submitLabel": "Add 3 sections \u2192"
+  },
+  {
+   "step": "1 tick the section",
+   "sectionChecked": true,
+   "sectionIndeterminate": false,
+   "ariaChecked": "true",
+   "checkState": "all",
+   "clausesTicked": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "clauseCount": 6,
+   "submitsSection": true,
+   "submitsUnits": 6,
+   "counter": "4",
+   "submitLabel": "Add 4 sections \u2192"
+  },
+  {
+   "step": "2 click clause 2 (untick it)",
+   "sectionChecked": false,
+   "sectionIndeterminate": true,
+   "ariaChecked": "mixed",
+   "checkState": "some",
+   "clausesTicked": [
+    1,
+    3,
+    4,
+    5,
+    6
+   ],
+   "clauseCount": 6,
+   "submitsSection": false,
+   "submitsUnits": 5,
+   "counter": "4",
+   "submitLabel": "Add 4 sections (5 clauses partial) \u2192"
+  },
+  {
+   "step": "3 click clause 2 again",
+   "sectionChecked": true,
+   "sectionIndeterminate": false,
+   "ariaChecked": "true",
+   "checkState": "all",
+   "clausesTicked": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "clauseCount": 6,
+   "submitsSection": true,
+   "submitsUnits": 6,
+   "counter": "4",
+   "submitLabel": "Add 4 sections \u2192"
+  },
+  {
+   "step": "4 untick the section",
+   "sectionChecked": false,
+   "sectionIndeterminate": false,
+   "ariaChecked": "false",
+   "checkState": "none",
+   "clausesTicked": [],
+   "clauseCount": 6,
+   "submitsSection": false,
+   "submitsUnits": 0,
+   "counter": "3",
+   "submitLabel": "Add 3 sections \u2192"
+  }
+ ],
+ "block": {
+  "section": "4",
+  "clauses": 6
+ },
+ "screenshot": {
+  "file": "candidate_picker_after-step-2_1280x900.png",
+  "sha256": "a655267f97bd07b3cfbe82b7bc7aa42d3e205292eff78ed899811c4d0e2f462c"
+ },
+ "exceptions": []
+}

@@ -1,0 +1,84 @@
+{
+ "label": "baseline",
+ "base": "http://127.0.0.1:8929",
+ "path": "/playground/laws/bns/sections",
+ "captured_at": "2026-11-16T14:18:44+0530",
+ "steps": [
+  {
+   "step": "0 initial",
+   "sectionChecked": false,
+   "sectionIndeterminate": false,
+   "ariaChecked": "false",
+   "checkState": "none",
+   "clausesTicked": [],
+   "clauseCount": 6,
+   "submitsSection": false,
+   "submitsUnits": 0,
+   "counter": "3",
+   "submitLabel": "Add 3 sections \u2192"
+  },
+  {
+   "step": "1 tick the section",
+   "sectionChecked": true,
+   "sectionIndeterminate": false,
+   "ariaChecked": "true",
+   "checkState": "all",
+   "clausesTicked": [],
+   "clauseCount": 6,
+   "submitsSection": true,
+   "submitsUnits": 0,
+   "counter": "4",
+   "submitLabel": "Add 4 sections \u2192"
+  },
+  {
+   "step": "2 click clause 2 (untick it)",
+   "sectionChecked": false,
+   "sectionIndeterminate": true,
+   "ariaChecked": "mixed",
+   "checkState": "some",
+   "clausesTicked": [
+    2
+   ],
+   "clauseCount": 6,
+   "submitsSection": false,
+   "submitsUnits": 1,
+   "counter": "4",
+   "submitLabel": "Add 4 sections (1 clause partial) \u2192"
+  },
+  {
+   "step": "3 click clause 2 again",
+   "sectionChecked": false,
+   "sectionIndeterminate": false,
+   "ariaChecked": "false",
+   "checkState": "none",
+   "clausesTicked": [],
+   "clauseCount": 6,
+   "submitsSection": false,
+   "submitsUnits": 0,
+   "counter": "3",
+   "submitLabel": "Add 3 sections \u2192"
+  },
+  {
+   "step": "4 untick the section",
+   "sectionChecked": true,
+   "sectionIndeterminate": false,
+   "ariaChecked": "true",
+   "checkState": "all",
+   "clausesTicked": [],
+   "clauseCount": 6,
+   "submitsSection": true,
+   "submitsUnits": 0,
+   "counter": "4",
+   "submitLabel": "Add 4 sections \u2192"
+  }
+ ],
+ "block": {
+  "section": "4",
+  "clauses": 6
+ },
+ "screenshot": {
+  "file": "baseline_picker_after-step-2_1280x900.png",
+  "sha256": "b4fd796f2bf1668a6a1a65b180edcc3db715aefc1eede85a590628e3111c8a5c"
+ },
+ "exceptions": []
+}
