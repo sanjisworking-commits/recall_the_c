@@ -51,6 +51,12 @@
     {% if cap.legend_removed %}<span>{{ cap.legend_removed }}</span>{% endif %}
     <span>{{ cap.legend_available }}</span>
   </p>
+  {% elif not cap.month_model %}
+  <p class="RosterCapacity-legend">
+    <span>{{ cap.legend_in }}</span>
+    {% if cap.legend_removed %}<span>{{ cap.legend_removed }}</span>{% endif %}
+    <span>{{ cap.legend_available }}</span>
+  </p>
   {% endif %}
 </div>
 {% endmacro %}
@@ -181,14 +187,19 @@
 </section>
 {% endmacro %}
 
-{% macro how_it_works() %}
+{% macro how_it_works(month_model=true) %}
 <div class="HowPlaygroundWorks">
   <p class="pg-eyebrow">How Playground works</p>
   <div class="HowPlaygroundWorks-row">
     <span class="HowPlaygroundWorks-n" aria-hidden="true">1</span>
     <div>
+      {% if month_model %}
       <p><strong>Choose your laws each month</strong></p>
       <p class="pg-lede">Pick the laws you want to learn. Your Playground holds them for the calendar month.</p>
+      {% else %}
+      <p><strong>Choose your laws</strong></p>
+      <p class="pg-lede">Pick the laws you want to learn. They stay in your Playground until you remove them.</p>
+      {% endif %}
     </div>
   </div>
   <div class="HowPlaygroundWorks-row">
@@ -201,8 +212,13 @@
   <div class="HowPlaygroundWorks-row">
     <span class="HowPlaygroundWorks-n" aria-hidden="true">3</span>
     <div>
+      {% if month_model %}
       <p><strong>Next month, decide what to keep</strong></p>
       <p class="pg-lede">Carry laws forward, or make room for something new.</p>
+      {% else %}
+      <p><strong>Remove and add back anytime</strong></p>
+      <p class="pg-lede">Your saved progress comes back with the law.</p>
+      {% endif %}
     </div>
   </div>
   <div class="HowPlaygroundWorks-row">

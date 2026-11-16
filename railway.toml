@@ -1,3 +1,9 @@
 [deploy]
-# Railway's service probe. The app also serves /health for local checks.
+# Overrides the dashboard start command for every builder (Railpack and Nixpacks).
+# constitution_memorizer.asgi:app must not import constitution_memorizer.web first —
+# that package used to load create_app before Uvicorn bound.
+startCommand = "sh -c 'PYTHONPATH=src${PYTHONPATH:+:$PYTHONPATH} exec python -m uvicorn constitution_memorizer.asgi:app --host 0.0.0.0 --port ${PORT:-8080}'"
 healthcheckPath = "/healthz"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+overlapSeconds = 15

@@ -360,7 +360,7 @@ def test_phone_signed_in_add_css_is_breakpoint_scoped() -> None:
     assert ":has([data-guest-add-phone])" not in css
     assert ":has([data-plus-add-phone])" not in css
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg57" in base
+    assert "playground.css?v=pg58" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg32" not in base
     assert "styles.css?v=main94" in base

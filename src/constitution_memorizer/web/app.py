@@ -617,6 +617,9 @@ def create_app(
     from constitution_memorizer.web.shell import shell_account_status  # noqa: PLC0415
 
     templates.env.globals["shell_account_status"] = shell_account_status
+    from constitution_memorizer.web.shell import shell_playground_month_model  # noqa: PLC0415
+
+    templates.env.globals["playground_month_model"] = shell_playground_month_model
     templates.env.globals["browse_mark"] = BROWSE_MARKS_BY_KEY.get
     templates.env.globals["default_seo_title"] = DEFAULT_SEO_TITLE
     templates.env.globals["default_seo_description"] = DEFAULT_SEO_DESCRIPTION

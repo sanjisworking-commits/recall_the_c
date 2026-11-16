@@ -7,7 +7,7 @@
     <a class="pg-back" href="/playground">← Playground</a>
     <p class="pg-eyebrow">Playground · {{ progress.scope_label }}</p>
     <h1>{{ act.short_name }}</h1>
-    <p>{{ status_badge('in_playground', 'In ' + month_name + ' Playground') }}</p>
+    <p>{{ status_badge('in_playground', ('In ' + month_name + ' Playground') if month_model|default(true) else 'In Playground') }}</p>
   </header>
 
   {% if progress.selected_count %}

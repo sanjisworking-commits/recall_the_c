@@ -3,7 +3,12 @@
 {% block title %}Playground · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block playground %}
 {% set home = home_view %}
-{% set plus_pg = plus_playground|default(false) %}
+{# M7a: ``plus_pg`` is the styled home layout. It applies to every account whose
+   Playground is open (Plus, Pro, Max, pending; RecallC Free under ``choices``);
+   ``is_plus`` keeps the Plus-only marker. Month phrases and rollover links are
+   printed only while ``home.month_model`` is true. #}
+{% set is_plus = plus_playground|default(false) %}
+{% set plus_pg = is_plus or open_playground|default(false) %}
 {% set expired_pg = expired_playground|default(false) %}
 {% set halted_pg = halted_playground|default(false) %}
 {% if halted_pg %}
@@ -13,7 +18,7 @@
 {% elif not expired_pg %}
 {{ banner(home.banner) }}
 {% endif %}
-<div class="pg-home-grid{% if home.read_only %} is-readonly{% endif %}"{% if plus_pg %} data-plus-playground="desktop"{% endif %}{% if expired_pg %} data-expired-playground="desktop"{% endif %}{% if halted_pg %} data-halted-playground="desktop"{% endif %}>
+<div class="pg-home-grid{% if home.read_only %} is-readonly{% endif %}"{% if is_plus %} data-plus-playground="desktop"{% endif %}{% if plus_pg %} data-open-playground="desktop"{% endif %}{% if expired_pg %} data-expired-playground="desktop"{% endif %}{% if halted_pg %} data-halted-playground="desktop"{% endif %}>
   {% if halted_pg and halted_gate %}
   <section class="expired-pg-desk" data-halted-pg-desktop>
     <div class="expired-pg-main">
@@ -73,11 +78,11 @@
     </aside>
   </section>
   {% endif %}
-  <div{% if plus_pg %} data-plus-playground-phone{% elif halted_pg %} data-halted-pg-phone{% elif expired_pg %} data-expired-pg-phone{% endif %}>
+  <div{% if is_plus %} data-plus-playground-phone{% endif %}{% if plus_pg %} data-open-playground-phone{% elif halted_pg %} data-halted-pg-phone{% elif expired_pg %} data-expired-pg-phone{% endif %}>
     <p class="pg-eyebrow pg-home-kicker">{{ home.kicker }}</p>
     <h1 class="pg-home-title{% if plus_pg %} plus-pg-desk-hide{% endif %}">{{ home.heading }}</h1>
     {% if plus_pg %}
-    <h1 class="pg-home-title plus-pg-month plus-pg-desk-only">{{ home.capacity.month_name }}</h1>
+    <h1 class="pg-home-title plus-pg-month plus-pg-desk-only">{{ home.desk_heading or home.capacity.month_name }}</h1>
     {% endif %}
     <p class="pg-home-month{% if plus_pg %} plus-pg-desk-hide{% endif %}">{{ home.month_count_label or home.capacity.month_name }}</p>
     {% if expired_pg %}
@@ -86,23 +91,30 @@
     {{ banner(home.quiet) }}
     <div class="pg-month-strip">
       {% if not home.read_only %}
-      {% if plus_pg %}
+      {% if plus_pg and home.month_model %}
       <span class="plus-pg-period-label">Playground month<br>{{ home.capacity.month_name }}</span>
+      {% elif plus_pg %}
+      <span class="plus-pg-period-label" data-pg-strip-label>{{ home.strip_label }}</span>
       {% endif %}
       <a href="{{ home.manage_href }}">{{ home.manage_label }}</a>
       <a href="{{ home.add_law_href }}">{{ home.add_law_label }}</a>
+      {% if home.month_model %}
       <a href="{{ home.plan_next_href }}">Manage {{ home.next_month_name }} ›</a>
+      {% endif %}
       {% else %}
       <a href="{{ home.resume_href }}">{{ home.resume_label }}</a>
       {% endif %}
     </div>
+    {% if plus_pg and not home.month_model and home.strip_note and not home.read_only %}
+    <p class="pg-strip-note plus-pg-desk-hide" data-pg-strip-note>{{ home.strip_note }}</p>
+    {% endif %}
     {% if not plus_pg %}
     {{ capacity_block(home.capacity) }}
     {% endif %}
     {% if home.empty and not home.read_only %}
     <div class="pg-home-empty">
-      <p class="pg-lede pg-home-empty-title">Your {{ home.capacity.month_name }} Playground is empty</p>
-      <p class="pg-lede">Add laws you want to learn this month. Your saved progress stays with you even when a law leaves Playground.</p>
+      <p class="pg-lede pg-home-empty-title">{{ home.empty_title or ('Your ' ~ home.capacity.month_name ~ ' Playground is empty') }}</p>
+      <p class="pg-lede">{{ home.empty_body }}</p>
       {% if plus_pg %}
       <p class="pg-actions plus-pg-desk-only">
         <a class="pg-btn" href="{{ home.browse_href }}">Browse laws</a>
@@ -122,7 +134,7 @@
       {{ trust_mark() }}
     </div>
     {% if home.active or home.removed %}
-    <div class="ProgressSummary pg-home-tiles" aria-label="This month’s progress">
+    <div class="ProgressSummary pg-home-tiles" aria-label="{{ home.tiles_label }}">
       <div class="ProgressSummary-cell">
         <div class="ProgressSummary-value">{{ home.due_today }}</div>
         <div class="ProgressSummary-label">Due today</div>
@@ -151,7 +163,7 @@
 
     {% if home.active %}
     <div class="pg-section-head">
-      <h2>In Playground this month</h2>
+      <h2>{{ home.active_heading }}</h2>
       {% if not plus_pg %}
       <span class="pg-section-count">{{ home.active|length }} law{% if home.active|length != 1 %}s{% endif %}</span>
       {% endif %}
@@ -164,7 +176,7 @@
     {% endif %}
 
     {% if home.removed %}
-    <h2>Removed this month</h2>
+    <h2>{{ home.removed_heading }}</h2>
     {% for card in home.removed %}
     {{ law_card(card, plus=plus_pg) }}
     {% endfor %}
@@ -177,7 +189,7 @@
     {% endfor %}
     {% endif %}
 
-    {% if not home.read_only %}
+    {% if not home.read_only and home.month_model %}
     {% if plus_pg %}
     <a class="pg-plan-row plus-pg-desk-only" href="{{ home.plan_next_href }}">
       <div>
@@ -195,11 +207,19 @@
     </div>
     {% endif %}
   </div>
-  <aside class="pg-aside"{% if halted_pg %} data-halted-pg-phone{% elif expired_pg %} data-expired-pg-phone{% endif %} aria-label="{{ home.capacity.month_name }} capacity">
+  <aside class="pg-aside"{% if halted_pg %} data-halted-pg-phone{% elif expired_pg %} data-expired-pg-phone{% endif %} aria-label="{{ home.aside_label or (home.capacity.month_name ~ ' capacity') }}">
     {% if plus_pg %}
     <div class="plus-pg-aside-card">
-      <p class="pg-eyebrow">{{ home.capacity.month_name }}</p>
+      <p class="pg-eyebrow">{{ home.aside_kicker or home.capacity.month_name }}</p>
       {{ capacity_block(home.capacity) }}
+      {% if home.limit_note %}
+      <p class="pg-limit-note" data-pg-limit-note>{{ home.limit_note }}</p>
+      {% endif %}
+      {% if home.upgrade_href %}
+      <p class="pg-actions pg-upgrade-actions">
+        <a class="pg-btn pg-btn--teal" href="{{ home.upgrade_href }}" data-pg-upgrade>{{ home.upgrade_label }}</a>
+      </p>
+      {% endif %}
       <p class="pg-actions">
         <a class="pg-btn" href="{{ home.browse_href }}">Browse laws</a>
         <a class="pg-btn pg-btn--ghost" href="{{ home.manage_href }}">{{ home.manage_label }}</a>
@@ -208,7 +228,9 @@
     {{ trust_mark() }}
     {% else %}
     <p class="pg-eyebrow">{{ home.kicker }}</p>
+    {% if home.month_model %}
     <p><strong>{{ home.capacity.month_name }}</strong></p>
+    {% endif %}
     {{ capacity_block(home.capacity) }}
     <p class="pg-actions">
       <a class="pg-btn pg-btn--ghost" href="{{ home.browse_href }}">Browse laws</a>

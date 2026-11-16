@@ -596,7 +596,8 @@ def test_phone_shared_picker_css_is_breakpoint_scoped() -> None:
     plus_home = css.split("is plus/03-screen:", 1)[1].split(
         "is expired/03-screen:", 1
     )[0]
-    assert "[data-plus-playground-phone]" in plus_home
+    # M7a (Q7): keyed on the shared open-Playground marker.
+    assert "[data-open-playground-phone]" in plus_home
     assert "[data-pg-picker]" not in plus_home
     expired_home = css.split("is expired/03-screen:", 1)[1].split(
         "@media (min-width: 561px)", 1
@@ -610,7 +611,7 @@ def test_phone_shared_picker_css_is_breakpoint_scoped() -> None:
     assert ".pg-pick-footer" in aside
     assert "display: none" in aside
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg57" in base
+    assert "playground.css?v=pg58" in base
     assert "playground.css?v=pg47" not in base
     assert "styles.css?v=main94" in base
     assert "mobile.css?v=mob113" in base

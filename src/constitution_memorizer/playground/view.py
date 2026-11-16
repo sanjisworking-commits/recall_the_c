@@ -299,6 +299,9 @@ class RosterCapacityView:
     legend_available: str
     aria_label: str
     permanent: bool = False
+    # M7a: False when the account's Playground has no monthly period model
+    # (``choices``). The legend is then printed for unlimited accounts too.
+    month_model: bool = True
 
 
 @dataclass(frozen=True)
@@ -376,6 +379,26 @@ class PlaygroundHomeView:
     month_count_label: str = ""
     add_law_href: str = BROWSE_LAWS_PATH
     add_law_label: str = "Add a law"
+    # M7a: presentation of the period model. ``month_model`` False (``choices``)
+    # removes every month phrase and the rollover links; the defaults below are
+    # today's strings under ``monthly``.
+    month_model: bool = True
+    desk_heading: str = ""
+    active_heading: str = "In Playground this month"
+    removed_heading: str = "Removed this month"
+    empty_title: str = ""
+    empty_body: str = (
+        "Add laws you want to learn this month. "
+        "Your saved progress stays with you even when a law leaves Playground."
+    )
+    tiles_label: str = "This month’s progress"
+    aside_label: str = ""
+    aside_kicker: str = ""
+    strip_label: str = ""
+    strip_note: str = ""
+    limit_note: str = ""
+    upgrade_label: str = ""
+    upgrade_href: str = ""
 
 
 def format_plan_end(value: datetime | date | None) -> str:
@@ -450,18 +473,30 @@ def capacity_view(
     planned: bool = False,
     surface: str = "home",
     permanent: bool = False,
+    month_model: bool = True,
+    tier_label: str = "",
 ) -> RosterCapacityView:
     month = playground_month_name(period_start)
     unlimited = law_limit is None
     full = (not unlimited) and remaining == 0
     if permanent and not unlimited:
-        used_label = f"{used} of {law_limit} law choices used"
+        # RecallC Free under ``choices`` (M7a Q3 / Q5): a permanent count, no month.
         spaces = remaining or 0
-        remaining_label = (
-            "All choices used"
-            if full
-            else f"{spaces} choice{'s' if spaces != 1 else ''} remaining"
-        )
+        if surface == "roster":
+            used_label = f"{used} of {law_limit} choices used"
+            remaining_label = f"{spaces} left · never restored by removal"
+        else:
+            used_label = f"{used} of {law_limit} law choices used"
+            remaining_label = (
+                f"All {_count_word(law_limit)} used · removal never restores a choice"
+                if full
+                else f"{spaces} left · removal never restores a choice"
+            )
+    elif unlimited and not month_model:
+        # Plus / Pro (and a legacy Max holder) under ``choices`` (M7a Q4).
+        noun = "law" if used == 1 else "laws"
+        used_label = f"{used} {noun}"
+        remaining_label = f"Unlimited · {tier_label}" if tier_label else "Unlimited"
     elif unlimited:
         noun = "law" if used == 1 else "laws"
         used_label = f"{used} {noun} this month" if planned is False else f"{used} planned"
@@ -491,11 +526,19 @@ def capacity_view(
         else ""
     )
     if permanent and removed_consumed_count:
-        legend_removed = f"{removed_consumed_count} removed · choice kept"
+        legend_removed = (
+            f"{removed_consumed_count} previously chosen · add again anytime · choice still used"
+        )
+    elif not month_model and removed_consumed_count:
+        legend_removed = f"{removed_consumed_count} previously chosen · add again anytime"
     avail = remaining if remaining is not None else 0
     legend_available = f"{avail} available" if not unlimited else "Unlimited"
     if permanent and not unlimited:
+        legend_available = f"{avail} choice{'s' if avail != 1 else ''} left"
+    if permanent and not unlimited:
         aria = f"{used} of {law_limit} permanent law choices used. {remaining_label}."
+    elif unlimited and not month_model:
+        aria = f"{used} {'law' if used == 1 else 'laws'}, unlimited."
     elif unlimited:
         aria = f"{used} laws this month, unlimited."
     else:
@@ -517,7 +560,84 @@ def capacity_view(
         legend_available=legend_available,
         aria_label=aria,
         permanent=permanent,
+        month_model=month_model,
     )
+
+
+def _count_word(n: int | None) -> str:
+    return {1: "one", 2: "two", 3: "three", 4: "four", 5: "five"}.get(int(n or 0), str(n))
+
+
+def playground_month_model(snapshot: Any) -> bool:
+    """True while the account's Playground follows the monthly period model.
+
+    Read from the entitlement snapshot (never from the flag): under ``choices``
+    memberships continue automatically (5-23) and no month is shown. A request
+    without a snapshot (single-user mode) keeps the monthly presentation.
+    """
+
+    return not is_choice_model(getattr(snapshot, "tier_model", None))
+
+
+def roster_page_copy(*, month_name: str, month_model: bool, permanent: bool) -> dict[str, str]:
+    """Manage laws: every string that depends on the period model (M7a Q5)."""
+
+    if month_model:
+        return {
+            "title": f"{month_name} Playground",
+            "rule": (
+                "Removing a law saves its progress. It doesn’t free a space this month, "
+                "and adding it back doesn’t use another one."
+            ),
+            "active_heading": "Active this month",
+            "active_empty": f"No laws in {month_name} yet.",
+            "removed_heading": "Removed this month",
+            "removed_badge": "Removed this month",
+            "removed_empty": "Nothing removed this month.",
+            "readd_label": "Add back",
+            "readd_note": "Your saved progress comes with it. No extra space used.",
+        }
+    return {
+        "title": "Manage laws",
+        "rule": (
+            "Removing a law saves its progress. It does not restore a law choice or allow a "
+            "different law instead; adding the same law again uses no choice."
+            if permanent
+            else "Removing a law saves its progress. You can add it again anytime."
+        ),
+        "active_heading": "Active",
+        "active_empty": "No laws in your Playground yet.",
+        "removed_heading": "Previously chosen — add again anytime",
+        "removed_badge": "Previously chosen",
+        "removed_empty": "Nothing here yet. A law you remove stays here, ready to add again.",
+        "readd_label": "Add again",
+        "readd_note": "",
+    }
+
+
+def remove_page_copy(*, month_name: str, month_model: bool, permanent: bool) -> dict[str, str]:
+    """Remove confirm page: title, action and the consequence line (M7a Q5)."""
+
+    if month_model:
+        return {
+            "title": f"Remove from {month_name}",
+            "consequence": "This does not free a law space this month.",
+        }
+    return {
+        "title": "Remove from Playground",
+        "consequence": (
+            "This does not restore a law choice. You can add this law again without using one."
+            if permanent
+            else "You can add it again anytime."
+        ),
+    }
+
+
+def playground_tier_word(snapshot: Any) -> str:
+    """"Plus" / "Pro" / "Max" for the capacity line; "" when there is no paid tier."""
+
+    tier = str(getattr(snapshot, "tier", None) or "")
+    return tier.capitalize() if tier in {"plus", "pro", "max"} else ""
 
 
 def add_confirm_copy(
@@ -529,6 +649,7 @@ def add_confirm_copy(
     historical: bool,
     re_add: bool,
     permanent: bool = False,
+    month_model: bool = True,
 ) -> tuple[str, tuple[str, ...]]:
     if permanent:
         # ``choices`` model, RecallC Free: permanent choices, no month (M2R-F02,
@@ -551,6 +672,8 @@ def add_confirm_copy(
         if historical:
             lines.append("Your saved progress comes with it.")
         return "Add to Playground", tuple(lines)
+    if re_add and not month_model:
+        return f"Add {short_title} again?", ("Your saved progress comes back with it.",)
     if re_add:
         title = f"Add {short_title} back to {month_name}?"
         lines = (
@@ -855,6 +978,7 @@ def roster_law_cards(
     overlay: Any,
     roster: Any,
     user_id: Any,
+    month_model: bool = True,
 ) -> tuple[tuple[LawCardView, ...], tuple[LawCardView, ...]]:
     """Active / removed roster rows from Stage 1 summaries. Restyle only."""
 
@@ -900,16 +1024,16 @@ def roster_law_cards(
             card = _stub_card(
                 item.law_id,
                 membership=MEMBERSHIP_REMOVED,
-                membership_label="Removed this month",
-                primary_label="Add back",
+                membership_label="Removed this month" if month_model else "Previously chosen",
+                primary_label="Add back" if month_model else "Add again",
                 primary_href=add_path(item.law_id),
             )
         else:
             card = _card_from_summary(
                 row,
                 membership=MEMBERSHIP_REMOVED,
-                membership_label="Removed this month",
-                primary_label="Add back",
+                membership_label="Removed this month" if month_model else "Previously chosen",
+                primary_label="Add back" if month_model else "Add again",
                 primary_href=add_path(item.law_id),
             )
         if card is not None:
@@ -1361,6 +1485,20 @@ def law_membership(
                 badge=MEMBERSHIP_REMOVED,
                 badge_label="Previously chosen",
                 secondary_copy="One of your chosen laws — adding it again uses no choice.",
+                opens_sheet=True,
+            )
+        if not playground_month_model(snapshot):
+            # M7a (W18): a paid account under ``choices`` — no month and no
+            # "space"; the same words as the home and Manage laws.
+            return _state(
+                KIND_RE_ADD,
+                removed=True,
+                historical=True,
+                primary_label="Add again",
+                primary_href=add_path(law_id),
+                badge=MEMBERSHIP_REMOVED,
+                badge_label="Previously chosen",
+                secondary_copy="Your saved progress comes back with it.",
                 opens_sheet=True,
             )
         return _state(
@@ -1862,6 +2000,9 @@ def build_home_view(
         cap = roster.capacity_for_request(
             access.user_id, access.snapshot, local_owner=access.local_owner
         )
+    month_model = playground_month_model(getattr(access, "snapshot", None))
+    removed_label = "Removed this month" if month_model else "Previously chosen"
+    readd_label = "Add back" if month_model else "Add again"
     active_items = roster.active_roster_items(access.user_id)
     removed_items = roster.removed_roster_items(access.user_id)
     active_ids = [item.law_id for item in active_items]
@@ -1917,19 +2058,19 @@ def build_home_view(
             card = _stub_card(
                 item.law_id,
                 membership=MEMBERSHIP_REMOVED,
-                membership_label="Removed this month",
-                primary_label="Add back",
+                membership_label=removed_label,
+                primary_label=readd_label,
                 primary_href=add_path(item.law_id),
             )
         else:
             card = _card_from_summary(
                 row,
                 membership=MEMBERSHIP_REMOVED,
-                membership_label="Removed this month",
-                primary_label="Add back",
+                membership_label=removed_label,
+                primary_label=readd_label,
                 primary_href=add_path(item.law_id),
                 add_href=add_path(item.law_id),
-                add_label="Add back",
+                add_label=readd_label,
             )
         if card is not None:
             removed_cards.append(card)
@@ -1952,7 +2093,16 @@ def build_home_view(
         can_add = access.can_consume_new_law or access.local_owner
         full = cap.remaining == 0
         for law_id in historical_ids:
-            if full:
+            if not month_model:
+                # ``choices``: no month and no rollover. A law with saved
+                # progress is added through the ordinary Add save point; an
+                # account that cannot choose another law is sent to the plans.
+                if can_add:
+                    label, href = "Add to Playground", add_path(law_id)
+                else:
+                    label, href = "See plans", PLAYGROUND_PLANS_PATH
+                membership, membership_label = MEMBERSHIP_SAVED, "Progress saved"
+            elif full:
                 label, href = "Plan next month", roster_next_path()
                 membership, membership_label = MEMBERSHIP_FULL, "Playground full this month"
             elif can_add:
@@ -2038,6 +2188,10 @@ def build_home_view(
             max(0, cap.used - len(active_cards)) if not permanent else len(removed_cards)
         ),
         permanent=permanent,
+        month_model=month_model,
+        # The tier word belongs to an open Playground; a read-only home
+        # (paused, expired, halted) keeps the plain "Unlimited" it shows today.
+        tier_label="" if read_only else playground_tier_word(getattr(access, "snapshot", None)),
     )
     next_start, _end = next_playground_month_bounds()
     next_month = playground_month_name(next_start)
@@ -2054,13 +2208,65 @@ def build_home_view(
         if capacity.law_limit is not None
         else f"{used_n} {'law' if used_n == 1 else 'laws'} · {capacity.month_name}"
     )
+    extra: dict[str, Any] = {
+        "desk_heading": capacity.month_name,
+        "empty_title": f"Your {capacity.month_name} Playground is empty",
+        "aside_label": f"{capacity.month_name} capacity",
+        "aside_kicker": capacity.month_name,
+    }
+    manage_label = f"Manage {capacity.month_name}"
+    plan_next_href = roster_next_path()
+    plan_next_label = f"Manage {next_month} — choose what continues."
+    if not month_model:
+        # ``choices`` (M7a Q3 / Q4): no month, no rollover (5-23). The counter is
+        # the permanent choice count for RecallC Free and "Unlimited" for paid.
+        tier_word = playground_tier_word(getattr(access, "snapshot", None))
+        month_count = f"{used_n} {'law' if used_n == 1 else 'laws'}"
+        manage_label = "Manage laws"
+        plan_next_href = ""
+        plan_next_label = ""
+        next_month = ""
+        extra = {
+            "month_model": False,
+            "desk_heading": "Laws",
+            "active_heading": "In Playground",
+            "removed_heading": "Previously chosen — add again anytime",
+            "empty_title": "Your Playground is empty",
+            "empty_body": (
+                "Add laws you want to learn. "
+                "Your saved progress stays with you even when a law leaves Playground."
+            ),
+            "tiles_label": "Progress",
+            "aside_label": "Law choices" if permanent else "Playground capacity",
+            "aside_kicker": "Law choices · Free" if permanent else "Playground",
+            "strip_label": (
+                f"{capacity.used_label} · Free"
+                if permanent
+                else (f"Unlimited laws · {tier_word}" if tier_word else "Unlimited laws")
+            ),
+            "strip_note": (
+                "Removing a law never restores a choice"
+                if permanent
+                else "Every law, whenever you want it"
+            ),
+        }
+        if permanent and capacity.full:
+            extra.update(
+                limit_note=(
+                    f"All {_count_word(capacity.law_limit)} choices are used. Each chosen law stays "
+                    "fully learnable, and any you remove can be added again without using a "
+                    "choice. For more laws, upgrade to Plus."
+                ),
+                upgrade_label="Upgrade to Plus · unlimited laws",
+                upgrade_href=PLAYGROUND_PLANS_PATH,
+            )
     return PlaygroundHomeView(
         capacity=capacity,
         browse_href=BROWSE_LAWS_PATH,
         manage_href=roster_path(),
-        manage_label=f"Manage {capacity.month_name}",
-        plan_next_href=roster_next_path(),
-        plan_next_label=f"Manage {next_month} — choose what continues.",
+        manage_label=manage_label,
+        plan_next_href=plan_next_href,
+        plan_next_label=plan_next_label,
         next_month_name=next_month,
         empty=not active_cards and not removed_cards,
         due_today=due_today,
@@ -2081,6 +2287,7 @@ def build_home_view(
         month_count_label=month_count,
         add_law_href=BROWSE_LAWS_PATH,
         add_law_label="Add a law",
+        **extra,
     )
 
 

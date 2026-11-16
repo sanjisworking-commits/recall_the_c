@@ -1,0 +1,287 @@
+{
+ "label": "plus-choices",
+ "base": "http://127.0.0.1:8927",
+ "captured_at": "2026-11-16T13:49:34+0530",
+ "rows": [
+  {
+   "key": "add-again",
+   "path": "/playground/laws/uapa/add",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Add to Playground \u00b7 The Unlawful Activities (Prevention) Act, 1967",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "\u2715",
+     "r": 3.24
+    },
+    {
+     "t": "PLAYGROUND",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 3.24,
+   "texts": 7,
+   "tabTrail": [
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-again",
+   "path": "/playground/laws/uapa/add",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Add to Playground \u00b7 The Unlawful Activities (Prevention) Act, 1967",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 7,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "add-again",
+   "path": "/playground/laws/uapa/add",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Add to Playground \u00b7 The Unlawful Activities (Prevention) Act, 1967",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "\u2715",
+     "r": 3.24
+    },
+    {
+     "t": "PLAYGROUND",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 3.24,
+   "texts": 7,
+   "tabTrail": [
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "Add again",
+     "ring": true
+    },
+    {
+     "t": "Cancel",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-again",
+   "path": "/playground/laws/uapa/add",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Add to Playground \u00b7 The Unlawful Activities (Prevention) Act, 1967",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "controls": 3,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 7,
+   "tabTrail": [],
+   "exceptions": []
+  }
+ ]
+}

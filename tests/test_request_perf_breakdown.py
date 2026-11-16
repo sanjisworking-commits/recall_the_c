@@ -4539,6 +4539,7 @@ _T8_HOME_CONTEXT_KEYS = frozenset(
         "hard_gate",
         "read_only",
         "plus_playground",
+        "open_playground",  # M7a (Q7): the shared open-Playground home layout
         "halted_playground",
         "halted_gate",
         "halted_header_status",

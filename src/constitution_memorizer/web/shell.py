@@ -43,6 +43,26 @@ def account_status_for_snapshot(snapshot: Any) -> str:
     return FREE_LABEL
 
 
+def shell_playground_month_model(request: Any) -> bool:
+    """Template global ``playground_month_model``: True while the Playground
+    follows the monthly period model for this request.
+
+    A signed-in account: read from its entitlement snapshot (cached on
+    ``request.state``). A guest has no account snapshot — the shared guest
+    snapshot carries no model — so the entitlement service's own model is
+    used, which is what the guest would get on signing in. Templates never
+    read the flag. Used for copy guests and gated accounts read ("How
+    Playground works")."""
+
+    from constitution_memorizer.entitlements.tier_model import is_choice_model  # noqa: PLC0415
+    from constitution_memorizer.playground.view import playground_month_model  # noqa: PLC0415
+
+    if getattr(getattr(request, "state", None), "current_user", None) is None:
+        service = getattr(getattr(getattr(request, "app", None), "state", None), "entitlement_service", None)
+        return not is_choice_model(getattr(service, "tier_model", None))
+    return playground_month_model(get_entitlement_snapshot(request))
+
+
 def shell_account_status(request: Any) -> str:
     """Template global: resolves the snapshot once per request (cached on
     ``request.state``); guests get an empty string (the slot is a Sign in

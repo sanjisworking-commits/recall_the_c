@@ -303,7 +303,11 @@ def test_paid_confirm_step_is_unchanged_under_choices(tmp_path: Path, tier: str)
     assert "choices used" not in cta
     panel = _panel(client.get(add_path("ndps")).text)
     assert 'data-pg-kind="eligible_to_add"' in panel
-    assert "joins this month's Playground — learnable, verbatim." in panel
+    # M7a (W15, owner-forwarded review 2026-11-16): under ``choices`` the paid sheet
+    # names no month — eyebrow "Playground", "joins your Playground"; the step stays.
+    assert "joins your Playground — learnable, verbatim." in panel
+    assert '<p class="pg-eyebrow">Playground</p>' in panel
+    assert "this month" not in panel
     assert "pg-add-warning" not in panel and "free_confirm" not in panel
     assert 'data-step="confirm"' in panel  # 5-14 not approved: the confirm step stays
 
@@ -398,7 +402,7 @@ def test_failure_banner_styles_and_pins():
         block = css.split(rule, 1)[1].split("}", 1)[0]
         assert "var(--pg-" in block and "#" not in block  # tokens only: both themes
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg57" in base and "playground.js?v=pg13" in base
+    assert "playground.css?v=pg58" in base and "playground.js?v=pg13" in base
     panel = PANEL.read_text(encoding="utf-8")
     assert 'data-pg-add-alert hidden' in panel and 'role="alert"' in panel
 

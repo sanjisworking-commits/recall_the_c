@@ -30,7 +30,11 @@ from constitution_memorizer.playground.roster.period import (
     playground_month_name,
 )
 from constitution_memorizer.playground.urls import roster_next_path, roster_path
-from constitution_memorizer.playground.view import BROWSE_LAWS_PATH, sections_selected_copy
+from constitution_memorizer.playground.view import (
+    BROWSE_LAWS_PATH,
+    PlaygroundHomeView,
+    sections_selected_copy,
+)
 from constitution_memorizer.web.app import create_app
 from tests.conftest import PLAYGROUND_TEST_NOW
 
@@ -240,7 +244,11 @@ def test_plus_populated_home_uses_same_architecture(tmp_path: Path) -> None:
     assert "Plan next month" in html
     assert roster_path() in html
     assert roster_next_path() in html
-    assert "Removed this month" in HOME.read_text(encoding="utf-8")
+    # M7a: the heading is a view field; under ``monthly`` it is today's string.
+    assert "{{ home.removed_heading }}" in HOME.read_text(encoding="utf-8")
+    assert PlaygroundHomeView.__dataclass_fields__["removed_heading"].default == "Removed this month"
+    assert PlaygroundHomeView.__dataclass_fields__["active_heading"].default == "In Playground this month"
+    assert "In Playground this month" in html
     assert "Saved progress" in HOME.read_text(encoding="utf-8")
 
 
@@ -283,9 +291,16 @@ def test_halted_expired_pro_free_guest_are_not_plus_screen_06(tmp_path: Path) ->
     pro_html = pro.get("/playground").text
     assert 'data-plus-playground="desktop"' not in pro_html
     assert "RecallC Plus" not in _header(pro_html)
-    assert 'class="pg-home-title">Playground</h1>' in pro_html or ">Playground<" in pro_html
-    assert "To learn" in pro_html or "Your September Playground is empty" in pro_html
-    assert pro_html.count('class="RosterCapacity"') == 2
+    # M7a (Q7): Pro shares the open-Playground home layout — the shared marker,
+    # one capacity block in the aside — and still never carries the Plus marker.
+    assert 'data-open-playground="desktop"' in pro_html
+    assert "data-open-playground-phone" in pro_html
+    assert "data-plus-playground-phone" not in pro_html
+    assert "Your September Playground is empty" in pro_html
+    assert pro_html.count('class="RosterCapacity"') == 1
+    assert 'data-roster-limit="30"' in pro_html
+    assert 'data-open-playground="desktop"' not in halted_html
+    assert 'data-open-playground="desktop"' not in expired_html
 
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
@@ -309,7 +324,9 @@ def test_plus_playground_marker_uses_shared_predicate() -> None:
     assert "Overdue" in home
     assert "Sections learned" in home
     assert f'href="{{{{ home.browse_href }}}}"' in home
-    assert "Removed this month" in home
+    # M7a: printed through the view field, whose monthly value is unchanged.
+    assert "{{ home.removed_heading }}" in home
+    assert PlaygroundHomeView.__dataclass_fields__["removed_heading"].default == "Removed this month"
     assert "Saved progress" in home
     assert "Plan next month" in home
     partials = PARTIALS.read_text(encoding="utf-8")
@@ -330,7 +347,7 @@ def test_plus_playground_marker_uses_shared_predicate() -> None:
     assert "def account_status_for_snapshot" in shell
     assert "def shell_account_status" in shell
     assert '"plus": "RecallC Plus"' in shell
-    assert "playground.css?v=pg57" in base
+    assert "playground.css?v=pg58" in base
     deps = DEPS.read_text(encoding="utf-8")
     assert "def request_is_active_plus" in deps
     assert 'snapshot.tier == "plus"' in deps
@@ -341,7 +358,10 @@ def test_plus_playground_marker_uses_shared_predicate() -> None:
     assert "def sections_selected_copy" in view
     assert "overdue" in view
     css = PG_CSS.read_text(encoding="utf-8")
-    assert 'data-plus-playground="desktop"' in css
+    # M7a (Q7): the home rules key on the shared open-Playground marker; the
+    # template still renders the Plus marker for active Plus (asserted above).
+    assert 'data-open-playground="desktop"' in css
+    assert '[data-plus-playground' not in css
     assert "plus-pg-month" in css
     assert "plus-pg-desk-only" in css
     styles = STYLES.read_text(encoding="utf-8")

@@ -1,16 +1,8 @@
-"""ASGI entrypoint for hosted web (no Docling / CLI import)."""
+"""Back-compat import path. Hosted start uses constitution_memorizer.asgi:app."""
 
-from __future__ import annotations
-
-from constitution_memorizer.multiuser.settings import (
-    get_multiuser_settings,
-    load_env_file,
-)
-from constitution_memorizer.web.app import create_app
-
-load_env_file()
-settings = get_multiuser_settings()
-app = create_app(
-    multiuser=settings.multiuser_enabled,
-    multiuser_settings=settings,
+from constitution_memorizer.asgi import (  # noqa: F401
+    BootSafeASGI,
+    app,
+    create_hosted_app,
+    health_app,
 )

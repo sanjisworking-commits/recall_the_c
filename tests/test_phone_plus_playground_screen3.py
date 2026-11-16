@@ -519,18 +519,20 @@ def test_phone_plus_css_scope_pins_and_desktop_06_untouched() -> None:
         "Expired and Halted desktop Playground home", 1
     )[0]
     assert "@media (max-width: 560px)" in phone_block
-    assert "[data-plus-playground-phone]" in phone_block
+    # M7a (Q7): the phone home rules key on the shared open-Playground marker.
+    assert "[data-open-playground-phone]" in phone_block
+    assert "[data-plus-playground-phone]" not in phone_block
     assert "safe-area-inset-bottom" in phone_block
     assert "overflow-x: hidden" in phone_block
     assert "min-height: 44px" in phone_block
     assert re.search(r"(^|[^A-Za-z0-9_-])order\s*:", phone_block) is None
     assert "[data-signed-in-pg-gate]" not in phone_block
     desk = css.split(
-        ".pg-home-grid[data-plus-playground=\"desktop\"] h1.plus-pg-month {", 1
+        ".pg-home-grid[data-open-playground=\"desktop\"] h1.plus-pg-month {", 1
     )[1].split("}", 1)[0]
     assert "font-size: 34px" in desk
     hide_strip = css.split(
-        ".pg-home-grid[data-plus-playground=\"desktop\"] .pg-month-strip {", 1
+        ".pg-home-grid[data-open-playground=\"desktop\"] .pg-month-strip {", 1
     )[1].split("}", 1)[0]
     assert "display: none" in hide_strip
     mobile = MOBILE.read_text(encoding="utf-8")
@@ -559,7 +561,7 @@ def test_phone_plus_css_scope_pins_and_desktop_06_untouched() -> None:
     routes = ROUTES.read_text(encoding="utf-8")
     assert '"plus_playground": request_is_active_plus(request)' in routes
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg57" in base
+    assert "playground.css?v=pg58" in base
     assert "playground.css?v=pg35" not in base
     assert "styles.css?v=main94" in base
     assert "mobile.css?v=mob113" in base

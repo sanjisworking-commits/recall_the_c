@@ -158,6 +158,10 @@ from constitution_memorizer.playground.view import (
     SHEET_KIND_FREE_CONFIRM,
     SHEET_KIND_FREE_READD,
     add_confirm_copy,
+    playground_month_model,
+    playground_tier_word,
+    remove_page_copy,
+    roster_page_copy,
     build_home_view,
     capacity_view,
     catalog_titles,
@@ -505,6 +509,9 @@ def _add_page_context(
         historical=historical and not re_add,
         re_add=re_add,
         permanent=permanent,
+        # M7a (W18): a paid re-add under ``choices`` reads "Add … again?" ·
+        # "Your saved progress comes back with it."
+        month_model=playground_month_model(getattr(access, "snapshot", None)),
     )
     entire_meta = ""
     if hydrate_scope and show_scope and state.kind in {"eligible_to_add", "re_add"}:
@@ -597,9 +604,13 @@ def _add_page_context(
         "title": title,
         "lines": lines,
         "month_name": month,
+        "month_model": playground_month_model(getattr(access, "snapshot", None)),
         "short_title": short,
         "action_label": (
-            "Add again" if kind == SHEET_KIND_FREE_READD else ("Add back" if re_add else "Add to Playground")
+            "Add again"
+            if kind == SHEET_KIND_FREE_READD
+            or (re_add and not playground_month_model(getattr(access, "snapshot", None)))
+            else ("Add back" if re_add else "Add to Playground")
         ),
         "confirm_value": ROSTER_ADD_CONFIRM,
         "cancel_href": f"/laws/{law_id}",
@@ -722,6 +733,14 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "hard_gate": False,
                 "read_only": bool(getattr(access, "can_view_home", False) and not access.can_open),
                 "plus_playground": request_is_active_plus(request),
+                # M7a Q7: the styled home for every account whose Playground is
+                # open (active Plus keeps its own marker as well). Single-user
+                # mode and the read-only states keep the generic layout.
+                "open_playground": bool(
+                    access.can_open
+                    and access.snapshot is not None
+                    and not getattr(access, "local_owner", False)
+                ),
                 "halted_playground": halted_playground,
                 "halted_gate": halted_gate,
                 "halted_header_status": halted_header_status,
@@ -767,11 +786,16 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             local_owner=access.local_owner,
         )
         month = playground_month_name(capacity.period_start)
+        # M7a: the month model is read from the snapshot; under ``choices`` the
+        # page prints no month and no rollover link (5-23).
+        month_model = playground_month_model(access.snapshot)
+        permanent = bool(getattr(capacity, "permanent", False))
         overlay = require_playground_repo(request)
         active_cards, removed_cards = roster_law_cards(
             overlay=overlay,
             roster=roster,
             user_id=access.user_id,
+            month_model=month_model,
         )
         add_catalog = playground_catalogue_law(add_id) if add_id else None
         show_confirm = preview is not None and preview.status in {
@@ -798,28 +822,41 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 remaining_after=remaining_after,
                 historical=historical and not re_add,
                 re_add=re_add,
+                permanent=permanent,
+                month_model=month_model,
             )
             if re_add:
-                confirm_action = "Add back"
+                confirm_action = "Add back" if month_model else "Add again"
         next_start, _end = next_playground_month_bounds()
         cap_view = capacity_view(
             period_start=capacity.period_start,
             used=capacity.used,
             law_limit=capacity.law_limit,
             remaining=capacity.remaining,
-            permanent=bool(getattr(capacity, "permanent", False)),
+            permanent=permanent,
             active_count=len(active_cards),
             removed_consumed_count=len(removed_cards),
             surface="roster",
+            month_model=month_model,
+            tier_label=playground_tier_word(access.snapshot),
         )
         notice = ""
         if request.query_params.get("notice") == "readded" and add_id:
-            notice = f"{add_short} is back in {month}. No extra space used."
+            if month_model:
+                notice = f"{add_short} is back in {month}. No extra space used."
+            elif permanent:
+                notice = f"{add_short} is back in your Playground. No choice used."
+            else:
+                notice = f"{add_short} is back in your Playground."
         return _timed_template(
             request,
             "playground_roster.html",
             {
                 "month_name": month,
+                "month_model": month_model,
+                "roster_copy": roster_page_copy(
+                    month_name=month, month_model=month_model, permanent=permanent
+                ),
                 "tier_snapshot": capacity.tier_snapshot,
                 "law_limit": capacity.law_limit,
                 "used": capacity.used,
@@ -1213,6 +1250,11 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "law_id": law_id,
                 "month_name": month,
                 "short_title": short,
+                "remove_copy": remove_page_copy(
+                    month_name=month,
+                    month_model=playground_month_model(opened.snapshot),
+                    permanent=bool(getattr(capacity, "permanent", False)),
+                ),
             },
         )
 
@@ -1372,6 +1414,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "item": item,
                 "rows": rows,
                 "month_name": month,
+                "month_model": playground_month_model(access.snapshot),
                 "launch": launch,
                 "launch_verbatim": launch_verbatim,
                 "progress": progress,

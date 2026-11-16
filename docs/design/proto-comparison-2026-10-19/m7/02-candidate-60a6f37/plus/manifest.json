@@ -1,0 +1,6501 @@
+{
+ "label": "plus",
+ "base": "http://127.0.0.1:8927",
+ "viewer": "plus",
+ "captured_at": "2026-11-16T08:24:06+0530",
+ "chrome": "Google Chrome 157.0.8103.52",
+ "rows": [
+  {
+   "key": "home",
+   "route": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "plus_plus_home_390x844_light.png",
+   "sha256": "e4bc614d6e72efec6eebd3107f4d8187c12b603c30ff633ac7e4f16b47e2a4eb",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "home",
+   "route": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "plus_plus_home_390x844_dark.png",
+   "sha256": "d8eeea7a029fc9d060f1f2ba20e9f410dea7529acbf87f58125904f354f56aca",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1e1e1d",
+      "ratio": 14.05
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "home",
+   "route": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "plus_plus_home_1280x900_light.png",
+   "sha256": "f3c6000813035996d8b655d307a66c355cdf92cae8b8f2fa449059d21a614571",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "home",
+   "route": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "plus_plus_home_1280x900_dark.png",
+   "sha256": "2bbd1c4d3eb0a3b5bd2b3a992ec15b3b4cf252e98f2c7344a3bc66345a63e317",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "roster",
+   "route": "/playground/roster",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "plus_plus_roster_390x844_light.png",
+   "sha256": "d826fc8bab41c035256e5222ab2d8ace2cd877e43825c65e14332fd0f07b903d",
+   "status_chain": [
+    [
+     "/playground/roster",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#0e7569",
+      "bg": "#fefefe",
+      "ratio": 5.52
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster",
+    "title": "November Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "roster",
+   "route": "/playground/roster",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "plus_plus_roster_390x844_dark.png",
+   "sha256": "1e1b96b5ec376addc62c8c2c7ead3f236c60ca4477ea860f8b54557702bbaf26",
+   "status_chain": [
+    [
+     "/playground/roster",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#2a9d8f",
+      "bg": "#1e1e1d",
+      "ratio": 5.05
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster",
+    "title": "November Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "roster",
+   "route": "/playground/roster",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "plus_plus_roster_1280x900_light.png",
+   "sha256": "91da9dc6ad31dfc78b80c7cea40a9f7c8e338ea20080b66d68a1073da9945734",
+   "status_chain": [
+    [
+     "/playground/roster",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster",
+    "title": "November Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "roster",
+   "route": "/playground/roster",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "plus_plus_roster_1280x900_dark.png",
+   "sha256": "0287f52bee84a06d2bcf2c67a3f0f892a1d499fdb0fbc0ad6e7a3e85eda19729",
+   "status_chain": [
+    [
+     "/playground/roster",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster",
+    "title": "November Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "roster-add",
+   "route": "/playground/roster?add=pss",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "plus_plus_roster-add_390x844_light.png",
+   "sha256": "446c2a0a5a3a42e1f126e0f657ea03018003b4b7ffc88a0291e07e00646b98bd",
+   "status_chain": [
+    [
+     "/playground/roster?add=pss",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#0e7569",
+      "bg": "#fefefe",
+      "ratio": 5.52
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster?add=pss",
+    "title": "November Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "roster-add",
+   "route": "/playground/roster?add=pss",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "plus_plus_roster-add_390x844_dark.png",
+   "sha256": "d9251f38c80def06cbf7f0ac0b9646316acd50301c4fb3c5702792fd1a779c43",
+   "status_chain": [
+    [
+     "/playground/roster?add=pss",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#2a9d8f",
+      "bg": "#1e1e1d",
+      "ratio": 5.05
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster?add=pss",
+    "title": "November Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "roster-add",
+   "route": "/playground/roster?add=pss",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "plus_plus_roster-add_1280x900_light.png",
+   "sha256": "6df1edebb0ed42e38b98bbc86e8f614226483c90b4db43dd93cc3df04be17a67",
+   "status_chain": [
+    [
+     "/playground/roster?add=pss",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster?add=pss",
+    "title": "November Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "roster-add",
+   "route": "/playground/roster?add=pss",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "plus_plus_roster-add_1280x900_dark.png",
+   "sha256": "622537a929532732f6d814e517b6392e2ae648c8de771f8048aa72715a9f286d",
+   "status_chain": [
+    [
+     "/playground/roster?add=pss",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster?add=pss",
+    "title": "November Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "remove",
+   "route": "/playground/roster/ndps/remove",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "plus_plus_remove_390x844_light.png",
+   "sha256": "9d441749fd78135ec486db45c2fbf5ed88b02852a3ff01090fe98c851fcc9d0a",
+   "status_chain": [
+    [
+     "/playground/roster/ndps/remove",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#0e7569",
+      "bg": "#fefefe",
+      "ratio": 5.52
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster/ndps/remove",
+    "title": "Remove from November \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "remove",
+   "route": "/playground/roster/ndps/remove",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "plus_plus_remove_390x844_dark.png",
+   "sha256": "efa07b44510d9d6333c206ef1e5ab7daec2bdcaf470ee4e83f9ea7bfb0b0b780",
+   "status_chain": [
+    [
+     "/playground/roster/ndps/remove",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#2a9d8f",
+      "bg": "#1e1e1d",
+      "ratio": 5.05
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster/ndps/remove",
+    "title": "Remove from November \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "remove",
+   "route": "/playground/roster/ndps/remove",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "plus_plus_remove_1280x900_light.png",
+   "sha256": "837027dc8a8ff7eef05ccb226aef2a18ed5fc1ef3643552fff19e102a93c8913",
+   "status_chain": [
+    [
+     "/playground/roster/ndps/remove",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster/ndps/remove",
+    "title": "Remove from November \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "remove",
+   "route": "/playground/roster/ndps/remove",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "plus_plus_remove_1280x900_dark.png",
+   "sha256": "2aae2dee9943cc51af0bd0feff4bd61d1858964067714fb5ccd8f8073eecc62f",
+   "status_chain": [
+    [
+     "/playground/roster/ndps/remove",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster/ndps/remove",
+    "title": "Remove from November \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "rollover",
+   "route": "/playground/roster/next",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "plus_plus_rollover_390x844_light.png",
+   "sha256": "a49a35c862fc1f7b36d95db2be7c49c499194fc668467e84a0a298de5f180bf0",
+   "status_chain": [
+    [
+     "/playground/roster/next",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster/next",
+    "title": "Your December Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "rollover",
+   "route": "/playground/roster/next",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "plus_plus_rollover_390x844_dark.png",
+   "sha256": "4b45a3ca1772f6019ba1472cf21d791ce89ffd41c1abf2f36db6d0b6a0177e8a",
+   "status_chain": [
+    [
+     "/playground/roster/next",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster/next",
+    "title": "Your December Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "rollover",
+   "route": "/playground/roster/next",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "plus_plus_rollover_1280x900_light.png",
+   "sha256": "8f17fff21599382af53c68ddae64716bde0c84d7046e02093aba320f3cc2a21d",
+   "status_chain": [
+    [
+     "/playground/roster/next",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster/next",
+    "title": "Your December Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "rollover",
+   "route": "/playground/roster/next",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "plus_plus_rollover_1280x900_dark.png",
+   "sha256": "8d38af333a62e030c91d1f48faca54d4dc66440e9396f96f20495ec21e8b5b73",
+   "status_chain": [
+    [
+     "/playground/roster/next",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/roster/next",
+    "title": "Your December Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "law",
+   "route": "/playground/laws/bns",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "plus_plus_law_390x844_light.png",
+   "sha256": "9c3d9219c834eca55895944f9e147704164455a147580c06d8dbf74cb3418490",
+   "status_chain": [
+    [
+     "/playground/laws/bns",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#0e7569",
+      "bg": "#fefefe",
+      "ratio": 5.52
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns",
+    "title": "The BNS, 2023 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "law",
+   "route": "/playground/laws/bns",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "plus_plus_law_390x844_dark.png",
+   "sha256": "c3328f9cd963bd42aae45879fd0a92f5b283bb7d5434c4c096561163740eab36",
+   "status_chain": [
+    [
+     "/playground/laws/bns",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#2a9d8f",
+      "bg": "#1e1e1d",
+      "ratio": 5.05
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns",
+    "title": "The BNS, 2023 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "law",
+   "route": "/playground/laws/bns",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "plus_plus_law_1280x900_light.png",
+   "sha256": "8a8425172a106495cf713341f0234bea78bd59946031376ffe211f0402a58484",
+   "status_chain": [
+    [
+     "/playground/laws/bns",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns",
+    "title": "The BNS, 2023 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "law",
+   "route": "/playground/laws/bns",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "plus_plus_law_1280x900_dark.png",
+   "sha256": "34d51883c9c6590c596bed29b5dfae7666698b58018267ba998123f59bc753f9",
+   "status_chain": [
+    [
+     "/playground/laws/bns",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns",
+    "title": "The BNS, 2023 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "picker",
+   "route": "/playground/laws/bns/sections",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "plus_plus_picker_390x844_light.png",
+   "sha256": "5e66610bfd4ad4d2d14e796cd29d38c41bb9700d6dfd66a08c2f657981ef1c5e",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections",
+    "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "picker",
+   "route": "/playground/laws/bns/sections",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "plus_plus_picker_390x844_dark.png",
+   "sha256": "9eb534246a92b50c6c13b416ce983542331ae02caf29ea71a3e2fbb48a3ce4ce",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1e1e1d",
+      "ratio": 14.05
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections",
+    "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "picker",
+   "route": "/playground/laws/bns/sections",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "plus_plus_picker_1280x900_light.png",
+   "sha256": "fc8c4bd64adb85d8c7a1919bab71a8079d7d7f6be8e3b05ffd074aceebc847c8",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections",
+    "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "picker",
+   "route": "/playground/laws/bns/sections",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "plus_plus_picker_1280x900_dark.png",
+   "sha256": "83fc2089bc2436d60289583016c08eb5f8d90816c97596aa380c362e09ec1ae1",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections",
+    "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "learn-read",
+   "route": "/playground/laws/bns/sections/1/learn/read",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "plus_plus_learn-read_390x844_light.png",
+   "sha256": "62252274b698295533018db2b01dac928709feb94bc063e59d16854940a06f58",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/1/learn/read",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/1/learn/read",
+    "title": "Read \u00b7 Section 1 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "learn-read",
+   "route": "/playground/laws/bns/sections/1/learn/read",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "plus_plus_learn-read_390x844_dark.png",
+   "sha256": "2230e1fd8566b69be97914db9eec8621948604ff8d5d9273e368369dc5ee07f6",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/1/learn/read",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/1/learn/read",
+    "title": "Read \u00b7 Section 1 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "learn-read",
+   "route": "/playground/laws/bns/sections/1/learn/read",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "plus_plus_learn-read_1280x900_light.png",
+   "sha256": "55be102c9e23b34589bf41c60e9a120a588eaf9d86601b5de45fa5cfa81ba293",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/1/learn/read",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/1/learn/read",
+    "title": "Read \u00b7 Section 1 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "learn-read",
+   "route": "/playground/laws/bns/sections/1/learn/read",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "plus_plus_learn-read_1280x900_dark.png",
+   "sha256": "6aa601a1017bdda57e20899a18ac8ee635db9980ac3ae934ed50fe489cddb5a3",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/1/learn/read",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": true,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "S Sanjay RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1120,
+       "y": 8,
+       "w": 120,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Plus",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1166,
+       "y": 31,
+       "w": 66,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/1/learn/read",
+    "title": "Read \u00b7 Section 1 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1120,
+      "y": 8,
+      "w": 120,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "learned",
+   "route": "/playground/laws/bns/sections/1/learned",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "plus_plus_learned_390x844_light.png",
+   "sha256": "dbbb10832311334da944c75f35f691885123f46d5ef90639e5380bd015477bae",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/1/learned",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/1/learned",
+    "title": "Section learned. \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "learned",
+   "route": "/playground/laws/bns/sections/1/learned",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "plus_plus_learned_390x844_dark.png",
+   "sha256": "6c0176d039f1d8ba0fb1ebd7366eb33e7c422f6133e3fd497ff1710b8808c080",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/1/learned",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/1/learned",
+    "title": "Section learned. \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "learned",
+   "route": "/playground/laws/bns/sections/1/learned",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "plus_plus_learned_1280x900_light.png",
+   "sha256": "37036aa16fd5c31aa7626885e1750c56a217bbf744278d5f0b3daf02e5b64cfa",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/1/learned",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/1/learned",
+    "title": "Section learned. \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "MAIN.main",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "learned",
+   "route": "/playground/laws/bns/sections/1/learned",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "plus_plus_learned_1280x900_dark.png",
+   "sha256": "f33be993d4a397d72cddf5310db2ff03d283da1887e8568905657a2938e3b163",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/1/learned",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/1/learned",
+    "title": "Section learned. \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "MAIN.main",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "mastered",
+   "route": "/playground/laws/bns/sections/2/mastered",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "plus_plus_mastered_390x844_light.png",
+   "sha256": "a9c4dce197e9954d394ccdece45e544c12cc9bbf483e573cdab6d954947b0e50",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/2/mastered",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/2/mastered",
+    "title": "Mastered, verbatim. \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "mastered",
+   "route": "/playground/laws/bns/sections/2/mastered",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "plus_plus_mastered_390x844_dark.png",
+   "sha256": "87a110e0f7a65e6d0112e0c3bb5f24621295851f3556dc3d0a9cc9156c246b8e",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/2/mastered",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/2/mastered",
+    "title": "Mastered, verbatim. \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.PlaygroundShell",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "mastered",
+   "route": "/playground/laws/bns/sections/2/mastered",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "plus_plus_mastered_1280x900_light.png",
+   "sha256": "cf5d41e36522ea8d384ce0ed336eeec716e226d640ad7570e6f7d590d8d23c79",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/2/mastered",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/2/mastered",
+    "title": "Mastered, verbatim. \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "MAIN.main",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "mastered",
+   "route": "/playground/laws/bns/sections/2/mastered",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "plus_plus_mastered_1280x900_dark.png",
+   "sha256": "d62c02f5eae3dcbd8cc070f01a8cd2a3f9ad7deff0ffd343988b9d59adc82a06",
+   "status_chain": [
+    [
+     "/playground/laws/bns/sections/2/mastered",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/playground/laws/bns/sections/2/mastered",
+    "title": "Mastered, verbatim. \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "MAIN.main",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Plus",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  }
+ ]
+}
