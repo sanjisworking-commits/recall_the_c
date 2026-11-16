@@ -203,7 +203,9 @@ def test_signed_in_pg_gate_does_not_touch_accepted_screens() -> None:
     assert "font-size: 34px" not in signed_gate_title
     gate_html = GATE.read_text(encoding="utf-8")
     assert "data-signed-in-pg-gate" in gate_html
-    assert "how_it_works()" in gate_html
+    # M7a (Q9d): the gate still calls the macro, now with the request's period model
+    # (the macro's default argument is the monthly block, pinned by test_playground_family F12).
+    assert "{{ how_it_works(pg_month_model) }}" in gate_html
     assert 'href="/laws"' not in gate_html
     assert "Browse laws" not in gate_html
 
