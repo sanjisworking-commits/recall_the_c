@@ -452,7 +452,8 @@ def test_expired_playground_uses_shared_predicate_and_gate_view() -> None:
     css = PG_CSS.read_text(encoding="utf-8")
     assert "[data-expired-pg-desktop]" in css
     assert "[data-expired-playground=\"desktop\"]" in css
-    assert 'data-plus-playground="desktop"' in css
+    # M7a (Q7): the open-Playground home rules key on the shared marker.
+    assert 'data-open-playground="desktop"' in css
     styles = STYLES.read_text(encoding="utf-8")
     # M1 (DV-20): styles.css no longer hides the account subtitle on Playground pages;
     # the predicate is exercised by playground.css (asserted above).

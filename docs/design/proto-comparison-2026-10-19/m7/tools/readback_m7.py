@@ -123,7 +123,7 @@ def page_row(html: str) -> dict:
         "h1": [_text(x) for x in re.findall(r"<h1[^>]*>(.*?)</h1>", main, flags=re.S)],
         "h2": [_text(x) for x in re.findall(r"<h2[^>]*>(.*?)</h2>", main, flags=re.S)],
         "markers": sorted(set(re.findall(
-            r'data-(?:plus|paid|expired|halted)-(?:playground(?:-phone)?|pg-[a-z]+)(?:="[^"]*")?', main))),
+            r'data-(?:plus|open|paid|expired|halted)-(?:playground(?:-phone)?|pg-[a-z]+)(?:="[^"]*")?', main))),
         "gate": sorted(set(re.findall(r'data-playground-gate="([^"]*)"', html))),
         "roster_used_limit": sorted(set(re.findall(r'data-roster-used="([^"]*)"[^>]*data-roster-limit="([^"]*)"', main))),
         "month_copy_count": len(hits),

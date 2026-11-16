@@ -408,7 +408,7 @@ def test_phone_plus_settings_css_is_breakpoint_scoped() -> None:
     assert 'action="/logout"' in src
     assert "data-plan-autosubmit" in src
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg57" in base
+    assert "playground.css?v=pg58" in base
     assert "playground.css?v=pg39" not in base
     assert "styles.css?v=main94" in base
     assert "mobile.css?v=mob113" in base

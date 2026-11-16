@@ -475,7 +475,7 @@ def test_phone_plus_css_scope_pins_and_desktop_04_untouched() -> None:
     assert "styles.css?v=main87" not in base
     assert "mobile.css?v=mob113" in base
     assert "mobile.css?v=mob106" not in base
-    assert "playground.css?v=pg57" in base
+    assert "playground.css?v=pg58" in base
     assert "mobile.js?v=mob31" in base
     bare = BARE.read_text(encoding="utf-8")
     assert "data-plus-bareact" in bare
