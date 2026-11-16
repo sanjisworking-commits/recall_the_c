@@ -7950,3 +7950,50 @@ label.pg-plan-card:has(.pg-plan-radio:focus-visible) {
     margin-top: 10px;
   }
 }
+
+/* ── M7b · Act progress and Learn: baseline defects ─────────────────────────
+   Three layout defects found on the M7b baseline (M7.md §8). No new design. */
+
+/* D1 — Act progress ring. The fraction label and the ring's paper disc were
+   two rows of the ring's grid, so the disc sat below the label and off the
+   ring's centre. They share one cell: the label reads inside the ring. */
+.pg-progress-ring--act > .pg-progress-ring-label,
+.pg-progress-ring--act::after {
+  grid-area: 1 / 1;
+}
+
+/* D2 — "On the ladder". Each bar was a flex item with a zero basis in a column
+   of automatic height, so every bar collapsed to nothing and only the counts
+   showed. The columns now fill the chart and a bar takes its height from the
+   rung's share (half the chart at most, leaving room for count and label);
+   an empty rung keeps a 2px baseline. */
+.pg-rung-bar--act {
+  align-items: stretch;
+}
+
+.pg-rung-bar--act .pg-rung-col {
+  justify-content: flex-end;
+}
+
+.pg-rung-bar--act .pg-rung {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 44px;
+  min-width: 8px;
+  min-height: 2px;
+  height: calc(var(--pg-rung-h, 0%) * 0.5);
+}
+
+.pg-rung-bar--act .pg-rung.is-filled {
+  background: var(--pg-teal);
+}
+
+/* D3 — Learn, desktop. The mode deck shares a grid row with the text panel,
+   and its card rows stretched to the panel's height (tall empty cards). The
+   deck keeps its natural height at the top of its column. */
+@media (min-width: 1040px) {
+  .pg-learn-deck {
+    align-content: start;
+    align-self: start;
+  }
+}

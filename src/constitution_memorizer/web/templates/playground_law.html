@@ -45,7 +45,7 @@
     {% for rung in progress.rungs %}
     <span class="pg-rung-col">
       <span class="pg-rung-count">{{ rung.count }}</span>
-      <span class="pg-rung pg-grow" style="--pg-rung-h: {{ rung.height_pct }}%;"></span>
+      <span class="pg-rung pg-grow{% if rung.count %} is-filled{% endif %}" style="--pg-rung-h: {{ rung.height_pct }}%;"></span>
       <span class="pg-rung-label">{{ rung.label }}</span>
     </span>
     {% endfor %}
