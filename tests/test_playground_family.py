@@ -398,6 +398,8 @@ def test_f10_home_rules_key_on_the_shared_marker() -> None:
     block = css.split("/* ── M7a · Playground home without the month model", 1)[1]
     for selector in (".pg-strip-note", ".pg-limit-note", ".pg-upgrade-actions"):
         assert selector in block
+    # W12: inside the aside card the capacity cells may shrink, so a 30-space bar fits
+    assert ".plus-pg-aside-card .RosterCapacity-cell {\n  min-width: 0;\n}" in block
     home = (TEMPLATES / "playground.html").read_text(encoding="utf-8")
     assert "{% if home.month_model %}" in home
     assert "{% if not home.read_only and home.month_model %}" in home
