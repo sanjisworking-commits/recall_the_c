@@ -1,6 +1,6 @@
 # M7a — test changes (branch `pg-m7a-playground-home`, PR #245)
 
-Every assertion changed by M7a, with the decision it follows. No assertion was weakened: each re-pinned line still checks the same thing for the decided value, and where a check moved it gained a companion assertion. Source commits `4bc0fd4`, `60a6f37`, `0829d45`, `ea47eab`, `773492f`; tests commits `fe554c5`, `18e9f02`, `fa05a2c`, `8066ef7`, `09bc48d`, `c89dd05`.
+Every assertion changed by M7a, with the decision it follows. No assertion was weakened: each re-pinned line still checks the same thing for the decided value, and where a check moved it gained a companion assertion. Source commits `4bc0fd4`, `60a6f37`, `0829d45`, `ea47eab`, `773492f`; tests commits `fe554c5`, `18e9f02`, `fa05a2c`, `8066ef7`, `09bc48d`, `c89dd05`, `458be60`.
 
 ## A. Mechanical asset re-pin (`fe554c5`)
 
@@ -42,7 +42,7 @@ The two `or` forms are gone (each now asserts one thing). The assertions that Pr
 
 ## E. New module
 
-`tests/test_playground_family.py` — 58 tests.
+`tests/test_playground_family.py` — 63 tests.
 
 | Row | Covers |
 |---|---|
@@ -57,6 +57,7 @@ The two `or` forms are gone (each now asserts one thing). The assertions that Pr
 | F10 | stylesheet keyed on the shared marker, no `[data-plus-playground` selector left, the M7a block and the capacity-cell rule; rollover links behind `home.month_model` / `month_model`; templates never read the flag |
 | F11 | `capacity_view` strings for the monthly, paid-`choices` and Free-`choices` branches |
 | F12 (`09bc48d`) | the guest line under both models (no count of choices, no price, the other three steps unchanged); the "How it works" macro rendered under both models (steps 1 and 3 per model, step 2 unchanged, default argument = monthly); the template global returns the signed-in account's snapshot model under both models; the gate template calls the helper and never reads the flag |
+| F14 (`458be60`) | paid re-add under `choices` (Plus and Pro): the Act head says "Previously chosen", "Add again", "Your saved progress comes back with it." and none of "Removed this month", "Add back", "No extra space used"; the sheet prints the same line and an "Add again" button, nothing about choices, and keeps `data-step="confirm"`; under `monthly` the head and sheet are unchanged; RecallC Free keeps the M2-R wording |
 | F13 (`09bc48d`) | Plus and Pro Add sheet under `choices`, for a new law and a re-add: eyebrow "Playground", "joins your Playground", no month, the confirm step and its form still present, no price; under `monthly` the month eyebrow and "joins this month's Playground" unchanged |
 
 The family module derives its month words from the suite's pinned Playground clock (`tests/conftest.py::PLAYGROUND_TEST_NOW`).
