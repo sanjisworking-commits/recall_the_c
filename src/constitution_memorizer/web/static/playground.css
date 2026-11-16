@@ -7929,6 +7929,17 @@ label.pg-plan-card:has(.pg-plan-radio:focus-visible) {
   margin: 14px 0 0;
 }
 
+/* W12: a 30-space plan (Pro, ``monthly``) drew its capacity bar past the aside
+   card. Inside the card the cells may shrink below their 8px floor; a bar that
+   already fits (ten cells or fewer) is unchanged. */
+.plus-pg-aside-card .RosterCapacity-bar {
+  max-width: 100%;
+}
+
+.plus-pg-aside-card .RosterCapacity-cell {
+  min-width: 0;
+}
+
 .pg-upgrade-actions .pg-btn {
   width: 100%;
   box-sizing: border-box;
