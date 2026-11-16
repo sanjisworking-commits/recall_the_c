@@ -268,6 +268,19 @@ def test_f05_home_markers_by_state(tmp_path: Path, state: str, tier_model: str) 
         assert f'data-{state}-playground="desktop"' in html
 
 
+@pytest.mark.parametrize("state", ["paused", "expired", "halted"])
+def test_f05_read_only_homes_change_only_their_month_phrases_under_choices(tmp_path: Path, state: str) -> None:
+    monthly_html = _client(tmp_path / "m", state, tier_model="monthly").get("/playground").text
+    choices_html = _client(tmp_path / "c", state, tier_model="choices").get("/playground").text
+    assert _month_hits(choices_html) == [] and _month_hits(monthly_html) != []
+    monthly, choices = _main(monthly_html), _main(choices_html)
+    assert "is-readonly" in monthly and "is-readonly" in choices
+    # the read-only capacity line stays the plain one: no tier word is promised
+    assert "Unlimited · " not in choices
+    assert ">Resume Playground<" in choices and ">Resume Playground<" in monthly
+    assert roster_next_path() not in choices and roster_next_path() not in monthly
+
+
 def test_f05_guest_home_is_the_gate(tmp_path: Path) -> None:
     html = _client(tmp_path, "guest").get("/playground").text
     assert "data-open-playground" not in html and "data-guest-pg-intro" in html
