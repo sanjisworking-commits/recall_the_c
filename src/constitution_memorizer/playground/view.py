@@ -1487,6 +1487,20 @@ def law_membership(
                 secondary_copy="One of your chosen laws — adding it again uses no choice.",
                 opens_sheet=True,
             )
+        if not playground_month_model(snapshot):
+            # M7a (W18): a paid account under ``choices`` — no month and no
+            # "space"; the same words as the home and Manage laws.
+            return _state(
+                KIND_RE_ADD,
+                removed=True,
+                historical=True,
+                primary_label="Add again",
+                primary_href=add_path(law_id),
+                badge=MEMBERSHIP_REMOVED,
+                badge_label="Previously chosen",
+                secondary_copy="Your saved progress comes back with it.",
+                opens_sheet=True,
+            )
         return _state(
             KIND_RE_ADD,
             removed=True,

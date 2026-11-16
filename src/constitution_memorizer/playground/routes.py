@@ -509,6 +509,9 @@ def _add_page_context(
         historical=historical and not re_add,
         re_add=re_add,
         permanent=permanent,
+        # M7a (W18): a paid re-add under ``choices`` reads "Add … again?" ·
+        # "Your saved progress comes back with it."
+        month_model=playground_month_model(getattr(access, "snapshot", None)),
     )
     entire_meta = ""
     if hydrate_scope and show_scope and state.kind in {"eligible_to_add", "re_add"}:
@@ -604,7 +607,10 @@ def _add_page_context(
         "month_model": playground_month_model(getattr(access, "snapshot", None)),
         "short_title": short,
         "action_label": (
-            "Add again" if kind == SHEET_KIND_FREE_READD else ("Add back" if re_add else "Add to Playground")
+            "Add again"
+            if kind == SHEET_KIND_FREE_READD
+            or (re_add and not playground_month_model(getattr(access, "snapshot", None)))
+            else ("Add back" if re_add else "Add to Playground")
         ),
         "confirm_value": ROSTER_ADD_CONFIRM,
         "cancel_href": f"/laws/{law_id}",
