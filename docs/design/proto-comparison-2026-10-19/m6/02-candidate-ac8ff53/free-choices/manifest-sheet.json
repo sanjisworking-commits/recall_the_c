@@ -1,0 +1,231 @@
+{
+ "label": "free-choices",
+ "base": "http://127.0.0.1:8924",
+ "captured_at": "2026-11-13T22:34:19+0530",
+ "rows": [
+  {
+   "file": "free-choices_free_calendar-sheet_1280x900_light.png",
+   "theme": "light",
+   "sha256": "9fb4f235ee64469b06cb57f00200ce9db6cac5f020dcf9f1cd14fd0e3a304992",
+   "opened": {
+    "sheet": true,
+    "open": true,
+    "activeInDialog": true,
+    "active": "BUTTON \u00d7",
+    "focusOnEntry": false,
+    "title": "Personal tasks are part of Plus",
+    "cta": "/playground?stage=plans",
+    "ctaText": "See plans \u203a",
+    "price": false,
+    "editor": false,
+    "viewer": true,
+    "gatedEntries": 2,
+    "hScroll": false,
+    "ctaBox": {
+     "x": 458,
+     "y": 514.53125,
+     "width": 109.328125,
+     "height": 44,
+     "top": 514.53125,
+     "right": 567.328125,
+     "bottom": 558.53125,
+     "left": 458
+    },
+    "closeBox": {
+     "x": 789.03125,
+     "y": 339.46875,
+     "width": 32.96875,
+     "height": 36,
+     "top": 339.46875,
+     "right": 822,
+     "bottom": 375.46875,
+     "left": 789.03125
+    }
+   },
+   "afterTwoTabs": {
+    "sheet": true,
+    "open": true,
+    "activeInDialog": true,
+    "active": "BUTTON \u00d7",
+    "focusOnEntry": false,
+    "title": "Personal tasks are part of Plus",
+    "cta": "/playground?stage=plans",
+    "ctaText": "See plans \u203a",
+    "price": false,
+    "editor": false,
+    "viewer": true,
+    "gatedEntries": 2,
+    "hScroll": false,
+    "ctaBox": {
+     "x": 458,
+     "y": 514.53125,
+     "width": 109.328125,
+     "height": 44,
+     "top": 514.53125,
+     "right": 567.328125,
+     "bottom": 558.53125,
+     "left": 458
+    },
+    "closeBox": {
+     "x": 789.03125,
+     "y": 339.46875,
+     "width": 32.96875,
+     "height": 36,
+     "top": 339.46875,
+     "right": 822,
+     "bottom": 375.46875,
+     "left": 789.03125
+    }
+   },
+   "afterEscape": {
+    "sheet": true,
+    "open": false,
+    "activeInDialog": false,
+    "active": "BUTTON Add task",
+    "focusOnEntry": true,
+    "title": "Personal tasks are part of Plus",
+    "cta": "/playground?stage=plans",
+    "ctaText": "See plans \u203a",
+    "price": false,
+    "editor": false,
+    "viewer": true,
+    "gatedEntries": 2,
+    "hScroll": false,
+    "ctaBox": {
+     "x": 0,
+     "y": 0,
+     "width": 0,
+     "height": 0,
+     "top": 0,
+     "right": 0,
+     "bottom": 0,
+     "left": 0
+    },
+    "closeBox": {
+     "x": 0,
+     "y": 0,
+     "width": 0,
+     "height": 0,
+     "top": 0,
+     "right": 0,
+     "bottom": 0,
+     "left": 0
+    }
+   },
+   "exceptions": [],
+   "exceptionsBeforeOpen": 0
+  },
+  {
+   "file": "free-choices_free_calendar-sheet_1280x900_dark.png",
+   "theme": "dark",
+   "sha256": "f474c48268c2e9e23e950201c5c901081b2e5aae21dfca55f20e1b9eb756d732",
+   "opened": {
+    "sheet": true,
+    "open": true,
+    "activeInDialog": true,
+    "active": "BUTTON \u00d7",
+    "focusOnEntry": false,
+    "title": "Personal tasks are part of Plus",
+    "cta": "/playground?stage=plans",
+    "ctaText": "See plans \u203a",
+    "price": false,
+    "editor": false,
+    "viewer": true,
+    "gatedEntries": 2,
+    "hScroll": false,
+    "ctaBox": {
+     "x": 458,
+     "y": 514.53125,
+     "width": 109.328125,
+     "height": 44,
+     "top": 514.53125,
+     "right": 567.328125,
+     "bottom": 558.53125,
+     "left": 458
+    },
+    "closeBox": {
+     "x": 789.03125,
+     "y": 339.46875,
+     "width": 32.96875,
+     "height": 36,
+     "top": 339.46875,
+     "right": 822,
+     "bottom": 375.46875,
+     "left": 789.03125
+    }
+   },
+   "afterTwoTabs": {
+    "sheet": true,
+    "open": true,
+    "activeInDialog": false,
+    "active": "BODY Recall the C\n        \n        \n         ",
+    "focusOnEntry": false,
+    "title": "Personal tasks are part of Plus",
+    "cta": "/playground?stage=plans",
+    "ctaText": "See plans \u203a",
+    "price": false,
+    "editor": false,
+    "viewer": true,
+    "gatedEntries": 2,
+    "hScroll": false,
+    "ctaBox": {
+     "x": 458,
+     "y": 514.53125,
+     "width": 109.328125,
+     "height": 44,
+     "top": 514.53125,
+     "right": 567.328125,
+     "bottom": 558.53125,
+     "left": 458
+    },
+    "closeBox": {
+     "x": 789.03125,
+     "y": 339.46875,
+     "width": 32.96875,
+     "height": 36,
+     "top": 339.46875,
+     "right": 822,
+     "bottom": 375.46875,
+     "left": 789.03125
+    }
+   },
+   "afterEscape": {
+    "sheet": true,
+    "open": false,
+    "activeInDialog": false,
+    "active": "BUTTON Add task",
+    "focusOnEntry": true,
+    "title": "Personal tasks are part of Plus",
+    "cta": "/playground?stage=plans",
+    "ctaText": "See plans \u203a",
+    "price": false,
+    "editor": false,
+    "viewer": true,
+    "gatedEntries": 2,
+    "hScroll": false,
+    "ctaBox": {
+     "x": 0,
+     "y": 0,
+     "width": 0,
+     "height": 0,
+     "top": 0,
+     "right": 0,
+     "bottom": 0,
+     "left": 0
+    },
+    "closeBox": {
+     "x": 0,
+     "y": 0,
+     "width": 0,
+     "height": 0,
+     "top": 0,
+     "right": 0,
+     "bottom": 0,
+     "left": 0
+    }
+   },
+   "exceptions": [],
+   "exceptionsBeforeOpen": 0
+  }
+ ]
+}

@@ -552,7 +552,7 @@ def test_plus_profile_marker_uses_shared_predicate() -> None:
     assert "def account_status_for_snapshot" in shell
     assert "def shell_account_status" in shell
     assert '"plus": "RecallC Plus"' in shell
-    assert "playground.css?v=pg56" in base
+    assert "playground.css?v=pg57" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-profile="desktop"' in css
     plus_css = css.split("plus/10-screen", 1)[-1]

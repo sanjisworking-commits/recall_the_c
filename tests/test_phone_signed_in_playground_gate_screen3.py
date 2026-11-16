@@ -549,10 +549,10 @@ def test_phone_free_gate_css_is_breakpoint_scoped() -> None:
     assert ":not([data-guest-phone-tabs])" in hide
     assert "data-signed-in-pg-gate" not in hide
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg56" in base
+    assert "playground.css?v=pg57" in base
     assert "playground.css?v=pg33" not in base
-    assert "styles.css?v=main93" in base
-    assert "mobile.css?v=mob112" in base
+    assert "styles.css?v=main94" in base
+    assert "mobile.css?v=mob113" in base
     assert "data-signed-in-pg-gate" not in MOBILE.read_text(encoding="utf-8")
     js = PG_JS.read_text(encoding="utf-8")
     assert "data-pg-plan-continue" not in js

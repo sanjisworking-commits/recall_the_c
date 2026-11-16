@@ -524,7 +524,7 @@ def test_halted_subscription_uses_shared_predicate_and_existing_routes() -> None
     assert "snapshot_is_halted_subscriber(snapshot)" in shell
     assert "gate_view(reason=BLOCK_PAYMENT_HALTED).title" in shell
     assert LIVE_HEADING not in base
-    assert "playground.css?v=pg56" in base
+    assert "playground.css?v=pg57" in base
     checkout = CHECKOUT.read_text(encoding="utf-8")
     assert "data-halted-subscription" not in checkout
     assert "data-halted-subscription" not in MOBILE.read_text(encoding="utf-8")

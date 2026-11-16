@@ -1,0 +1,749 @@
+{
+ "label": "halted",
+ "base": "http://127.0.0.1:8927",
+ "viewer": "halted",
+ "captured_at": "2026-11-13T22:31:17+0530",
+ "chrome": "Google Chrome 157.0.8103.52",
+ "rows": [
+  {
+   "key": "calendar",
+   "route": "/calendar",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "halted_halted_calendar_390x844_light.png",
+   "sha256": "26659df407aeafe49ab7e9102fed0102db9f6dfd39b403e42b22737d60d8a27f",
+   "status_chain": [
+    [
+     "/calendar",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": true,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/calendar",
+    "title": "November 2026 \u00b7 Calendar",
+    "mscreen": "revisions",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": "page",
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "SECTION.panel calendar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "Payment retries have stopped",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "focusTrail": [
+    {
+     "el": "A.cal-m-nav-btn",
+     "text": "\u2190",
+     "href": "/calendar?year=2026&month=10",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 190,
+      "y": 11,
+      "w": 44,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.cal-m-nav-btn",
+     "text": "\u2192",
+     "href": "/calendar?year=2026&month=12",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 327,
+      "y": 11,
+      "w": 44,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "1",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 97,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "2",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 69,
+      "y": 97,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "3",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 121,
+      "y": 97,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "4",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 172,
+      "y": 97,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "5",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 224,
+      "y": 97,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "6",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 275,
+      "y": 97,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "7",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 327,
+      "y": 97,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "8",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 147,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "9",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 69,
+      "y": 147,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "10",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 121,
+      "y": 147,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "11",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 172,
+      "y": 147,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.cal-m-cell.is-past",
+     "text": "12",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 224,
+      "y": 147,
+      "w": 45,
+      "h": 44
+     },
+     "inViewport": true
+    }
+   ],
+   "phoneBarTrail": [
+    {
+     "el": "A.mobile-tab",
+     "text": "Browse",
+     "href": "/browse",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 78,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Playground",
+     "href": "/playground",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 156,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab.is-active",
+     "text": "Calendar",
+     "href": "/calendar",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 234,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Profile",
+     "href": "/profile",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 312,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab.is-active",
+     "text": "Calendar",
+     "href": "/calendar",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 234,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Playground",
+     "href": "/playground",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 156,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Browse",
+     "href": "/browse",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 78,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Today",
+     "href": "/dashboard",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 0,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    }
+   ]
+  },
+  {
+   "key": "calendar",
+   "route": "/calendar",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "halted_halted_calendar_390x844_dark.png",
+   "sha256": "376ff8ba07ddacc5118066ec5f51a0998e3437992eebda03d54ac6e11e68aa06",
+   "status_chain": [
+    [
+     "/calendar",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": true,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1e1e1d",
+      "ratio": 14.05
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/calendar",
+    "title": "November 2026 \u00b7 Calendar",
+    "mscreen": "revisions",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": "page",
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "SECTION.panel calendar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "Payment retries have stopped",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  }
+ ]
+}

@@ -241,7 +241,7 @@ def test_plus_calendar_reaches_month_with_calendar_selected(tmp_path: Path) -> N
     assert ">My material<" in html
     assert "Add task" in html
     assert 'data-study-token="' in html
-    assert 'href="/playground"' in html.split("data-cal-continue-recall", 1)[1][:80]
+    assert 'href="/dashboard"' in html.split("data-cal-continue-recall", 1)[1][:80]  # M6 Q5: Continue today's Recall → Today
     assert "Continue today’s Recall" in html or "Continue today's Recall" in html
     for phrase in INVENTED:
         assert phrase not in html, phrase
@@ -363,7 +363,7 @@ def test_plus_calendar_markup_preserves_routes_and_study_gates() -> None:
     assert ">My material<" in cal
     assert "{% if study_token|default('') %}" in cal
     assert "Add task" in cal
-    assert 'href="/playground"' in cal
+    assert 'href="/dashboard"' in cal  # M6 Q5: Continue today's Recall → Today
     assert "Continue today’s Recall" in cal or "Continue today's Recall" in cal
     assert "Mark revised" in cal
     assert "data-study-undo" in cal
@@ -386,16 +386,16 @@ def test_plus_calendar_markup_preserves_routes_and_study_gates() -> None:
     assert "def account_status_for_snapshot" in shell
     assert "def shell_account_status" in shell
     assert '"plus": "RecallC Plus"' in shell
-    assert "playground.css?v=pg56" in base
+    assert "playground.css?v=pg57" in base
     css = PG_CSS.read_text(encoding="utf-8")
-    assert 'data-plus-calendar="desktop"' in css
+    assert 'data-paid-calendar="desktop"' in css  # M6 Q3: the Plus rules key on the shared paid marker
     plus_css = css.split("plus/09-screen", 1)[-1]
     assert "var(--pg-teal)" in plus_css
     assert "#0e7569" not in plus_css
     assert "#3a3a38" not in plus_css
-    assert '[data-plus-calendar="desktop"]:not(.is-week) .cal-si-desk' in plus_css
+    assert '[data-paid-calendar="desktop"]:not(.is-week) .cal-si-desk' in plus_css  # M6 Q3: keyed on the shared paid marker
     assert "minmax(0, 1fr) 380px" in plus_css
-    assert '[data-plus-calendar="desktop"]:not(.is-week) .calendar-grid' in plus_css
+    assert '[data-paid-calendar="desktop"]:not(.is-week) .calendar-grid' in plus_css  # M6 Q3: keyed on the shared paid marker
     assert "repeat(7, minmax(0, 1fr))" in plus_css
     js = (ROOT / "src/constitution_memorizer/web/static/calendar-signed.js").read_text(
         encoding="utf-8"
@@ -426,7 +426,7 @@ def test_plus_calendar_does_not_touch_accepted_screens_or_sync() -> None:
     generic, _, rest = mobile.partition("is signedIn/05-screen:")
     assert "data-plus-calendar" not in generic
     phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
-    assert ":not([data-plus-calendar])" in phone_block
+    assert ":not([data-paid-calendar])" in phone_block  # M6 Q3: keyed on the shared paid marker
     assert 'data-plus-calendar="desktop"' not in phone_block
     phone = CAL.read_text(encoding="utf-8").split("revisions-mobile", 1)[1].split(
         "calendar-header", 1

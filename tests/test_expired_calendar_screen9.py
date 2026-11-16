@@ -425,7 +425,7 @@ def test_expired_calendar_reaches_month_with_calendar_selected(
     assert 'role="radiogroup"' in html
     assert 'href="/calendar?view=week' in html
     assert ">Playground<" in html
-    assert 'href="/playground"' in html.split("data-cal-continue-recall", 1)[1][:80]
+    assert 'href="/dashboard"' in html.split("data-cal-continue-recall", 1)[1][:80]  # M6 Q5: Continue today's Recall → Today
 
 
 def test_expired_calendar_canonical_month_uses_live_state(
@@ -486,7 +486,7 @@ def test_expired_calendar_canonical_month_uses_live_state(
     assert law_path("ndps") in panel_hrefs
     assert all("/learn/" not in href for href in panel_hrefs)
     continue_chunk = html.split("data-cal-continue-recall", 1)[1][:80]
-    assert 'href="/playground"' in continue_chunk
+    assert 'href="/dashboard"' in continue_chunk  # M6 Q5: Continue today's Recall → Today
     for phrase in INVENTED:
         assert phrase not in html, phrase
 
@@ -731,7 +731,7 @@ def test_expired_calendar_marker_uses_shared_predicate() -> None:
     assert "Resume Playground" not in cal
     assert "View Playground plans" not in cal
     assert "{{ chip.href }}" in cal
-    assert 'href="/playground"' in cal
+    assert 'href="/dashboard"' in cal  # M6 Q5: Continue today's Recall → Today
     app = APP.read_text(encoding="utf-8")
     page = app.split("async def calendar_page", 1)[1].split("async def progress_page", 1)[0]
     assert "request_is_expired_subscriber" in page
@@ -758,11 +758,11 @@ def test_expired_calendar_marker_uses_shared_predicate() -> None:
     assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     assert "plus_calendar_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
     assert "shell_account_status" in base  # M1-R: one snapshot-driven label
-    assert "playground.css?v=pg56" in base
+    assert "playground.css?v=pg57" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-calendar="desktop"' in css
     assert "expired/09-screen" in css
-    assert 'data-plus-calendar="desktop"' in css
+    assert 'data-paid-calendar="desktop"' in css  # M6 Q3: the Plus rules key on the shared paid marker
     plus_css = css.split("plus/09-screen", 1)[1].split("expired/09-screen", 1)[0]
     expired_css = css.split("expired/09-screen", 1)[1].split("plus/10-screen", 1)[0]
     assert "var(--pg-teal)" in plus_css

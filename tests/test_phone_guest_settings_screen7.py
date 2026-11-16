@@ -370,7 +370,7 @@ def test_phone_guest_settings_css_is_breakpoint_scoped() -> None:
     assert "var(--ink)" in phone_block
     assert "var(--on-accent)" in phone_block
     assert "@media (min-width: 561px)" not in phone_block
-    assert "playground.css?v=pg56" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg57" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
 
 

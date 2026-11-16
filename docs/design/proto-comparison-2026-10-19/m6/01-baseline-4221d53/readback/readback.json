@@ -1,0 +1,3517 @@
+{
+  "sha": "4221d53",
+  "rows": [
+    {
+      "state": "guest",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 303,
+      "location": "/login?next=%2Fcalendar&reason=default"
+    },
+    {
+      "state": "guest",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 303,
+      "location": "/login?next=%2Fcalendar&reason=default"
+    },
+    {
+      "state": "free",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "7a31c9133a978557"
+    },
+    {
+      "state": "free",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "97c4addba0d8ca76"
+    },
+    {
+      "state": "plus",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-plus-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "68f32b48037cdcf5"
+    },
+    {
+      "state": "plus",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-plus-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "442d18f285b8e3ad"
+    },
+    {
+      "state": "pro",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Pro",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "8e7e04d89260ebb0"
+    },
+    {
+      "state": "pro",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Pro",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "0990953daa2f0cf9"
+    },
+    {
+      "state": "max",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Max",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "41a91bcd85f13704"
+    },
+    {
+      "state": "max",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Max",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "db5c782f20381a89"
+    },
+    {
+      "state": "paused",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "5197bde1e1c782f5"
+    },
+    {
+      "state": "paused",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "35dcfd1716a8e3eb"
+    },
+    {
+      "state": "pending",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "d6e571c296561a31"
+    },
+    {
+      "state": "pending",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "3c4d5a07307ff59c"
+    },
+    {
+      "state": "expired",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "Your Playground is paused",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-expired-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "3ce7338cd7d4ad57"
+    },
+    {
+      "state": "expired",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "Your Playground is paused",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-expired-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "bc9629781393ef30"
+    },
+    {
+      "state": "halted",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "Payment retries have stopped",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-halted-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "b7fc46bd03a55562"
+    },
+    {
+      "state": "halted",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "Payment retries have stopped",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-halted-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "77157cf62b3715a8"
+    },
+    {
+      "state": "guest",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 303,
+      "location": "/login?next=%2Fcalendar&reason=default"
+    },
+    {
+      "state": "guest",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 303,
+      "location": "/login?next=%2Fcalendar&reason=default"
+    },
+    {
+      "state": "free",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "ecbb4ac3802932b4"
+    },
+    {
+      "state": "free",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "f01313da668dedf7"
+    },
+    {
+      "state": "plus",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-plus-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "6c93167e4694aaae"
+    },
+    {
+      "state": "plus",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-plus-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "c1cc49d31681e68e"
+    },
+    {
+      "state": "pro",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Pro",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "65ec1c4f3c131ec3"
+    },
+    {
+      "state": "pro",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Pro",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "cd91009cd669e940"
+    },
+    {
+      "state": "max",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Max",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "838ac930b262cdf1"
+    },
+    {
+      "state": "max",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Max",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "dbee42d98128cfc1"
+    },
+    {
+      "state": "paused",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "6921232c8780a09f"
+    },
+    {
+      "state": "paused",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "0d2f77e96256b115"
+    },
+    {
+      "state": "pending",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "8d0266e7049142a3"
+    },
+    {
+      "state": "pending",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "771a2e29276d3abc"
+    },
+    {
+      "state": "expired",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "Your Playground is paused",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-expired-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "94439d576acf9c48"
+    },
+    {
+      "state": "expired",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "Your Playground is paused",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-expired-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "da3a906360b84c4c"
+    },
+    {
+      "state": "halted",
+      "view": "month",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "Payment retries have stopped",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-halted-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "b30bee2507b023b4"
+    },
+    {
+      "state": "halted",
+      "view": "week",
+      "tier_model": "monthly",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "Payment retries have stopped",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-halted-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "ddb6c689752407e9"
+    },
+    {
+      "state": "guest",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 303,
+      "location": "/login?next=%2Fcalendar&reason=default"
+    },
+    {
+      "state": "guest",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 303,
+      "location": "/login?next=%2Fcalendar&reason=default"
+    },
+    {
+      "state": "free",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "781ea3581962441e"
+    },
+    {
+      "state": "free",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "63b6cfcde16e4c1a"
+    },
+    {
+      "state": "plus",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-plus-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "9db7c6fc299f65a8"
+    },
+    {
+      "state": "plus",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-plus-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "ae941508c6ae7062"
+    },
+    {
+      "state": "pro",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Pro",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "2bf8a0ca14f89c2d"
+    },
+    {
+      "state": "pro",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Pro",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "5b38960f20baaa84"
+    },
+    {
+      "state": "max",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Max",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "b6a495d8b8a15a34"
+    },
+    {
+      "state": "max",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Max",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "e6792193abfa6b33"
+    },
+    {
+      "state": "paused",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "4180fe7dccc56137"
+    },
+    {
+      "state": "paused",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "d5bcb57dc680c4fa"
+    },
+    {
+      "state": "pending",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "075398e3538f9fb2"
+    },
+    {
+      "state": "pending",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "1c20ce6d6ed5f615"
+    },
+    {
+      "state": "expired",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "Your Playground is paused",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-expired-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "94468626d9ef0b86"
+    },
+    {
+      "state": "expired",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "Your Playground is paused",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-expired-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "c19887bec9e364fd"
+    },
+    {
+      "state": "halted",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "Payment retries have stopped",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-halted-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "68f45d1d7a302e95"
+    },
+    {
+      "state": "halted",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "off",
+      "status": 200,
+      "location": "",
+      "header_status": "Payment retries have stopped",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-halted-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "1df7137f23866b3e"
+    },
+    {
+      "state": "guest",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 303,
+      "location": "/login?next=%2Fcalendar&reason=default"
+    },
+    {
+      "state": "guest",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 303,
+      "location": "/login?next=%2Fcalendar&reason=default"
+    },
+    {
+      "state": "free",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "ffcc7e208d2d1174"
+    },
+    {
+      "state": "free",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "707dbd310c6cadf6"
+    },
+    {
+      "state": "plus",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-plus-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "d1280ed45970371a"
+    },
+    {
+      "state": "plus",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-plus-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "036b3c088cba4f3e"
+    },
+    {
+      "state": "pro",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Pro",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "3a4b4a5618212c95"
+    },
+    {
+      "state": "pro",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Pro",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "79b998603c04e3a6"
+    },
+    {
+      "state": "max",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Max",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "d1d18ea73e288c23"
+    },
+    {
+      "state": "max",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Max",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "c50ff3b7840cd6a9"
+    },
+    {
+      "state": "paused",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "8fd634ef2736a6a6"
+    },
+    {
+      "state": "paused",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Free",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "4a1b271c2a94336e"
+    },
+    {
+      "state": "pending",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "d36db4a9cc94ae1d"
+    },
+    {
+      "state": "pending",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "RecallC Plus",
+      "markers": [
+        "data-signed-in-calendar"
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "19e377f9f38cedb1"
+    },
+    {
+      "state": "expired",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "Your Playground is paused",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-expired-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "efe8137dfb96928d"
+    },
+    {
+      "state": "expired",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "Your Playground is paused",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-expired-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "0a1b402003892470"
+    },
+    {
+      "state": "halted",
+      "view": "month",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "Payment retries have stopped",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-halted-calendar=\"desktop\""
+      ],
+      "is_week": false,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "2f79689310617261"
+    },
+    {
+      "state": "halted",
+      "view": "week",
+      "tier_model": "choices",
+      "entitlements": "on",
+      "status": 200,
+      "location": "",
+      "header_status": "Payment retries have stopped",
+      "markers": [
+        "data-signed-in-calendar",
+        "data-halted-calendar=\"desktop\""
+      ],
+      "is_week": true,
+      "phone_legend": [
+        "Today",
+        "Overdue",
+        "Scheduled",
+        "Done",
+        "New"
+      ],
+      "toolbar": true,
+      "toolbar_legend": [
+        "My material",
+        "Due today",
+        "Overdue",
+        "Memorized",
+        "Scheduled"
+      ],
+      "base_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Review"
+      ],
+      "week_legend": [
+        "Memorized",
+        "Review done",
+        "Review due",
+        "Scheduled",
+        "New",
+        "Overdue"
+      ],
+      "add_task": true,
+      "cell_add_count": 13,
+      "day_add": true,
+      "editor_dialog": true,
+      "upgrade_entry": false,
+      "upgrade_sheet": false,
+      "continue_hrefs": [
+        "/playground"
+      ],
+      "footnote": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 15 \u2192 30 \u2192 60 days. With Google Calendar on in Settings, these land in your calendar too \u2014 Playground due work as the pending rung only.",
+      "playground_chip_hrefs": [],
+      "legacy_copy": [],
+      "sha256": "fcde16a49534791a"
+    }
+  ]
+}

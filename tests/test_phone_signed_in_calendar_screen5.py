@@ -56,7 +56,7 @@ INVENTED = (
     "Sunday 6 September",
 )
 FREE_SEL = (
-    "[data-signed-in-calendar]:not([data-plus-calendar])"
+    "[data-signed-in-calendar]:not([data-paid-calendar])"
     ":not([data-expired-calendar]):not([data-halted-calendar])"
 )
 
@@ -362,7 +362,7 @@ def test_phone_free_calendar_css_is_breakpoint_scoped() -> None:
     assert "@media (max-width: 560px)" in phone_block
     assert "@media (min-width: 561px)" not in phone_block
     assert FREE_SEL in phone_block.replace("\n", "").replace(" ", "")
-    assert ":not([data-plus-calendar])" in phone_block
+    assert ":not([data-paid-calendar])" in phone_block  # M6 Q3: keyed on the shared paid marker
     assert ":not([data-expired-calendar])" in phone_block
     assert ":not([data-halted-calendar])" in phone_block
     assert "safe-area-inset-bottom" in phone_block
@@ -393,9 +393,9 @@ def test_phone_free_calendar_css_is_breakpoint_scoped() -> None:
     )[1]
     assert "@media (min-width: 561px)" in desk
     assert "grid-template-columns: minmax(0, 1fr) 380px" in desk
-    assert "playground.css?v=pg56" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main93" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob112" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg57" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main94" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob113" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     cal = CAL.read_text(encoding="utf-8")
     assert "data-signed-in-calendar" in cal

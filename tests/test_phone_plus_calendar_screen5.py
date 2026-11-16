@@ -308,9 +308,7 @@ def test_phone_plus_calendar_empty_has_no_invented_chips(tmp_path: Path) -> None
     assert "Article 20" not in phone
     assert "1 → 3 → 7 → 15 → 30 → 60" in phone
     desk = html.split("calendar-header", 1)[1]
-    assert 'data-cal-continue-recall href="/playground"' in desk or (
-        'href="/playground"' in desk and "data-cal-continue-recall" in desk
-    )
+    assert 'data-cal-continue-recall href="/dashboard"' in desk  # M6 Q5: Continue today's Recall → Today (the former `or` branch matched any /playground link)
 
 
 def test_phone_plus_calendar_mixed_due_today_keeps_constitution_today_card(
@@ -348,7 +346,7 @@ def test_phone_plus_calendar_mixed_due_today_keeps_constitution_today_card(
     assert "cal-m-today-continue" not in day_html
     assert 'href="/learn/clause-1"' in day_html
     desk = html.split("calendar-header", 1)[1]
-    assert "/playground" in desk.split("data-cal-continue-recall", 1)[1][:80]
+    assert "/dashboard" in desk.split("data-cal-continue-recall", 1)[1][:80]  # M6 Q5: Continue today's Recall → Today
     assert 'data-cal-source="playground"' in desk
     assert 'data-cal-source="constitution"' in desk
 
@@ -539,7 +537,7 @@ def test_phone_plus_calendar_css_scope_pins_and_desktop_09_untouched() -> None:
     )[0]
     assert "@media (max-width: 560px)" in phone_block
     assert "@media (min-width: 561px)" not in phone_block
-    assert '[data-plus-calendar="desktop"]' in phone_block
+    assert '[data-paid-calendar="desktop"]' in phone_block  # M6 Q3: the Plus rules key on the shared paid marker
     assert "safe-area-inset-bottom" in phone_block
     assert "overflow-x: hidden" in phone_block
     assert "min-width: 44px" in phone_block
@@ -569,7 +567,7 @@ def test_phone_plus_calendar_css_scope_pins_and_desktop_09_untouched() -> None:
     combined = after_04.split("/* R1 — Playground phone shell", 1)[0]
     assert "is plus/05-screen:" not in generic
     assert "is plus/05-screen:" not in combined
-    assert ":not([data-plus-calendar])" in combined
+    assert ":not([data-paid-calendar])" in combined  # M6 Q3: keyed on the shared paid marker
     assert 'data-plus-calendar="desktop"] {' not in combined
     assert "sun" not in combined.lower()
     assert re.search(r"(^|[^A-Za-z0-9_-])order\s*:", combined) is None
@@ -583,7 +581,7 @@ def test_phone_plus_calendar_css_scope_pins_and_desktop_09_untouched() -> None:
     today_card = phone.split("data-today-list", 1)[1]
     assert "cal-m-today-continue" in today_card
     desk_cal = cal.split("calendar-header", 1)[1]
-    assert 'href="/playground"' in desk_cal
+    assert 'href="/dashboard"' in desk_cal  # M6 Q5: Continue today's Recall → Today
     assert "data-cal-continue-recall" in desk_cal
     app = APP.read_text(encoding="utf-8")
     assert "build_revisions_view" in app
@@ -593,10 +591,10 @@ def test_phone_plus_calendar_css_scope_pins_and_desktop_09_untouched() -> None:
         assert "plus_calendar" not in text
         assert "data-plus-calendar" not in text
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg56" in base
+    assert "playground.css?v=pg57" in base
     assert "playground.css?v=pg37" not in base
-    assert "styles.css?v=main93" in base
-    assert "mobile.css?v=mob112" in base
+    assert "styles.css?v=main94" in base
+    assert "mobile.css?v=mob113" in base
     assert "data-plus-calendar-phone-tabs" not in base
     # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in
     # base.html, followed only by the guest bar; the active tab comes from the shell_* flag
