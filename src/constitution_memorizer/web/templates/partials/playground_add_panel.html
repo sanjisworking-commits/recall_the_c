@@ -112,9 +112,17 @@
     <p class="pg-add-lede{% if not loop.first %} pg-add-lede--tight{% endif %}">{{ line }}</p>
     {% endfor %}
     {% else %}
+    {# M7a (W15): under ``choices`` the paid sheet names no month; the confirm
+       step itself is unchanged (5-14 not approved). #}
+    {% if month_model|default(true) %}
     <p class="pg-eyebrow">{{ month_name }}</p>
     <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
     <p class="pg-add-lede">{{ reading_name|default(short_title) }} joins this month's Playground — learnable, verbatim. The reader itself never changes.</p>
+    {% else %}
+    <p class="pg-eyebrow">Playground</p>
+    <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
+    <p class="pg-add-lede">{{ reading_name|default(short_title) }} joins your Playground — learnable, verbatim. The reader itself never changes.</p>
+    {% endif %}
     {% for line in lines %}
     <p class="pg-add-note pg-add-note--left">{{ line }}</p>
     {% endfor %}

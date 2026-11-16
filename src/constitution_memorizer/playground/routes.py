@@ -601,6 +601,7 @@ def _add_page_context(
         "title": title,
         "lines": lines,
         "month_name": month,
+        "month_model": playground_month_model(getattr(access, "snapshot", None)),
         "short_title": short,
         "action_label": (
             "Add again" if kind == SHEET_KIND_FREE_READD else ("Add back" if re_add else "Add to Playground")

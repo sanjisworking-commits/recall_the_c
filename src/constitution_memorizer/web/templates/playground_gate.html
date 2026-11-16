@@ -2,6 +2,9 @@
 {% from "partials/playground.html" import how_it_works, guest_phone_gate %}
 {% block title %}{{ gate.title }} · Playground · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block playground %}
+{# M7a (Q9d): "How Playground works" follows the period model of the request's
+   entitlement snapshot; under ``monthly`` the lines are unchanged. #}
+{% set pg_month_model = playground_month_model(request) if playground_month_model is defined else true %}
 {% set guest_pg_intro = multiuser_enabled|default(false) and not current_user and gate.reason == 'sign_in_required' %}
 {% if guest_pg_intro %}
 <section class="guest-pg-intro" data-guest-pg-intro>
@@ -11,7 +14,7 @@
     <p class="guest-pg-lede">Turns any Act into a learning experience. Reading the Bare Acts stays free for everyone.</p>
     <p class="guest-pg-how">How Playground works</p>
     <ol class="guest-pg-steps">
-      <li><span class="guest-pg-step-n" aria-hidden="true">1</span><span class="guest-pg-step-t">Add laws to your month — up to your plan’s spaces.</span></li>
+      <li><span class="guest-pg-step-n" aria-hidden="true">1</span><span class="guest-pg-step-t">{% if pg_month_model %}Add laws to your month — up to your plan’s spaces.{% else %}Add the laws you want to learn to your Playground.{% endif %}</span></li>
       <li><span class="guest-pg-step-n" aria-hidden="true">2</span><span class="guest-pg-step-t">Learn each section verbatim through six recall modes.</span></li>
       <li><span class="guest-pg-step-n" aria-hidden="true">3</span><span class="guest-pg-step-t">Revise on the ladder: day 1, 3, 7, 15, 30 and 60.</span></li>
       <li><span class="guest-pg-step-n" aria-hidden="true">4</span><span class="guest-pg-step-t">Progress stays saved, in or out of Playground.</span></li>
@@ -125,7 +128,7 @@
     {% endfor %}
   </div>
   {% else %}
-  {{ how_it_works() }}
+  {{ how_it_works(pg_month_model) }}
   {% endif %}
   {% endif %}
 </section>
