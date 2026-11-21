@@ -413,6 +413,7 @@ def test_p09_completion_pages(tmp_path: Path) -> None:
     done = block.split(".pg-complete-chip.is-done {", 1)[1].split("}", 1)[0]
     # three different drawings: plain outline, accent outline, accent fill
     assert "background: transparent;" in plain and "color: var(--pg-muted);" in plain
+    assert "gap: 4px;" in plain  # the tick does not sit flush against the word
     assert "background: transparent;" in nxt and "color: var(--pg-teal);" in nxt
     assert "background: var(--pg-teal);" in done and "color: var(--pg-paper);" in done
     assert _contrast("#9a9a9a", "#141414") >= 4.5  # the to-come step on the completion surface (was 4.49:1 on its fill)
