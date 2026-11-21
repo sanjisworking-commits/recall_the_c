@@ -3,7 +3,8 @@
 {% block title %}{{ title }} · Playground{% endblock %}
 {% block playground %}
 <section class="pg-complete pg-surface--fixed-dark" data-pg-complete data-pg-variant="{{ variant }}">
-  <p class="pg-complete-kicker">{{ kicker }}</p>
+  <span class="pg-complete-badge" aria-hidden="true">✓</span>
+  <p class="pg-complete-kicker">{{ kicker }}{% if variant != 'whole' and act %} · {{ act.short_name }}{% endif %}</p>
   <h1>{{ title }}</h1>
   {% if source_pending %}
   <p>{{ status_badge('updated', 'Law updated') }}</p>
@@ -11,12 +12,19 @@
   <p class="pg-complete-count">
     {{ progress.completed_scope_count }} of {{ progress.selected_count }} learned
   </p>
-  <div class="pg-complete-ladder" aria-label="Revision ladder">
+  {# M7b (F5): the row runs Learned, the six days, Mastered. A reached step is
+     filled and ticked, the next one outlined, later ones plain; each says which
+     it is in text for assistive technology. #}
+  {% set reached = variant != 'learned' %}
+  <div class="pg-complete-ladder" role="list" aria-label="Revision ladder">
+    <span class="pg-complete-chip pg-complete-chip--end is-done" role="listitem">Learned<span aria-hidden="true"> ✓</span><span class="visually-hidden"> — reached</span></span>
     {% for day in rungs %}
     <span
-      class="pg-complete-chip{% if variant == 'learned' and day == 1 %} is-next{% elif variant != 'learned' %} is-done{% endif %}"
-    >Day {{ day }}</span>
+      class="pg-complete-chip{% if variant == 'learned' and day == 1 %} is-next{% elif reached %} is-done{% endif %}"
+      role="listitem"
+    >Day {{ day }}{% if reached %}<span aria-hidden="true"> ✓</span><span class="visually-hidden"> — reached</span>{% elif day == 1 %}<span class="visually-hidden"> — next</span>{% else %}<span class="visually-hidden"> — to come</span>{% endif %}</span>
     {% endfor %}
+    <span class="pg-complete-chip pg-complete-chip--end{% if reached %} is-done{% endif %}" role="listitem">Mastered{% if reached %}<span aria-hidden="true"> ✓</span><span class="visually-hidden"> — reached</span>{% else %}<span class="visually-hidden"> — to come</span>{% endif %}</span>
   </div>
   <p class="pg-lede">{{ note }}</p>
   {{ trust_mark("Bare Act wording, never rewritten.") }}

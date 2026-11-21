@@ -81,29 +81,11 @@
     {% endif %}
   </p>
 
-  <div class="pg-learn-deck" data-pg-learn-deck>
-    {% for item in learn_modes %}
-    {% set state = 'Done' if item.id in completed else ('In progress' if item.id in summary.in_progress_modes else 'Not started') %}
-    <a
-      class="learn-deck-card pg-learn-card{% if item.id in completed %} is-done{% endif %}{% if item.id == learn_mode %} is-current{% endif %}"
-      href="{{ learn_links[item.id] }}{{ revision_qs }}"
-    >
-      <span class="learn-deck-card-eyebrow">{{ item.ordinal_label }} · {{ item.label | upper }}</span>
-      <span class="learn-deck-card-title">{{ item.title }}</span>
-      <span class="learn-deck-card-lede">{{ item.lede }}</span>
-      <span class="learn-deck-card-foot">
-        <span class="learn-deck-card-state">{{ state }}</span>
-        <span class="learn-deck-card-open">{% if item.id in completed %}Review →{% else %}Open →{% endif %}</span>
-      </span>
-    </a>
-    {% endfor %}
-  </div>
-
   {% if learn_mode == 'read' %}
   <div class="learn-body pg-learn-panel" data-pg-learn-panel="read">
     <article class="unit-text learn-read-text">{{ canonical_body }}</article>
     <p class="learn-hint">Read it closely. Bare Act wording, verbatim.</p>
-    <div class="pg-learn-actions">
+    <div class="pg-learn-actions pg-learn-actionbar">
       <button type="button" class="pg-btn" data-pg-complete>{{ advance_label }}</button>
     </div>
   </div>
@@ -125,7 +107,7 @@
     {% if cloze_fallback %}
     <p class="learn-hint">This provision is short. Read the Bare Act wording, then mark Cloze complete.</p>
     <article class="unit-text">{{ canonical_body }}</article>
-    <p class="pg-learn-actions">
+    <p class="pg-learn-actions pg-learn-actionbar">
       <button type="button" class="pg-btn" data-pg-complete>{{ advance_label }}</button>
     </p>
     {% else %}
@@ -134,7 +116,7 @@
       <button type="button" class="learn-cloze-btn" data-cloze-action="toggle-all">Reveal all</button>
       <span class="learn-cloze-status" data-cloze-status>0 of 0 revealed — tap a blank</span>
     </div>
-    <p class="pg-learn-actions">
+    <p class="pg-learn-actions pg-learn-actionbar">
       <button type="button" class="pg-btn" data-pg-complete>{{ advance_label }}</button>
     </p>
     {% endif %}
@@ -162,7 +144,7 @@
       <textarea id="pg-letters-manual" class="learn-letters-manual" data-letters-manual rows="2" autocomplete="off" spellcheck="false"></textarea>
       <button type="button" class="learn-letters-check-text" data-letters-check-text>Check typed words</button>
     </div>
-    <p class="pg-actions">
+    <p class="pg-actions pg-learn-actionbar">
       <button type="button" class="pg-btn" data-pg-complete>{{ advance_label }}</button>
     </p>
   </div>
@@ -189,7 +171,7 @@
       ></textarea>
     </div>
     <p class="learn-type-stats" data-type-stats><span data-type-count>0 of 0 words · 0 correct</span></p>
-    <p class="pg-actions">
+    <p class="pg-actions pg-learn-actionbar">
       <button type="button" class="pg-btn" data-type-check>Check</button>
       <button type="button" class="pg-btn pg-btn--ghost" data-pg-complete hidden>{{ advance_label }}</button>
     </p>
@@ -215,7 +197,7 @@
     </div>
     <div class="learn-recite-map" data-recite-map hidden aria-live="polite"></div>
     <p class="learn-recite-stats" data-recite-stats hidden></p>
-    <p class="pg-actions">
+    <p class="pg-actions pg-learn-actionbar">
       <button type="button" class="pg-btn" data-pg-complete hidden>{{ advance_label }}</button>
     </p>
   </div>
@@ -240,7 +222,7 @@
         {% endif %}
       </fieldset>
       {% endfor %}
-      <p class="pg-actions">
+      <p class="pg-actions pg-learn-actionbar">
         <button type="submit" class="pg-btn">{{ advance_label }}</button>
       </p>
     </form>

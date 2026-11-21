@@ -1,0 +1,11754 @@
+{
+ "label": "plus",
+ "base": "http://127.0.0.1:8929",
+ "captured_at": "2026-11-16T14:35:21+0530",
+ "rows": [
+  {
+   "key": "law",
+   "path": "/playground/laws/bns",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 5,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "PLAYGROUND \u00b7 3 PROVISIONS",
+     "r": 2.74
+    },
+    {
+     "t": "3 PROVISIONS",
+     "r": 2.74
+    },
+    {
+     "t": "Section 1 \u00b7 Learning",
+     "r": 3.3
+    },
+    {
+     "t": "ON THE LADDER",
+     "r": 2.74
+    },
+    {
+     "t": "day 1",
+     "r": 2.74
+    },
+    {
+     "t": "day 3",
+     "r": 2.74
+    },
+    {
+     "t": "day 7",
+     "r": 2.74
+    },
+    {
+     "t": "day 15",
+     "r": 2.74
+    },
+    {
+     "t": "day 30",
+     "r": 2.74
+    },
+    {
+     "t": "day 60",
+     "r": 2.74
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 33,
+   "tabTrail": [
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Manage sections",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Manage sections",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "law",
+   "path": "/playground/laws/bns",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 5,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "Section 1 \u00b7 Learning",
+     "r": 2.78
+    }
+   ],
+   "minRatio": 2.78,
+   "texts": 33,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "law",
+   "path": "/playground/laws/bns",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 10,
+   "smallTargets": [
+    {
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 32
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "PLAYGROUND \u00b7 3 PROVISIONS",
+     "r": 2.74
+    },
+    {
+     "t": "3 PROVISIONS",
+     "r": 2.74
+    },
+    {
+     "t": "Section 1 \u00b7 Learning",
+     "r": 3.3
+    },
+    {
+     "t": "ON THE LADDER",
+     "r": 2.74
+    },
+    {
+     "t": "day 1",
+     "r": 2.74
+    },
+    {
+     "t": "day 3",
+     "r": 2.74
+    },
+    {
+     "t": "day 7",
+     "r": 2.74
+    },
+    {
+     "t": "day 15",
+     "r": 2.74
+    },
+    {
+     "t": "day 30",
+     "r": 2.74
+    },
+    {
+     "t": "day 60",
+     "r": 2.74
+    },
+    {
+     "t": "UP NEXT \u00b7 LEARNING PROMPT",
+     "r": 2.74
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 56,
+   "tabTrail": [
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Manage sections",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Hide verbatim text",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "law",
+   "path": "/playground/laws/bns",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 10,
+   "smallTargets": [
+    {
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 32
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "Section 1 \u00b7 Learning",
+     "r": 2.78
+    }
+   ],
+   "minRatio": 2.78,
+   "texts": 56,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "law-new",
+   "path": "/playground/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "The NDPS Act, 1985 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 5,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "PLAYGROUND \u00b7 ENTIRE ACT",
+     "r": 2.74
+    },
+    {
+     "t": "ENTIRE ACT",
+     "r": 2.74
+    },
+    {
+     "t": "ON THE LADDER",
+     "r": 2.74
+    },
+    {
+     "t": "day 1",
+     "r": 2.74
+    },
+    {
+     "t": "day 3",
+     "r": 2.74
+    },
+    {
+     "t": "day 7",
+     "r": 2.74
+    },
+    {
+     "t": "day 15",
+     "r": 2.74
+    },
+    {
+     "t": "day 30",
+     "r": 2.74
+    },
+    {
+     "t": "day 60",
+     "r": 2.74
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 158,
+   "tabTrail": [
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Learn Section 1",
+     "ring": true
+    },
+    {
+     "t": "Manage sections",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Learn Section 1",
+     "ring": true
+    },
+    {
+     "t": "Manage sections",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "law-new",
+   "path": "/playground/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "The NDPS Act, 1985 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 5,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.95,
+   "texts": 158,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "law-new",
+   "path": "/playground/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "The NDPS Act, 1985 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 135,
+   "smallTargets": [
+    {
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 32
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "PLAYGROUND \u00b7 ENTIRE ACT",
+     "r": 2.74
+    },
+    {
+     "t": "ENTIRE ACT",
+     "r": 2.74
+    },
+    {
+     "t": "ON THE LADDER",
+     "r": 2.74
+    },
+    {
+     "t": "day 1",
+     "r": 2.74
+    },
+    {
+     "t": "day 3",
+     "r": 2.74
+    },
+    {
+     "t": "day 7",
+     "r": 2.74
+    },
+    {
+     "t": "day 15",
+     "r": 2.74
+    },
+    {
+     "t": "day 30",
+     "r": 2.74
+    },
+    {
+     "t": "day 60",
+     "r": 2.74
+    },
+    {
+     "t": "UP NEXT \u00b7 LEARNING PROMPT",
+     "r": 2.74
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 677,
+   "tabTrail": [
+    {
+     "t": "\u2190 Playground",
+     "ring": true
+    },
+    {
+     "t": "Learn Section 1",
+     "ring": true
+    },
+    {
+     "t": "Manage sections",
+     "ring": true
+    },
+    {
+     "t": "Read Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Start learning",
+     "ring": true
+    },
+    {
+     "t": "Hide verbatim text",
+     "ring": true
+    },
+    {
+     "t": "Start learning",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "law-new",
+   "path": "/playground/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "The NDPS Act, 1985 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 135,
+   "smallTargets": [
+    {
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 32
+    }
+   ],
+   "lowContrast": [],
+   "minRatio": 5.95,
+   "texts": 677,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "picker",
+   "path": "/playground/laws/bns/sections",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 872,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "SECTION 1",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 2",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 3",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 4",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 5",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 6",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 7",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 8",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 9",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 10",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 11",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 12",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 13",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 14",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 15",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 16",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 17",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 18",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 19",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 20",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 21",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 22",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 23",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 24",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 25",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 26",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 27",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 28",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 29",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 30",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 31",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 32",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 33",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 34",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 35",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 36",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 37",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 38",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 39",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 40",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 41",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 42",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 43",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 44",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 45",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 46",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 47",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 48",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 49",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 50",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 51",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 52",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 53",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 54",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 55",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 56",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 57",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 58",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 59",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 60",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 61",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 62",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 63",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 64",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 65",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 66",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 67",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 68",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 69",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 70",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 71",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 72",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 73",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 74",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 75",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 76",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 77",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 78",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 79",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 80",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 81",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 82",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 83",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 84",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 85",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 86",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 87",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 88",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 89",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 90",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 91",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 92",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 93",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 94",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 95",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 96",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 97",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 98",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 99",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 100",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 101",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 102",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 103",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 104",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 105",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 106",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 107",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 108",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 109",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 110",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 111",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 112",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 113",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 114",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 115",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 116",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 117",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 118",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 119",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 120",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 121",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 122",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 123",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 124",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 125",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 126",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 127",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 128",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 129",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 130",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 131",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 132",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 133",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 134",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 135",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 136",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 137",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 138",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 139",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 140",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 141",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 142",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 143",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 144",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 145",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 146",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 147",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 148",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 149",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 150",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 151",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 152",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 153",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 154",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 155",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 156",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 157",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 158",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 159",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 160",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 161",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 162",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 163",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 164",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 165",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 166",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 167",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 168",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 169",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 170",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 171",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 172",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 173",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 174",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 175",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 176",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 177",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 178",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 179",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 180",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 181",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 182",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 183",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 184",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 185",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 186",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 187",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 188",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 189",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 190",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 191",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 192",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 193",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 194",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 195",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 196",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 197",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 198",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 199",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 200",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 201",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 202",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 203",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 204",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 205",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 206",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 207",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 208",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 209",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 210",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 211",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 212",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 213",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 214",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 215",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 216",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 217",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 218",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 219",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 220",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 221",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 222",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 223",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 224",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 225",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 226",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 227",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 228",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 229",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 230",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 231",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 232",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 233",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 234",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 235",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 236",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 237",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 238",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 239",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 240",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 241",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 242",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 243",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 244",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 245",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 246",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 247",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 248",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 249",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 250",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 251",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 252",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 253",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 254",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 255",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 256",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 257",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 258",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 259",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 260",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 261",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 262",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 263",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 264",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 265",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 266",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 267",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 268",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 269",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 270",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 271",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 272",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 273",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 274",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 275",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 276",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 277",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 278",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 279",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 280",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 281",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 282",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 283",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 284",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 285",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 286",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 287",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 288",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 289",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 290",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 291",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 292",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 293",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 294",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 295",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 296",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 297",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 298",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 299",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 300",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 301",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 302",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 303",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 304",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 305",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 306",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 307",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 308",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 309",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 310",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 311",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 312",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 313",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 314",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 315",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 316",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 317",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 318",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 319",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 320",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 321",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 322",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 323",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 324",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 325",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 326",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 327",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 328",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 329",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 330",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 331",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 332",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 333",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 334",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 335",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 336",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 337",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 338",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 339",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 340",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 341",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 342",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 343",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 344",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 345",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 346",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 347",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 348",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 349",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 350",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 351",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 352",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 353",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 354",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 355",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 356",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 357",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    },
+    {
+     "t": "SECTION 358",
+     "r": 2.81
+    },
+    {
+     "t": "Not started",
+     "r": 2.81
+    }
+   ],
+   "minRatio": 2.81,
+   "texts": 2364,
+   "tabTrail": [
+    {
+     "t": "\u2190 The BNS, 2023",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "\u25b8",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "\u25b8",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "\u25b8",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "\u25b8",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "\u25b8",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "picker",
+   "path": "/playground/laws/bns/sections",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 872,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "SECTION 1",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 2",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 3",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 4",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 5",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 6",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 7",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 8",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 9",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 10",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 11",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 12",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 13",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 14",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 15",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 16",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 17",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 18",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 19",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 20",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 21",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 22",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 23",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 24",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 25",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 26",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 27",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 28",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 29",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 30",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 31",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 32",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 33",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 34",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 35",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 36",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 37",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 38",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 39",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 40",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 41",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 42",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 43",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 44",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 45",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 46",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 47",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 48",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 49",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 50",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 51",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 52",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 53",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 54",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 55",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 56",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 57",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 58",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 59",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 60",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 61",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 62",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 63",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 64",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 65",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 66",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 67",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 68",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 69",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 70",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 71",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 72",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 73",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 74",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 75",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 76",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 77",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 78",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 79",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 80",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 81",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 82",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 83",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 84",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 85",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 86",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 87",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 88",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 89",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 90",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 91",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 92",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 93",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 94",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 95",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 96",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 97",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 98",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 99",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 100",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 101",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 102",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 103",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 104",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 105",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 106",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 107",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 108",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 109",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 110",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 111",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 112",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 113",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 114",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 115",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 116",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 117",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 118",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 119",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 120",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 121",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 122",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 123",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 124",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 125",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 126",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 127",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 128",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 129",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 130",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 131",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 132",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 133",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 134",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 135",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 136",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 137",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 138",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 139",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 140",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 141",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 142",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 143",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 144",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 145",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 146",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 147",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 148",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 149",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 150",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 151",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 152",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 153",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 154",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 155",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 156",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 157",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 158",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 159",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 160",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 161",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 162",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 163",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 164",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 165",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 166",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 167",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 168",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 169",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 170",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 171",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 172",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 173",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 174",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 175",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 176",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 177",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 178",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 179",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 180",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 181",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 182",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 183",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 184",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 185",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 186",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 187",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 188",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 189",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 190",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 191",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 192",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 193",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 194",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 195",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 196",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 197",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 198",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 199",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 200",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 201",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 202",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 203",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 204",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 205",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 206",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 207",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 208",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 209",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 210",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 211",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 212",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 213",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 214",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 215",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 216",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 217",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 218",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 219",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 220",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 221",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 222",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 223",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 224",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 225",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 226",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 227",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 228",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 229",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 230",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 231",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 232",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 233",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 234",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 235",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 236",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 237",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 238",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 239",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 240",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 241",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 242",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 243",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 244",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 245",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 246",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 247",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 248",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 249",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 250",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 251",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 252",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 253",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 254",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 255",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 256",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 257",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 258",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 259",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 260",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 261",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 262",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 263",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 264",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 265",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 266",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 267",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 268",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 269",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 270",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 271",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 272",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 273",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 274",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 275",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 276",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 277",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 278",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 279",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 280",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 281",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 282",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 283",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 284",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 285",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 286",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 287",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 288",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 289",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 290",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 291",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 292",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 293",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 294",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 295",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 296",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 297",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 298",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 299",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 300",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 301",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 302",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 303",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 304",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 305",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 306",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 307",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 308",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 309",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 310",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 311",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 312",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 313",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 314",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 315",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 316",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 317",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 318",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 319",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 320",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 321",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 322",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 323",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 324",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 325",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 326",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 327",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 328",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 329",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 330",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 331",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 332",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 333",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 334",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 335",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 336",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 337",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 338",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 339",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 340",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 341",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 342",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 343",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 344",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 345",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 346",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 347",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 348",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 349",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 350",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 351",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 352",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 353",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 354",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 355",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 356",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 357",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    },
+    {
+     "t": "SECTION 358",
+     "r": 4.1
+    },
+    {
+     "t": "Not started",
+     "r": 4.1
+    }
+   ],
+   "minRatio": 4.1,
+   "texts": 2364,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "picker",
+   "path": "/playground/laws/bns/sections",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 872,
+   "smallTargets": [
+    {
+     "t": "\u2190 The BNS, 2023",
+     "w": 93,
+     "h": 32
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "SECTION 1",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 2",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 3",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 4",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 5",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 6",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 7",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 8",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 9",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 10",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 11",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 12",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 13",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 14",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 15",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 16",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 17",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 18",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 19",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 20",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 21",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 22",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 23",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 24",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 25",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 26",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 27",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 28",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 29",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 30",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 31",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 32",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 33",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 34",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 35",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 36",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 37",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 38",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 39",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 40",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 41",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 42",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 43",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 44",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 45",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 46",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 47",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 48",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 49",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 50",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 51",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 52",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 53",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 54",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 55",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 56",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 57",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 58",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 59",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 60",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 61",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 62",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 63",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 64",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 65",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 66",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 67",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 68",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 69",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 70",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 71",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 72",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 73",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 74",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 75",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 76",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 77",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 78",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 79",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 80",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 81",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 82",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 83",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 84",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 85",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 86",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 87",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 88",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 89",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 90",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 91",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 92",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 93",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 94",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 95",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 96",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 97",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 98",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 99",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 100",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 101",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 102",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 103",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 104",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 105",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 106",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 107",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 108",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 109",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 110",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 111",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 112",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 113",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 114",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 115",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 116",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 117",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 118",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 119",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 120",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 121",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 122",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 123",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 124",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 125",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 126",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 127",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 128",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 129",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 130",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 131",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 132",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 133",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 134",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 135",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 136",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 137",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 138",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 139",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 140",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 141",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 142",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 143",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 144",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 145",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 146",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 147",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 148",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 149",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 150",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 151",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 152",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 153",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 154",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 155",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 156",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 157",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 158",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 159",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 160",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 161",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 162",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 163",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 164",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 165",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 166",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 167",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 168",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 169",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 170",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 171",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 172",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 173",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 174",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 175",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 176",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 177",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 178",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 179",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 180",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 181",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 182",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 183",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 184",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 185",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 186",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 187",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 188",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 189",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 190",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 191",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 192",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 193",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 194",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 195",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 196",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 197",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 198",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 199",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 200",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 201",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 202",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 203",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 204",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 205",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 206",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 207",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 208",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 209",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 210",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 211",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 212",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 213",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 214",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 215",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 216",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 217",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 218",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 219",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 220",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 221",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 222",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 223",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 224",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 225",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 226",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 227",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 228",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 229",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 230",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 231",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 232",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 233",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 234",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 235",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 236",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 237",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 238",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 239",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 240",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 241",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 242",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 243",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 244",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 245",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 246",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 247",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 248",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 249",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 250",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 251",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 252",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 253",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 254",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 255",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 256",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 257",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 258",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 259",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 260",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 261",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 262",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 263",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 264",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 265",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 266",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 267",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 268",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 269",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 270",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 271",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 272",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 273",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 274",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 275",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 276",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 277",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 278",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 279",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 280",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 281",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 282",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 283",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 284",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 285",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 286",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 287",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 288",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 289",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 290",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 291",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 292",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 293",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 294",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 295",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 296",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 297",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 298",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 299",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 300",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 301",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 302",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 303",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 304",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 305",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 306",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 307",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 308",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 309",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 310",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 311",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 312",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 313",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 314",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 315",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 316",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 317",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 318",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 319",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 320",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 321",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 322",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 323",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 324",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 325",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 326",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 327",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 328",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 329",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 330",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 331",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 332",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 333",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 334",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 335",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 336",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 337",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 338",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 339",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 340",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 341",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 342",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 343",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 344",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 345",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 346",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 347",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 348",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 349",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 350",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 351",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 352",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 353",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 354",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 355",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 356",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 357",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    },
+    {
+     "t": "SECTION 358",
+     "r": 2.38
+    },
+    {
+     "t": "Not started",
+     "r": 2.38
+    }
+   ],
+   "minRatio": 2.38,
+   "texts": 2373,
+   "tabTrail": [
+    {
+     "t": "\u2190 The BNS, 2023",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "\u25b8",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "\u25b8",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "\u25b8",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "picker",
+   "path": "/playground/laws/bns/sections",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 872,
+   "smallTargets": [
+    {
+     "t": "\u2190 The BNS, 2023",
+     "w": 93,
+     "h": 32
+    }
+   ],
+   "lowContrast": [],
+   "minRatio": 4.5,
+   "texts": 2373,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-read",
+   "path": "/playground/laws/bns/sections/1/learn/read",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Read \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 12,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "READ",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 1 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    },
+    {
+     "t": "Read it closely. Bare Act wording, verba",
+     "r": 2.38
+    }
+   ],
+   "minRatio": 2.38,
+   "texts": 30,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    },
+    {
+     "t": "Test",
+     "ring": true
+    },
+    {
+     "t": "Mark as read",
+     "ring": true
+    },
+    {
+     "t": "Show verbatim text",
+     "ring": true
+    },
+    {
+     "t": "Read the Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Back to The BNS, 2023",
+     "ring": true
+    },
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-read",
+   "path": "/playground/laws/bns/sections/1/learn/read",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Read \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 12,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 30,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-read",
+   "path": "/playground/laws/bns/sections/1/learn/read",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Read \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 18,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "READ",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 1 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    },
+    {
+     "t": "Read it closely. Bare Act wording, verba",
+     "r": 2.38
+    }
+   ],
+   "minRatio": 2.38,
+   "texts": 60,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-read",
+   "path": "/playground/laws/bns/sections/1/learn/read",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Read \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 18,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 60,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-cloze",
+   "path": "/playground/laws/bns/sections/1/learn/cloze",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Cloze \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 16,
+   "smallTargets": [
+    {
+     "t": "Reveal all",
+     "w": 86,
+     "h": 38
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "CLOZE",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 2 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 314,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    },
+    {
+     "t": "Test",
+     "ring": true
+    },
+    {
+     "t": "Light",
+     "ring": true
+    },
+    {
+     "t": "Medium",
+     "ring": true
+    },
+    {
+     "t": "Heavy",
+     "ring": true
+    },
+    {
+     "t": "called",
+     "ring": true
+    },
+    {
+     "t": "Bharatiya",
+     "ring": true
+    },
+    {
+     "t": "Sanhita,",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-cloze",
+   "path": "/playground/laws/bns/sections/1/learn/cloze",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Cloze \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 16,
+   "smallTargets": [
+    {
+     "t": "Reveal all",
+     "w": 86,
+     "h": 38
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "called",
+     "r": 1.09
+    },
+    {
+     "t": "Bharatiya",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita,",
+     "r": 1.09
+    },
+    {
+     "t": "Central",
+     "r": 1.09
+    },
+    {
+     "t": "Government",
+     "r": 1.09
+    },
+    {
+     "t": "notification",
+     "r": 1.09
+    },
+    {
+     "t": "Official",
+     "r": 1.09
+    },
+    {
+     "t": "Gazette,",
+     "r": 1.09
+    },
+    {
+     "t": "appoint,",
+     "r": 1.09
+    },
+    {
+     "t": "different",
+     "r": 1.09
+    },
+    {
+     "t": "appointed",
+     "r": 1.09
+    },
+    {
+     "t": "different",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita.",
+     "r": 1.09
+    },
+    {
+     "t": "person",
+     "r": 1.09
+    },
+    {
+     "t": "liable",
+     "r": 1.09
+    },
+    {
+     "t": "punishment",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita",
+     "r": 1.09
+    },
+    {
+     "t": "otherwise",
+     "r": 1.09
+    },
+    {
+     "t": "omission",
+     "r": 1.09
+    },
+    {
+     "t": "contrary",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "thereof,",
+     "r": 1.09
+    },
+    {
+     "t": "guilty",
+     "r": 1.09
+    },
+    {
+     "t": "within",
+     "r": 1.09
+    },
+    {
+     "t": "person",
+     "r": 1.09
+    },
+    {
+     "t": "liable,",
+     "r": 1.09
+    },
+    {
+     "t": "offence",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "beyond",
+     "r": 1.09
+    },
+    {
+     "t": "according",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "beyond",
+     "r": 1.09
+    },
+    {
+     "t": "manner",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "within",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita",
+     "r": 1.09
+    },
+    {
+     "t": "offence",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "citizen",
+     "r": 1.09
+    },
+    {
+     "t": "without",
+     "r": 1.09
+    },
+    {
+     "t": "beyond",
+     "r": 1.09
+    },
+    {
+     "t": "person",
+     "r": 1.09
+    },
+    {
+     "t": "aircraft",
+     "r": 1.09
+    },
+    {
+     "t": "registered",
+     "r": 1.09
+    },
+    {
+     "t": "wherever",
+     "r": 1.09
+    },
+    {
+     "t": "person",
+     "r": 1.09
+    },
+    {
+     "t": "without",
+     "r": 1.09
+    },
+    {
+     "t": "beyond",
+     "r": 1.09
+    },
+    {
+     "t": "committing",
+     "r": 1.09
+    },
+    {
+     "t": "offence",
+     "r": 1.09
+    },
+    {
+     "t": "targeting",
+     "r": 1.09
+    },
+    {
+     "t": "computer",
+     "r": 1.09
+    },
+    {
+     "t": "resource",
+     "r": 1.09
+    },
+    {
+     "t": "located",
+     "r": 1.09
+    },
+    {
+     "t": "section,",
+     "r": 1.09
+    },
+    {
+     "t": "\u201coffence\u201d",
+     "r": 1.09
+    },
+    {
+     "t": "includes",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "outside",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "punishable",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita.",
+     "r": 1.09
+    },
+    {
+     "t": "citizen",
+     "r": 1.09
+    },
+    {
+     "t": "commits",
+     "r": 1.09
+    },
+    {
+     "t": "murder",
+     "r": 1.09
+    },
+    {
+     "t": "without",
+     "r": 1.09
+    },
+    {
+     "t": "beyond",
+     "r": 1.09
+    },
+    {
+     "t": "convicted",
+     "r": 1.09
+    },
+    {
+     "t": "murder",
+     "r": 1.09
+    },
+    {
+     "t": "Nothing",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita",
+     "r": 1.09
+    },
+    {
+     "t": "affect",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "punishing",
+     "r": 1.09
+    },
+    {
+     "t": "mutiny",
+     "r": 1.09
+    },
+    {
+     "t": "desertion",
+     "r": 1.09
+    },
+    {
+     "t": "officers,",
+     "r": 1.09
+    },
+    {
+     "t": "soldiers,",
+     "r": 1.09
+    },
+    {
+     "t": "sailors",
+     "r": 1.09
+    },
+    {
+     "t": "airmen",
+     "r": 1.09
+    },
+    {
+     "t": "service",
+     "r": 1.09
+    },
+    {
+     "t": "Government",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "special",
+     "r": 1.09
+    }
+   ],
+   "minRatio": 1.09,
+   "texts": 314,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-cloze",
+   "path": "/playground/laws/bns/sections/1/learn/cloze",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Cloze \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 22,
+   "smallTargets": [
+    {
+     "t": "Reveal all",
+     "w": 86,
+     "h": 38
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "CLOZE",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 2 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 344,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-cloze",
+   "path": "/playground/laws/bns/sections/1/learn/cloze",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Cloze \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 22,
+   "smallTargets": [
+    {
+     "t": "Reveal all",
+     "w": 86,
+     "h": 38
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "called",
+     "r": 1.09
+    },
+    {
+     "t": "Bharatiya",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita,",
+     "r": 1.09
+    },
+    {
+     "t": "Central",
+     "r": 1.09
+    },
+    {
+     "t": "Government",
+     "r": 1.09
+    },
+    {
+     "t": "notification",
+     "r": 1.09
+    },
+    {
+     "t": "Official",
+     "r": 1.09
+    },
+    {
+     "t": "Gazette,",
+     "r": 1.09
+    },
+    {
+     "t": "appoint,",
+     "r": 1.09
+    },
+    {
+     "t": "different",
+     "r": 1.09
+    },
+    {
+     "t": "appointed",
+     "r": 1.09
+    },
+    {
+     "t": "different",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita.",
+     "r": 1.09
+    },
+    {
+     "t": "person",
+     "r": 1.09
+    },
+    {
+     "t": "liable",
+     "r": 1.09
+    },
+    {
+     "t": "punishment",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita",
+     "r": 1.09
+    },
+    {
+     "t": "otherwise",
+     "r": 1.09
+    },
+    {
+     "t": "omission",
+     "r": 1.09
+    },
+    {
+     "t": "contrary",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "thereof,",
+     "r": 1.09
+    },
+    {
+     "t": "guilty",
+     "r": 1.09
+    },
+    {
+     "t": "within",
+     "r": 1.09
+    },
+    {
+     "t": "person",
+     "r": 1.09
+    },
+    {
+     "t": "liable,",
+     "r": 1.09
+    },
+    {
+     "t": "offence",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "beyond",
+     "r": 1.09
+    },
+    {
+     "t": "according",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "beyond",
+     "r": 1.09
+    },
+    {
+     "t": "manner",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "within",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita",
+     "r": 1.09
+    },
+    {
+     "t": "offence",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "citizen",
+     "r": 1.09
+    },
+    {
+     "t": "without",
+     "r": 1.09
+    },
+    {
+     "t": "beyond",
+     "r": 1.09
+    },
+    {
+     "t": "person",
+     "r": 1.09
+    },
+    {
+     "t": "aircraft",
+     "r": 1.09
+    },
+    {
+     "t": "registered",
+     "r": 1.09
+    },
+    {
+     "t": "wherever",
+     "r": 1.09
+    },
+    {
+     "t": "person",
+     "r": 1.09
+    },
+    {
+     "t": "without",
+     "r": 1.09
+    },
+    {
+     "t": "beyond",
+     "r": 1.09
+    },
+    {
+     "t": "committing",
+     "r": 1.09
+    },
+    {
+     "t": "offence",
+     "r": 1.09
+    },
+    {
+     "t": "targeting",
+     "r": 1.09
+    },
+    {
+     "t": "computer",
+     "r": 1.09
+    },
+    {
+     "t": "resource",
+     "r": 1.09
+    },
+    {
+     "t": "located",
+     "r": 1.09
+    },
+    {
+     "t": "section,",
+     "r": 1.09
+    },
+    {
+     "t": "\u201coffence\u201d",
+     "r": 1.09
+    },
+    {
+     "t": "includes",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "outside",
+     "r": 1.09
+    },
+    {
+     "t": "committed",
+     "r": 1.09
+    },
+    {
+     "t": "punishable",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita.",
+     "r": 1.09
+    },
+    {
+     "t": "citizen",
+     "r": 1.09
+    },
+    {
+     "t": "commits",
+     "r": 1.09
+    },
+    {
+     "t": "murder",
+     "r": 1.09
+    },
+    {
+     "t": "without",
+     "r": 1.09
+    },
+    {
+     "t": "beyond",
+     "r": 1.09
+    },
+    {
+     "t": "convicted",
+     "r": 1.09
+    },
+    {
+     "t": "murder",
+     "r": 1.09
+    },
+    {
+     "t": "Nothing",
+     "r": 1.09
+    },
+    {
+     "t": "Sanhita",
+     "r": 1.09
+    },
+    {
+     "t": "affect",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "punishing",
+     "r": 1.09
+    },
+    {
+     "t": "mutiny",
+     "r": 1.09
+    },
+    {
+     "t": "desertion",
+     "r": 1.09
+    },
+    {
+     "t": "officers,",
+     "r": 1.09
+    },
+    {
+     "t": "soldiers,",
+     "r": 1.09
+    },
+    {
+     "t": "sailors",
+     "r": 1.09
+    },
+    {
+     "t": "airmen",
+     "r": 1.09
+    },
+    {
+     "t": "service",
+     "r": 1.09
+    },
+    {
+     "t": "Government",
+     "r": 1.09
+    },
+    {
+     "t": "provisions",
+     "r": 1.09
+    },
+    {
+     "t": "special",
+     "r": 1.09
+    }
+   ],
+   "minRatio": 1.09,
+   "texts": 344,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-letters",
+   "path": "/playground/laws/bns/sections/1/learn/letters",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Letters \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 18,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "LETTERS",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 3 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    },
+    {
+     "t": "Just read",
+     "r": 4.11
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 36,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    },
+    {
+     "t": "Test",
+     "ring": true
+    },
+    {
+     "t": "Speak it",
+     "ring": true
+    },
+    {
+     "t": "Just read",
+     "ring": true
+    },
+    {
+     "t": "\u25b8 Speak it",
+     "ring": true
+    },
+    {
+     "t": "Full text",
+     "ring": true
+    },
+    {
+     "t": "TEXTAREA",
+     "ring": true
+    },
+    {
+     "t": "Check typed words",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-letters",
+   "path": "/playground/laws/bns/sections/1/learn/letters",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Letters \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 18,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.11,
+   "texts": 36,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-letters",
+   "path": "/playground/laws/bns/sections/1/learn/letters",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Letters \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 24,
+   "smallTargets": [
+    {
+     "t": "Speak it",
+     "w": 90,
+     "h": 34
+    },
+    {
+     "t": "Just read",
+     "w": 90,
+     "h": 34
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "LETTERS",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 3 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    },
+    {
+     "t": "Just read",
+     "r": 4.11
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 66,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-letters",
+   "path": "/playground/laws/bns/sections/1/learn/letters",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Letters \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 24,
+   "smallTargets": [
+    {
+     "t": "Speak it",
+     "w": 90,
+     "h": 34
+    },
+    {
+     "t": "Just read",
+     "w": 90,
+     "h": 34
+    }
+   ],
+   "lowContrast": [],
+   "minRatio": 5.11,
+   "texts": 66,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-type",
+   "path": "/playground/laws/bns/sections/1/learn/type",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Type \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 13,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "TYPE",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 4 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 30,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    },
+    {
+     "t": "Test",
+     "ring": true
+    },
+    {
+     "t": "TEXTAREA",
+     "ring": true
+    },
+    {
+     "t": "Check",
+     "ring": true
+    },
+    {
+     "t": "Show verbatim text",
+     "ring": true
+    },
+    {
+     "t": "Read the Bare Act",
+     "ring": true
+    },
+    {
+     "t": "Back to The BNS, 2023",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-type",
+   "path": "/playground/laws/bns/sections/1/learn/type",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Type \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 13,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 30,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-type",
+   "path": "/playground/laws/bns/sections/1/learn/type",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Type \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 19,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "TYPE",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 4 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 60,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-type",
+   "path": "/playground/laws/bns/sections/1/learn/type",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Type \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 19,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 60,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-recite",
+   "path": "/playground/laws/bns/sections/1/learn/recite",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Recite \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 15,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "RECITE",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 5 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    },
+    {
+     "t": "Speak the clause; stop for your accuracy",
+     "r": 2.38
+    }
+   ],
+   "minRatio": 2.38,
+   "texts": 33,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    },
+    {
+     "t": "Test",
+     "ring": true
+    },
+    {
+     "t": "\u25b8 Start reciting",
+     "ring": true
+    },
+    {
+     "t": "Hold to peek",
+     "ring": true
+    },
+    {
+     "t": "TEXTAREA",
+     "ring": true
+    },
+    {
+     "t": "Check accuracy",
+     "ring": true
+    },
+    {
+     "t": "Show verbatim text",
+     "ring": true
+    },
+    {
+     "t": "Read the Bare Act",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-recite",
+   "path": "/playground/laws/bns/sections/1/learn/recite",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Recite \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 15,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 33,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-recite",
+   "path": "/playground/laws/bns/sections/1/learn/recite",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Recite \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 21,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "RECITE",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 5 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    },
+    {
+     "t": "Speak the clause; stop for your accuracy",
+     "r": 2.38
+    }
+   ],
+   "minRatio": 2.38,
+   "texts": 63,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-recite",
+   "path": "/playground/laws/bns/sections/1/learn/recite",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Recite \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 21,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 63,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-test",
+   "path": "/playground/laws/bns/sections/1/learn/test",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Test \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 26,
+   "smallTargets": [
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "TEST",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 6 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 47,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    },
+    {
+     "t": "Test",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "INPUT",
+     "ring": true
+    },
+    {
+     "t": "Check answers",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-test",
+   "path": "/playground/laws/bns/sections/1/learn/test",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Test \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 26,
+   "smallTargets": [
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    }
+   ],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 47,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-test",
+   "path": "/playground/laws/bns/sections/1/learn/test",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Test \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 32,
+   "smallTargets": [
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    }
+   ],
+   "lowContrast": [
+    {
+     "t": "TEST",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "SECTION 1",
+     "r": 2.74
+    },
+    {
+     "t": "\u00b7",
+     "r": 2.74
+    },
+    {
+     "t": "STEP 6 OF 6",
+     "r": 2.74
+    },
+    {
+     "t": "VERBATIM BARE ACT",
+     "r": 3.24
+    }
+   ],
+   "minRatio": 2.74,
+   "texts": 77,
+   "tabTrail": [
+    {
+     "t": "\u2715",
+     "ring": true
+    },
+    {
+     "t": "?",
+     "ring": true
+    },
+    {
+     "t": "Read \u2713",
+     "ring": true
+    },
+    {
+     "t": "Cloze \u2713",
+     "ring": true
+    },
+    {
+     "t": "Letters",
+     "ring": true
+    },
+    {
+     "t": "Type",
+     "ring": true
+    },
+    {
+     "t": "Recite",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-test",
+   "path": "/playground/laws/bns/sections/1/learn/test",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Test \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 32,
+   "smallTargets": [
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    },
+    {
+     "t": "",
+     "w": 13,
+     "h": 13
+    }
+   ],
+   "lowContrast": [],
+   "minRatio": 5.42,
+   "texts": 77,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learned",
+   "path": "/playground/laws/bns/sections/3/learned",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Section learned. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 1,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "Day 3",
+     "r": 4.49
+    },
+    {
+     "t": "Day 7",
+     "r": 4.49
+    },
+    {
+     "t": "Day 15",
+     "r": 4.49
+    },
+    {
+     "t": "Day 30",
+     "r": 4.49
+    },
+    {
+     "t": "Day 60",
+     "r": 4.49
+    }
+   ],
+   "minRatio": 4.49,
+   "texts": 14,
+   "tabTrail": [
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learned",
+   "path": "/playground/laws/bns/sections/3/learned",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Section learned. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 1,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "Day 3",
+     "r": 4.49
+    },
+    {
+     "t": "Day 7",
+     "r": 4.49
+    },
+    {
+     "t": "Day 15",
+     "r": 4.49
+    },
+    {
+     "t": "Day 30",
+     "r": 4.49
+    },
+    {
+     "t": "Day 60",
+     "r": 4.49
+    }
+   ],
+   "minRatio": 4.49,
+   "texts": 14,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "learned",
+   "path": "/playground/laws/bns/sections/3/learned",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Section learned. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 1,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "Day 3",
+     "r": 4.49
+    },
+    {
+     "t": "Day 7",
+     "r": 4.49
+    },
+    {
+     "t": "Day 15",
+     "r": 4.49
+    },
+    {
+     "t": "Day 30",
+     "r": 4.49
+    },
+    {
+     "t": "Day 60",
+     "r": 4.49
+    }
+   ],
+   "minRatio": 4.49,
+   "texts": 14,
+   "tabTrail": [
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learned",
+   "path": "/playground/laws/bns/sections/3/learned",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Section learned. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 1,
+   "smallTargets": [],
+   "lowContrast": [
+    {
+     "t": "Day 3",
+     "r": 4.49
+    },
+    {
+     "t": "Day 7",
+     "r": 4.49
+    },
+    {
+     "t": "Day 15",
+     "r": 4.49
+    },
+    {
+     "t": "Day 30",
+     "r": 4.49
+    },
+    {
+     "t": "Day 60",
+     "r": 4.49
+    }
+   ],
+   "minRatio": 4.49,
+   "texts": 14,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "mastered",
+   "path": "/playground/laws/bns/sections/2/mastered",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Mastered, verbatim. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 1,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 6.55,
+   "texts": 14,
+   "tabTrail": [
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "mastered",
+   "path": "/playground/laws/bns/sections/2/mastered",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Mastered, verbatim. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 1,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 6.55,
+   "texts": 14,
+   "tabTrail": [],
+   "exceptions": []
+  },
+  {
+   "key": "mastered",
+   "path": "/playground/laws/bns/sections/2/mastered",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Mastered, verbatim. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 1,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 6.55,
+   "texts": 14,
+   "tabTrail": [
+    {
+     "t": "Continue",
+     "ring": true
+    },
+    {
+     "t": "Continue",
+     "ring": true
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "mastered",
+   "path": "/playground/laws/bns/sections/2/mastered",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Mastered, verbatim. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "controls": 1,
+   "smallTargets": [],
+   "lowContrast": [],
+   "minRatio": 6.55,
+   "texts": 14,
+   "tabTrail": [],
+   "exceptions": []
+  }
+ ]
+}

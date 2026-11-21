@@ -10,7 +10,11 @@
     <p>{{ status_badge('in_playground', ('In ' + month_name + ' Playground') if month_model|default(true) else 'In Playground') }}</p>
   </header>
 
+  {# M7b (F1): three groups in today's order. On a phone they are plain blocks
+     (one column, as before); from 900px they form the two-column body. #}
+  <div class="pg-act-body">
   {% if progress.selected_count %}
+  <div class="pg-act-lead">
   <div class="pg-act-ring-row">
     <span
       class="pg-progress-ring pg-progress-ring--act"
@@ -30,6 +34,8 @@
     <span class="pg-chip pg-chip--next" title="{{ progress.next_citation }}">Next · {{ progress.next_citation }}</span>
   </p>
   {% endif %}
+  </div>
+  <div class="pg-act-charts">
   <p class="pg-eyebrow">{{ progress.scope_label }}</p>
   <div class="pg-waffle" role="list" aria-label="Selected provisions">
     {% for cell in progress.waffle %}
@@ -45,10 +51,11 @@
     {% for rung in progress.rungs %}
     <span class="pg-rung-col">
       <span class="pg-rung-count">{{ rung.count }}</span>
-      <span class="pg-rung pg-grow" style="--pg-rung-h: {{ rung.height_pct }}%;"></span>
+      <span class="pg-rung pg-grow{% if rung.count %} is-filled{% endif %}" style="--pg-rung-h: {{ rung.height_pct }}%;"></span>
       <span class="pg-rung-label">{{ rung.label }}</span>
     </span>
     {% endfor %}
+  </div>
   </div>
   {% else %}
   <div class="pg-act-empty">
@@ -57,6 +64,7 @@
   </div>
   {% endif %}
 
+  <div class="pg-act-actions">
   <p class="pg-actions pg-act-cta">
     {% if progress.selected_count and progress.next_href %}
     <a class="pg-btn" href="{{ progress.next_href }}">{{ progress.next_cta }}</a>
@@ -70,6 +78,8 @@
   {% if provenance %}
   <p class="pg-lede">{% for line in provenance %}{{ line }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
   {% endif %}
+  </div>
+  </div>
   {% if source_state and source_state.status == 'review_required' %}
   <div class="pg-update-panel" role="status">
     <p>{{ status_badge('updated', 'Law updated') }}</p>

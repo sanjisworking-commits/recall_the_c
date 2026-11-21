@@ -1401,69 +1401,6 @@ dialog.pg-sheet[open]::backdrop {
   margin: 0 0 16px;
 }
 
-.pg-learn-deck {
-  display: none;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  margin: 0 0 20px;
-}
-
-.pg-learn-card {
-  display: flex;
-  flex-direction: column;
-  min-height: 160px;
-  padding: 14px 14px 0;
-  border: 1px solid var(--pg-hairline);
-  background: var(--pg-paper);
-  color: var(--pg-ink);
-  text-decoration: none;
-}
-
-.pg-learn-card .learn-deck-card-eyebrow {
-  margin-bottom: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--pg-muted);
-}
-
-.pg-learn-card .learn-deck-card-title {
-  font-family: var(--pg-font-display);
-  font-size: 22px;
-  font-weight: 600;
-  margin: 0 0 4px;
-}
-
-.pg-learn-card .learn-deck-card-lede {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--pg-muted);
-}
-
-.pg-learn-card .learn-deck-card-foot {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  margin: auto -14px 0;
-  padding: 0 14px;
-  border-top: 1px solid var(--pg-hairline);
-  font-size: 14px;
-}
-
-.pg-learn-card .learn-deck-card-state {
-  color: var(--pg-muted);
-}
-
-.pg-learn-card.is-done .learn-deck-card-state {
-  color: var(--pg-ink);
-  font-weight: 700;
-}
-
-.pg-learn-card .learn-deck-card-open {
-  margin-left: auto;
-}
-
 .pg-mode-tabs.mode-tabs {
   flex-wrap: wrap;
   overflow: visible;
@@ -1520,45 +1457,6 @@ dialog.pg-sheet[open]::backdrop {
 .pg-learn .learn-panel-recite,
 .pg-learn .learn-panel-test {
   display: block;
-}
-
-@media (min-width: 1040px) {
-  .pg-learn-deck {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .pg-learn {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
-    gap: 24px;
-  }
-
-  .pg-learn > .pg-eyebrow,
-  .pg-learn > h1,
-  .pg-learn > .pg-lede,
-  .pg-learn > .pg-note,
-  .pg-learn > .pg-mode-bar,
-  .pg-learn > .pg-mode-head,
-  .pg-learn > .pg-mode-tabs,
-  .pg-learn > .pg-methods-tracker {
-    grid-column: 1 / -1;
-  }
-
-  .pg-learn-deck {
-    grid-column: 1;
-  }
-
-  .pg-learn-panel,
-  .pg-learn-feedback,
-  .pg-learn > .VerbatimText,
-  .pg-learn > .pg-actions {
-    grid-column: 2;
-  }
-}
-
-.pg-learn-card.is-current {
-  outline: 2px solid var(--pg-ink);
 }
 
 .pg-learn-feedback {
@@ -2775,9 +2673,6 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 }
 
 @media (max-width: 899px) {
-  .pg-learn-deck {
-    display: none;
-  }
   .pg-mode-tabs {
     position: absolute;
     width: 1px;
@@ -7949,4 +7844,230 @@ label.pg-plan-card:has(.pg-plan-radio:focus-visible) {
   .pg-home-grid[data-open-playground="desktop"] .pg-upgrade-actions + .pg-actions {
     margin-top: 10px;
   }
+}
+
+/* ── M7b · Act progress and Learn: baseline defects ─────────────────────────
+   Three layout defects found on the M7b baseline (M7.md §8). No new design. */
+
+/* D1 — Act progress ring. The fraction label and the ring's paper disc were
+   two rows of the ring's grid, so the disc sat below the label and off the
+   ring's centre. They share one cell: the label reads inside the ring. */
+.pg-progress-ring--act > .pg-progress-ring-label,
+.pg-progress-ring--act::after {
+  grid-area: 1 / 1;
+}
+
+/* D2 — "On the ladder". Each bar was a flex item with a zero basis in a column
+   of automatic height, so every bar collapsed to nothing and only the counts
+   showed. The columns now fill the chart and a bar takes its height from the
+   rung's share (half the chart at most, leaving room for count and label);
+   an empty rung keeps a 2px baseline. */
+.pg-rung-bar--act {
+  align-items: stretch;
+}
+
+.pg-rung-bar--act .pg-rung-col {
+  justify-content: flex-end;
+}
+
+.pg-rung-bar--act .pg-rung {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 44px;
+  min-width: 8px;
+  min-height: 2px;
+  height: calc(var(--pg-rung-h, 0%) * 0.5);
+}
+
+.pg-rung-bar--act .pg-rung.is-filled {
+  background: var(--pg-teal);
+}
+
+/* ── M7b · design batch (owner-forwarded review; M7b.md §6) ─────────────────
+   F1/F2 Act progress on desktop, F3/F4 Learn without the deck and with an
+   action bar, F5 completion pages, F6 picker chapter headings, F8 Learn
+   control sizes. Phone layouts are untouched unless a rule says otherwise. */
+
+/* F1 / F2 — Act progress from 900px: the badge sits beside the title where
+   there is room, and the body is two columns on the theme's paper surface. */
+@media (min-width: 900px) {
+  .pg-act-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 14px;
+  }
+
+  .pg-act-head > .pg-back,
+  .pg-act-head > .pg-eyebrow {
+    flex: 0 0 100%;
+  }
+
+  .pg-act-head > h1 {
+    margin-bottom: 0;
+  }
+
+  .pg-act-head > p:last-child {
+    margin: 0;
+  }
+
+  .pg-act-body {
+    display: grid;
+    grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+    grid-template-areas:
+      "lead charts"
+      "actions charts";
+    column-gap: 56px;
+    row-gap: 4px;
+    align-items: start;
+    margin: 20px 0 8px;
+    padding: 28px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+  }
+
+  .pg-act-lead,
+  .pg-act-empty {
+    grid-area: lead;
+  }
+
+  .pg-act-charts {
+    grid-area: charts;
+  }
+
+  .pg-act-actions {
+    grid-area: actions;
+  }
+
+  .pg-act-lead > .pg-act-ring-row {
+    margin-top: 0;
+  }
+
+  .pg-act-charts > .pg-eyebrow:first-child {
+    margin-top: 0;
+  }
+
+  .pg-act-charts > .pg-waffle {
+    margin-bottom: 24px;
+  }
+
+  .pg-act-actions > .pg-act-cta {
+    margin-top: 16px;
+  }
+}
+
+/* F3 — Learn from 1040px: one reading column. The mode tabs are the way
+   between the six modes; the card deck that duplicated them is gone. */
+@media (min-width: 1040px) {
+  .pg-learn {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* F4 — Learn action bar. On a wide and tall enough window the mode's primary
+   action stays at the bottom of the reading column. It is ordinary flow
+   everywhere else (phones, short windows, zoom), so it can never sit on top
+   of text or controls there; where it does stick, the page keeps focused
+   controls clear of it. A bar whose only button is still hidden is not drawn. */
+@media (min-width: 900px) and (min-height: 600px) {
+  .pg-learn .pg-learn-actionbar {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 24px 0 0;
+    padding: 14px 0;
+    background: var(--pg-page);
+    border-top: 1px solid var(--pg-hairline);
+  }
+
+  .pg-learn .pg-learn-actionbar:not(:has(> :not([hidden]))) {
+    display: none;
+  }
+
+  html:has([data-pg-learn]) {
+    scroll-padding-bottom: 96px;
+  }
+
+  /* The page wrappers hide horizontal overflow, which makes each of them a
+     scroll container and stops the bar from sticking to the window. Clipping
+     hides the same overflow and leaves the page as the one that scrolls. */
+  html:has([data-pg-learn]) .page-wrap,
+  html:has([data-pg-learn]) .sheet,
+  html:has([data-pg-learn]) main.main,
+  .PlaygroundShell:has([data-pg-learn]) {
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+}
+
+/* F5 — Completion pages: the tick badge, and a ladder row whose steps read
+   differently when reached (filled, ticked), next (outlined in the accent)
+   and to come (plain outline). The plain step was 4.49:1 on its old fill. */
+.pg-complete-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 0 18px;
+  border-radius: 50%;
+  background: var(--pg-teal);
+  color: var(--pg-paper);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.pg-complete-chip {
+  gap: 4px;
+  border: 1px solid var(--pg-control-border);
+  background: transparent;
+  color: var(--pg-muted);
+}
+
+.pg-complete-chip.is-next {
+  border-color: var(--pg-teal);
+  background: transparent;
+  color: var(--pg-teal);
+}
+
+.pg-complete-chip.is-done {
+  border-color: var(--pg-teal);
+  background: var(--pg-teal);
+  color: var(--pg-paper);
+}
+
+/* F6 — Picker chapter headings from 561px: still h2, in the small label style
+   (the shell's h2 rule had been winning over the picker's own). */
+@media (min-width: 561px) {
+  .PlaygroundShell h2.pg-pick-chapter {
+    margin: 28px 0 10px;
+    font-family: var(--pg-font-ui);
+    font-size: var(--pg-label-size);
+    font-weight: var(--pg-label-weight);
+    letter-spacing: var(--pg-label-tracking);
+  }
+}
+
+/* F8 — Learn controls reach the 44px target: "Reveal all", the letters
+   practice-style switch, and each test answer (the whole label is the target). */
+.pg-learn .learn-cloze-btn,
+.pg-learn .learn-letters-view-btn {
+  min-height: var(--pg-tap);
+  min-width: var(--pg-tap);
+}
+
+.pg-learn .learn-test-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--pg-tap);
+  padding: 4px 0;
 }

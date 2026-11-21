@@ -1,0 +1,203 @@
+{
+ "base": "http://127.0.0.1:8929",
+ "stem": "/playground/laws/bns/sections/1/learn",
+ "captured_at": "2026-11-21T07:45:51+0530",
+ "live_speech": "NOT RUN",
+ "bar": [
+  {
+   "window": "1280x900",
+   "case": "wide, tall",
+   "position": "sticky",
+   "display": "flex",
+   "top": 827,
+   "bottom": 900,
+   "windowHeight": 900,
+   "pageHeight": 1648,
+   "stuck": true,
+   "hScroll": false
+  },
+  {
+   "window": "1280x500",
+   "case": "wide, short",
+   "position": "static",
+   "display": "flex",
+   "top": 985,
+   "bottom": 1029,
+   "windowHeight": 500,
+   "pageHeight": 1619,
+   "stuck": false,
+   "hScroll": false
+  },
+  {
+   "window": "640x450",
+   "case": "1280x900 at 200% zoom",
+   "position": "static",
+   "display": "flex",
+   "top": 1127,
+   "bottom": 1171,
+   "windowHeight": 450,
+   "pageHeight": 1867,
+   "stuck": false,
+   "hScroll": false
+  },
+  {
+   "window": "390x844",
+   "case": "phone",
+   "position": "static",
+   "display": "flex",
+   "top": 1676,
+   "bottom": 1720,
+   "windowHeight": 844,
+   "pageHeight": 2231,
+   "stuck": false,
+   "hScroll": false
+  }
+ ],
+ "focus": {
+  "mode": "test",
+  "window": "1280x900",
+  "bar": {
+   "position": "sticky",
+   "display": "flex",
+   "top": 827,
+   "bottom": 900,
+   "windowHeight": 900,
+   "pageHeight": 2190,
+   "stuck": true,
+   "hScroll": false
+  },
+  "stops": 21,
+  "underBar": [],
+  "offscreen": [],
+  "reachedBarAction": true,
+  "trail": [
+   "\u2715",
+   "?",
+   "Read \u2713",
+   "Cloze \u2713",
+   "Letters",
+   "Type",
+   "Recite",
+   "Test",
+   "INPUT",
+   "0",
+   "0",
+   "INPUT",
+   "0",
+   "Check answers",
+   "Show verbatim text",
+   "Read the Bare Act",
+   "Back to The BNS, 2023",
+   "\u2715",
+   "?",
+   "Read \u2713",
+   "Cloze \u2713"
+  ],
+  "scrolledTo": 1290,
+  "note": "each reading is taken after the browser's own focus scroll has settled"
+ },
+ "tabs": {
+  "window": "1280x900",
+  "mode": "cloze",
+  "tabs": [
+   {
+    "label": "Read \u2713",
+    "href": "/playground/laws/bns/sections/1/learn/read",
+    "link": true,
+    "current": false,
+    "done": true,
+    "visible": true,
+    "w": 70,
+    "h": 44
+   },
+   {
+    "label": "Cloze \u2713",
+    "href": "/playground/laws/bns/sections/1/learn/cloze",
+    "link": true,
+    "current": true,
+    "done": true,
+    "visible": true,
+    "w": 73,
+    "h": 44
+   },
+   {
+    "label": "Letters",
+    "href": "/playground/laws/bns/sections/1/learn/letters",
+    "link": true,
+    "current": false,
+    "done": false,
+    "visible": true,
+    "w": 68,
+    "h": 44
+   },
+   {
+    "label": "Type",
+    "href": "/playground/laws/bns/sections/1/learn/type",
+    "link": true,
+    "current": false,
+    "done": false,
+    "visible": true,
+    "w": 55,
+    "h": 44
+   },
+   {
+    "label": "Recite",
+    "href": "/playground/laws/bns/sections/1/learn/recite",
+    "link": true,
+    "current": false,
+    "done": false,
+    "visible": true,
+    "w": 63,
+    "h": 44
+   },
+   {
+    "label": "Test",
+    "href": "/playground/laws/bns/sections/1/learn/test",
+    "link": true,
+    "current": false,
+    "done": false,
+    "visible": true,
+    "w": 51,
+    "h": 44
+   }
+  ],
+  "deck": 0
+ },
+ "fallback_letters": {
+  "typedWords": 5,
+  "fallbackVisible": true,
+  "status": "Matched 5 words.",
+  "bar": {
+   "position": "sticky",
+   "display": "flex",
+   "top": 827,
+   "bottom": 900,
+   "windowHeight": 900,
+   "pageHeight": 1641,
+   "stuck": true,
+   "hScroll": false
+  }
+ },
+ "fallback_recite": {
+  "before": {
+   "completeHidden": true,
+   "bar": "none"
+  },
+  "typedWords": 280,
+  "stats": "280 / 280 recalled \u00b7 100%",
+  "mapWords": 280,
+  "mapHits": 280,
+  "completeHidden": false,
+  "bar": {
+   "position": "sticky",
+   "display": "flex",
+   "top": 827,
+   "bottom": 900,
+   "windowHeight": 900,
+   "pageHeight": 2291,
+   "stuck": true,
+   "hScroll": false
+  }
+ },
+ "exceptions": []
+}
