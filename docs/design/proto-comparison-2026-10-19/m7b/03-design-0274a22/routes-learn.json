@@ -1,0 +1,11 @@
+[{"key":"law","path":"/playground/laws/bns"},
+ {"key":"law-new","path":"/playground/laws/ndps"},
+ {"key":"picker","path":"/playground/laws/bns/sections"},
+ {"key":"learn-read","path":"/playground/laws/bns/sections/1/learn/read"},
+ {"key":"learn-cloze","path":"/playground/laws/bns/sections/1/learn/cloze"},
+ {"key":"learn-letters","path":"/playground/laws/bns/sections/1/learn/letters"},
+ {"key":"learn-type","path":"/playground/laws/bns/sections/1/learn/type"},
+ {"key":"learn-recite","path":"/playground/laws/bns/sections/1/learn/recite"},
+ {"key":"learn-test","path":"/playground/laws/bns/sections/1/learn/test"},
+ {"key":"learned","path":"/playground/laws/bns/sections/3/learned"},
+ {"key":"mastered","path":"/playground/laws/bns/sections/2/mastered"}]

@@ -6,7 +6,8 @@ sign-in of `m1r/tools/capture_m1r.py`; the browser profile lives in a
 temporary directory outside the repository and is removed):
 
   hScroll        the document is wider than the viewport
-  smallTargets   visible links and buttons in <main> narrower or shorter than 44 px
+  smallTargets   visible links, buttons and form controls in the measured region narrower or
+                 shorter than 44 px; a radio or checkbox is measured by its whole clickable label
   lowContrast    visible leaf text in <main> whose colour against the first opaque
                  background behind it is under 4.5:1 (WCAG ratio)
   minRatio       the lowest such ratio on the page
@@ -49,7 +50,9 @@ PROBE = r"""
   const main = document.querySelector(__SCOPE__) || document.querySelector('main') || document.body;
   const label = e => (e.innerText || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 40);
   const ctrls = [...main.querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, summary')].filter(vis);
-  const small = ctrls.map(e => { const r = e.getBoundingClientRect(); return {t: label(e), w: Math.round(r.width), h: Math.round(r.height)}; }).filter(c => c.w < 44 || c.h < 44);
+  // a radio or checkbox is clicked through its label: the label's box is the target
+  const target = e => { if (e.tagName === 'INPUT' && (e.type === 'radio' || e.type === 'checkbox')) { const l = e.closest('label') || (e.id && document.querySelector('label[for="' + e.id + '"]')); if (l && vis(l)) return l; } return e; };
+  const small = ctrls.map(e => { const t = target(e); const r = t.getBoundingClientRect(); return {t: label(t) || label(e), w: Math.round(r.width), h: Math.round(r.height), viaLabel: t !== e}; }).filter(c => c.w < 44 || c.h < 44);
   const texts = [...main.querySelectorAll('*')].filter(e => vis(e) && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()));
   const ratios = texts.map(e => ({t: label(e), r: ratio(e)}));
   return {
