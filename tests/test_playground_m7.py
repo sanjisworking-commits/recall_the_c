@@ -327,12 +327,12 @@ def test_read_complete_control_not_constitution_desktop_hidden():
     assert "learn-panel-recite" not in html
     assert "learn-panel-test" not in html
     assert ".pg-learn-actions" in css
-    # R1 added a shell-width `@media (min-width: 1040px)` before the Learn
-    # deck query. The old split on the first 1040px block no longer isolates
-    # `.pg-learn-deck`. Intent unchanged: the deck stays `display: none`
-    # until the 1040px Learn grid.
-    deck = css.split(".pg-learn-deck {", 1)[1].split("}", 1)[0]
-    assert "display: none" in deck
+    # M7b (F3): the Playground Learn deck is retired — no deck markup and no
+    # deck rule at any width; the mode tabs are the way between the six modes.
+    # The 1040px Learn query remains (it now sets the single reading column).
+    assert "pg-learn-deck" not in html and "learn-deck-card" not in html
+    assert "pg-learn-deck" not in css and "pg-learn-card" not in css
+    assert 'class="mode-tabs pg-mode-tabs" role="tablist"' in html
     assert "@media (min-width: 1040px)" in css
 
 

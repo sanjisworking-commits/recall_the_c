@@ -1041,7 +1041,7 @@ def test_r4_assets_and_no_duplicate_engines():
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
     assert "playground-learn.js?v=pg3" in base
     assert "speech_client.js?v=speech3" in base
-    assert "playground.css?v=pg59" in base
+    assert "playground.css?v=pg60" in base
     assert "options.url" in speech
     assert "csrf_token" in speech
     assert "RecallSpeech" in js
@@ -1101,8 +1101,12 @@ def test_d75_d84_six_mode_chrome_and_advance_labels(tmp_path: Path):
 
 
 def test_d87_desktop_deck_panel_layout_is_1040():
+    # M7b (F3): at 1040px the Learn stage is one reading column. The two-column
+    # deck / panel grid this test used to pin (minmax(280px, 360px)) is retired
+    # with the deck; the breakpoint itself is unchanged.
     css = (STATIC / "playground.css").read_text(encoding="utf-8")
     assert "minmax(220px, 280px)" not in css
+    assert ".pg-learn-deck" not in css
     needle = "@media (min-width: 1040px)"
     found = False
     start = 0
@@ -1110,11 +1114,12 @@ def test_d87_desktop_deck_panel_layout_is_1040():
         idx = css.find(needle, start)
         if idx == -1:
             break
-        block = css[idx : idx + 1400]
-        if ".pg-learn-deck" in block and "minmax(280px, 360px)" in block:
+        block = css[idx : idx + 400]
+        if ".pg-learn {" in block:
             found = True
-            assert "display: grid" in block
-            assert ".pg-learn-panel" in block
+            assert "max-width: 760px" in block
+            assert "margin-left: auto" in block and "margin-right: auto" in block
+            assert "display: grid" not in block.split("}", 1)[0]
             break
         start = idx + len(needle)
     assert found
