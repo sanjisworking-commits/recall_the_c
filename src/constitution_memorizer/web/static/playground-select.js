@@ -46,47 +46,44 @@
       return $$(".pg-pick-section", form);
     }
 
+    // M7b (Q8). One state per section, shown the same way everywhere:
+    //   whole section  -> the section box ticked and every clause box ticked
+    //   some clauses   -> the section box indeterminate, those clause boxes ticked
+    //   nothing        -> nothing ticked
+    // Ticking the section ticks every clause; unticking one clause leaves the
+    // rest; ticking the last clause promotes back to the whole section. The
+    // server stores a whole section either way (it ignores clause values of a
+    // section submitted whole and promotes a full set of clauses itself).
+    function setSectionBox(block, sectionBox, state) {
+      sectionBox.checked = state === "all";
+      sectionBox.indeterminate = state === "some";
+      sectionBox.setAttribute(
+        "aria-checked",
+        state === "all" ? "true" : state === "some" ? "mixed" : "false"
+      );
+      block.setAttribute("data-check-state", state);
+    }
+
     function syncSectionState(block) {
       var sectionBox = $(".pg-pick-check", block);
       var units = $$(".pg-pick-clause-check", block);
       if (!sectionBox || sectionBox.disabled) {
         return;
       }
+      if (!units.length) {
+        setSectionBox(block, sectionBox, sectionBox.checked ? "all" : "none");
+        return;
+      }
       var unitOn = units.filter(function (box) {
         return box.checked;
       }).length;
-      var mixed = unitOn > 0 && unitOn < units.length;
-      var allUnits = units.length > 0 && unitOn === units.length;
-      if (allUnits) {
-        sectionBox.checked = true;
-        sectionBox.indeterminate = false;
-        sectionBox.setAttribute("aria-checked", "true");
-        units.forEach(function (box) {
-          box.checked = false;
-        });
-        block.setAttribute("data-check-state", "all");
-        return;
+      if (unitOn === units.length) {
+        setSectionBox(block, sectionBox, "all");
+      } else if (unitOn > 0) {
+        setSectionBox(block, sectionBox, "some");
+      } else {
+        setSectionBox(block, sectionBox, "none");
       }
-      if (sectionBox.checked) {
-        sectionBox.indeterminate = false;
-        sectionBox.setAttribute("aria-checked", "true");
-        units.forEach(function (box) {
-          box.checked = false;
-        });
-        block.setAttribute("data-check-state", "all");
-        return;
-      }
-      if (mixed || unitOn > 0) {
-        sectionBox.checked = false;
-        sectionBox.indeterminate = true;
-        sectionBox.setAttribute("aria-checked", "mixed");
-        block.setAttribute("data-check-state", "some");
-        return;
-      }
-      sectionBox.checked = false;
-      sectionBox.indeterminate = false;
-      sectionBox.setAttribute("aria-checked", "false");
-      block.setAttribute("data-check-state", "none");
     }
 
     function paint() {
@@ -162,23 +159,24 @@
         sectionBox.checked = false;
         sectionBox.setAttribute("aria-checked", "mixed");
       }
+      if (sectionBox && sectionBox.checked && !sectionBox.disabled) {
+        // The server renders a whole section as the section box alone: show
+        // its clauses ticked too, so unticking one does what it says.
+        $$(".pg-pick-clause-check", block).forEach(function (box) {
+          box.checked = true;
+        });
+      }
       if (sectionBox) {
         sectionBox.addEventListener("change", function () {
-          if (sectionBox.checked) {
-            $$(".pg-pick-clause-check", block).forEach(function (box) {
-              box.checked = false;
-            });
-          }
+          var on = sectionBox.checked;
+          $$(".pg-pick-clause-check", block).forEach(function (box) {
+            box.checked = on;
+          });
           paint();
         });
       }
       $$(".pg-pick-clause-check", block).forEach(function (box) {
-        box.addEventListener("change", function () {
-          if (box.checked && sectionBox) {
-            sectionBox.checked = false;
-          }
-          paint();
-        });
+        box.addEventListener("change", paint);
       });
       var details = $("details", block);
       if (details) {
