@@ -84,7 +84,7 @@ Skipped locally: the Playwright-gated screen tests and the Postgres integration 
 | G4 | Ring and ladder | PASS — P04, P05; frames `law`, `law-new` |
 | G5 | Act progress: two columns from 900 px on theme colours, badge beside the title; the phone is one column | PASS — P08; the phone frames of `law` and `law-new` are byte-identical to the first candidate |
 | G6 | Learn: no deck; six modes, current and completed marks, keyboard access | PASS — P06; `learn-check.json` `tabs`: six links, 44 px tall, the current and done marks, 0 deck elements; the Tab trail reaches all six |
-| G7 | Action bar never obscures text, controls or focus at narrow widths or zoom | PASS — P07; `learn-check.json`: sticky and stuck at 1280 × 900; **ordinary flow at 1280 × 500, 640 × 450 (1280 × 900 at 200 % zoom) and 390 × 844**; on the test mode at 1280 × 900, 21 focus stops with the page scrolling to 1290 px — **0 under the bar, 0 off screen**, and the bar's action reached by keyboard; no horizontal scroll in any case |
+| G7 | Action bar does not obscure text, controls or focus at the tested viewports | **Tested viewport and focus checks passed** — P07; `learn-check.json`: sticky and stuck at 1280 × 900; **ordinary flow at 1280 × 500, 640 × 450 (a reduced-viewport reflow check) and 390 × 844**; on the test mode at 1280 × 900, 21 focus stops with the page scrolling to 1290 px — **0 under the bar, 0 off screen**, and the bar's action reached by keyboard; no horizontal scroll in any case. **Browser zoom: NOT RUN** — no page was zoomed, so this gate makes no claim about zoom |
 | G8 | Typed fallback after the layout change | PASS — exercised in a browser at 1280 × 900: letters — five opening words typed, "Check typed words" → "Matched 5 words."; recite — the 280-word passage typed, "Check accuracy" → "280 / 280 recalled · 100%", a 280-word accuracy map, and the completion action (hidden before) appears in the bar. **Live speech: NOT RUN** |
 | G9 | Completion pages: badge, Act name, end pills, the three states distinct and said in text, first-revision line and Continue kept, no quotation | PASS — P09; frames `learned`, `mastered` |
 | G10 | Completion pill contrast | PASS — the to-come step is `#9a9a9a` on `#141414`, 6.5:1 (it was 4.49:1 on its old fill, below 4.5:1); the probe finds no text under 4.5:1 on either completion page (minimum 6.55:1) |
@@ -108,7 +108,7 @@ The review of the first candidate was forwarded without further comment. It is r
 |---|---|---|
 | Act progress | Two-column desktop layout; preserve the title, badge beside it where space permits, single-column phone; theme colours rather than hard-coded white | Built so (G5) |
 | Learn | Keep mode tabs, remove the duplicate desktop deck; preserve all six modes, completion indicators and keyboard access | Built so (G6) |
-| Learn action bar | Follow the prototype, but never obscure text, controls or keyboard focus at narrow widths or zoom | Built as a bar that sticks only in a wide and tall window (G7) |
+| Learn action bar | Follow the prototype, but never obscure text, controls or keyboard focus at narrow widths or zoom | Built as a bar that sticks only in a wide and tall window. Narrow and short viewports: tested viewport and focus checks passed (G7). Zoom: NOT RUN (§7) |
 | Completion pages | Check badge, Act name, Learned / Mastered end pills; keep the first-revision date and Continue; distinguish reached from future; no invented quotation | Built so (G9) |
 | Picker | Smaller chapter headings, preserving heading semantics, clause selection and indeterminate states | Built so (G3) |
 | News / Important marks | Out of scope | Not built |
@@ -123,12 +123,17 @@ Still different from the prototype, by the decisions above or because the applic
 
 - Hosted comparison: NOT RUN (staging blocked, `M5-staging-prep.md`).
 - **Live speech** (`letters`, `recite`): NOT RUN — no speech provider locally. Only the typed fallback was exercised.
-- Automated accessibility scan, screen reader, real zoom: NOT RUN. The 200 % zoom case of G7 is a 640 × 450 window, which is what a 1280 × 900 window presents to the page at that zoom; it is not a zoomed browser.
+- Automated accessibility scan, screen reader: NOT RUN.
+- **Browser zoom: NOT RUN.** No page was zoomed. G7's 640 × 450 case is a reduced-viewport reflow check in an unzoomed browser; it shows how the page lays out in a small window and is not evidence of behaviour under zoom.
 - Playwright-gated screen tests: skipped locally (not installed).
 - The executed picker test runs the real script against a stand-in DOM that implements only what the script uses; it is not a browser. The browser behaviour is the CDP trace of G1, recorded on `3aff371`.
 - The focus check of G7 covers the test mode at one window size; the other modes have fewer controls than it does.
 - One account (Plus, `monthly`) was captured; these pages have no tier or model branch.
 - Sections 2 and 3 of the fixture received their progress through the repository's completion methods with a placeholder source identity, so Learn frames were taken on section 1.
+
+### 7.1 Wording correction, 2026-11-26
+
+An owner-forwarded review of this record found that G7 and the PR summary overstated zoom verification: the 640 × 450 case had been described as "1280 × 900 at 200 % zoom", and a disclaimer further down did not undo that claim. Corrected here, in `learn-check.json` (the case label only — no measurement changed), in `tools/check_learn_m7b.py` and in the PR description: G7's result is "tested viewport and focus checks passed", 640 × 450 is a reduced-viewport reflow check, and browser zoom is NOT RUN. Documentation and evidence labelling only; no product or test file changed, so the tested SHA stays `bd40c14`.
 
 ## 8. Owner sign-off
 

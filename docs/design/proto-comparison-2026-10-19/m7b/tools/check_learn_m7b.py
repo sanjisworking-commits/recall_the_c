@@ -4,9 +4,9 @@ Google sign-in of `m1r/tools/capture_m1r.py`; the browser profile lives in a
 temporary directory outside the repository.
 
   bar        where the action bar sits at four window sizes (a wide, tall
-             window; a wide, short one; 640 x 450, which is a 1280 x 900 window
-             at 200 % zoom; a phone): sticky to the window bottom, or ordinary
-             flow
+             window; a wide, short one; 640 x 450, a reduced-viewport reflow
+             check; a phone): sticky to the window bottom, or ordinary flow.
+             Browser zoom is not exercised
   focus      on the test mode in the wide, tall window: Tab through the page
              and count focus stops that end up underneath the bar
   tabs       the six mode tabs: links, which is current, which carry the
@@ -84,7 +84,7 @@ async def run(args) -> int:
     proc = subprocess.Popen([m1r.CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-first-run",
                              f"--remote-debugging-port={args.debug_port}", f"--user-data-dir={prof}", "--window-size=1280,900", "about:blank"],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    rec: dict = {"base": args.base, "stem": args.stem, "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "live_speech": "NOT RUN"}
+    rec: dict = {"base": args.base, "stem": args.stem, "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "live_speech": "NOT RUN", "browser_zoom": "NOT RUN"}
     try:
         for _ in range(50):
             try:
@@ -117,7 +117,7 @@ async def run(args) -> int:
 
             # bar ----------------------------------------------------------------
             rec["bar"] = []
-            for label, w, h in (("wide, tall", 1280, 900), ("wide, short", 1280, 500), ("1280x900 at 200% zoom", 640, 450), ("phone", 390, 844)):
+            for label, w, h in (("wide, tall", 1280, 900), ("wide, short", 1280, 500), ("reduced viewport (reflow check)", 640, 450), ("phone", 390, 844)):
                 await go("read", w, h)
                 rec["bar"].append({"window": f"{w}x{h}", "case": label, **(await ev(BAR) or {"missing": True})})
 

@@ -3,6 +3,8 @@
  "stem": "/playground/laws/bns/sections/1/learn",
  "captured_at": "2026-11-21T07:45:51+0530",
  "live_speech": "NOT RUN",
+ "browser_zoom": "NOT RUN",
+ "label_note": "2026-11-26: the 640x450 case was captured under the label '1280x900 at 200% zoom'; relabelled 'reduced viewport (reflow check)' because no page was zoomed. No measurement changed.",
  "bar": [
   {
    "window": "1280x900",
@@ -30,7 +32,7 @@
   },
   {
    "window": "640x450",
-   "case": "1280x900 at 200% zoom",
+   "case": "reduced viewport (reflow check)",
    "position": "static",
    "display": "flex",
    "top": 1127,
