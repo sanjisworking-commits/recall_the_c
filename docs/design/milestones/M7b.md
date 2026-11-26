@@ -10,7 +10,7 @@
 | Tooling | `m1r/tools/capture_m1r.py`; `m7/tools/probe_page_m7.py`; `m7/tools/serve_populated_m7.py --scenario learn`; `m7b/tools/trace_picker_m7b.py`; `m7b/tools/check_learn_m7b.py`; `tests/js/picker_harness.js` |
 | Flags | `PLAYGROUND_TIER_MODEL` `monthly`; `ARTICLE_ENTITLEMENTS_ENABLED` off. These pages carry no tier or model branch |
 
-**Status: candidate with local evidence — the decided picker change, three layout defects, and the design batch the review recommended. Not accepted.** No merge, deployment or `choices` activation.
+**Status: accepted (local) on 2026-11-26 by the owner's direct answer (§8) — the decided picker change, three layout defects, and the design batch the review recommended. Hosted acceptance pending.** No merge, deployment or `choices` activation.
 
 ## 1. Scope
 
@@ -135,6 +135,14 @@ Still different from the prototype, by the decisions above or because the applic
 
 An owner-forwarded review of this record found that G7 and the PR summary overstated zoom verification: the 640 × 450 case had been described as "1280 × 900 at 200 % zoom", and a disclaimer further down did not undo that claim. Corrected here, in `learn-check.json` (the case label only — no measurement changed), in `tools/check_learn_m7b.py` and in the PR description: G7's result is "tested viewport and focus checks passed", 640 × 450 is a reduced-viewport reflow check, and browser zoom is NOT RUN. Documentation and evidence labelling only; no product or test file changed, so the tested SHA stays `bd40c14`.
 
-## 8. Owner sign-off
+## 8. Owner sign-off — local, M7b (owner's direct answer, 2026-11-26)
 
-None recorded. This candidate is offered for review. Sign-off is recorded only against the owner's direct answer.
+| Item | Record |
+|---|---|
+| Instruction | An owner-forwarded review of 2026-11-26 recommended acceptance after one wording correction (§7.1) and said that acceptance remained the owner's. The correction was made (`e27b506`), and the owner was then asked directly, with PR #246 at head `e27b506` (tested `bd40c14`): "Do you accept M7b as the reusable local baseline, with its recorded limitations (label contrast and 32 px back link open; browser zoom, live speech and hosted checks not run)?" The owner answered: **"Yes, I accept M7b"** — to the option "record local acceptance in M7b.md and on PR #246 against source `0274a22` / tested `bd40c14` / head `e27b506`. Hosted acceptance, merge, deployment and choices activation stay separate and untouched." |
+| Decision | **Accepted (local)** as the reusable local baseline for Act progress, the section picker, Learn (`read · cloze · letters · type · recite · test`) and the learned / mastered completion pages — source `0274a22` (with `3aff371`, `9895a3a`, `c6a6297`), tested `bd40c14` (local 4316 passed / 177 skipped / 0 failed; CI 44854805695 executed, 4315 passed / 164 skipped / 14 deselected / 0 failed); evidence `m7b/01-baseline-0810bc2/`, `02-candidate-9895a3a/`, `03-design-0274a22/`. From `bd40c14` to `e27b506` only records, captures and evidence tooling changed. |
+| Scope of the acceptance | What the recorded tests, frames, probes, traces and checks cover (§3–§5). It does not extend to anything listed as NOT RUN or as a limitation in §7. |
+| Findings retained, open | Light-theme label contrast 2.38–3.24:1 and the phone picker's dark-theme "SECTION n" / "Not started" text at 4.1:1 (the shared label style, M7a W16) — for the shared-style batch. The desktop back link at 78 × 32 px against the 44 px design target (M7a W17). |
+| NOT RUN, retained | Hosted comparison; live speech; **browser zoom**; automated accessibility scan; screen reader; Playwright-gated screen tests. The executed picker test uses a stand-in DOM, not a browser. |
+| Not covered by this acceptance | Hosted acceptance; merge; deployment; `choices` activation (blockers 5-6b, 5-20, 5-13 unchanged). |
+| Reopening | Local evidence is reopened only where a later change affects these pages. |
