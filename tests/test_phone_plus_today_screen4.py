@@ -633,10 +633,10 @@ def test_phone_plus_today_css_scope_pins_and_desktop_08_untouched() -> None:
     for phrase in TEMPLATE_INVENTED:
         assert phrase not in dash, phrase
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg60" in base
+    assert "playground.css?v=pg61" in base
     assert "playground.css?v=pg37" not in base
     assert "playground.css?v=pg36" not in base
-    assert "styles.css?v=main94" in base
+    assert "styles.css?v=main95" in base
     assert "mobile.css?v=mob113" in base
     assert "data-plus-today-phone-tabs" not in base
     # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in

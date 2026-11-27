@@ -852,5 +852,5 @@ def test_d142_error_html_resolves_theme_and_page_wash(tmp_path: Path):
     assert page.status_code == 404
     assert "cm-theme" in page.text
     assert 'data-playground-error="404"' in page.text
-    assert "playground.css?v=pg11" in page.text
+    assert "playground.css?v=pg61" in page.text
 

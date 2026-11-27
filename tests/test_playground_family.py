@@ -563,7 +563,7 @@ def test_f10_home_rules_key_on_the_shared_marker() -> None:
     roster = (TEMPLATES / "playground_roster.html").read_text(encoding="utf-8")
     assert '{% if month_model %}\n  <a class="pg-plan-row" href="/playground/roster/next">' in roster
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    assert "playground.css?v=pg60" in base
+    assert "playground.css?v=pg61" in base
     # templates read the view, never the flag
     for name in ("playground.html", "playground_roster.html", "playground_remove.html", "playground_law.html"):
         source = (TEMPLATES / name).read_text(encoding="utf-8")

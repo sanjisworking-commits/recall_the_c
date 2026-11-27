@@ -291,7 +291,7 @@ def test_p06_learn_has_tabs_and_no_deck(tmp_path: Path) -> None:
         assert "is-done" in read_classes and read_label == "Read ✓"
         assert all("✓" not in l for _c, _s, _cur, _h, l in links[1:])
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    assert "playground.css?v=pg60" in base
+    assert "playground.css?v=pg61" in base
 
 
 def test_p07_action_bar_rules_and_markup(tmp_path: Path) -> None:

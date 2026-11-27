@@ -711,9 +711,9 @@ def test_phone_expired_calendar_css_scope_pins_and_desktop_09_untouched() -> Non
         assert "expired_calendar" not in text
         assert "data-expired-calendar" not in text
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg60" in base
+    assert "playground.css?v=pg61" in base
     assert "playground.css?v=pg44" not in base
-    assert "styles.css?v=main94" in base
+    assert "styles.css?v=main95" in base
     assert "mobile.css?v=mob113" in base
     assert "data-expired-calendar-phone-tabs" not in base
     # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in

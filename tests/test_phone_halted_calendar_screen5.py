@@ -141,7 +141,7 @@ def test_phone_halted_calendar_css_scope_pins_and_desktop_09_untouched() -> None
     cal = CAL.read_text(encoding="utf-8")
     assert "data-halted-calendar-phone" not in cal
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg60" in base and "styles.css?v=main94" in base and "mobile.css?v=mob113" in base
+    assert "playground.css?v=pg61" in base and "styles.css?v=main95" in base and "mobile.css?v=mob113" in base
 
 
 def test_phone_halted_calendar_screen05_captures(tmp_path: Path) -> None:
