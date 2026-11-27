@@ -82,7 +82,7 @@ New `tests/test_edge_state_family.py` — 100 tests (E01–E07 and the four know
 | Related modules by keyword, local, before the re-pins | working tree | 2735 passed / 168 skipped / 21 failed — 20 assertions of the old behaviour (re-pinned) and the date-dependent test below. The keyword selection missed one affected test, found by the full run |
 | Full suite, local | `97edd4e` | **4425 passed / 177 skipped / 1 failed** (991.8 s) |
 | Full suite, local, on the pull-request head | `8f555b8` (records and tools only since `97edd4e`) | 4425 passed / 177 skipped / 1 failed (1009.9 s) — the same test |
-| CI `workflow_dispatch` | `97edd4e` tree | __CI__ |
+| CI `workflow_dispatch` 46033900403 | `8f555b8` (source and tests of `97edd4e`) | **failure — pytest executed: 4424 passed / 164 skipped / 14 deselected / 1 failed** (1374.8 s): the date-dependent test only. No run of this batch is green while that test fails; against M8-S's re-run on its own head (4324 passed / 1 failed) this batch adds 100 passing tests and no failure |
 
 The one local failure is `tests/test_phone_plus_calendar_screen5.py::test_phone_plus_calendar_overdue_done_and_future_constitution`, the date-dependent test described in `M8-S.md` §3: it fails on the untouched M7b head too from the 24th of the month. Counting it, this batch adds 100 tests and changes no other result: 4325 passed at M8-S → 4425 passed, the same 1 failing.
 
