@@ -1,0 +1,124 @@
+{
+ "label": "error",
+ "base": "http://127.0.0.1:8929",
+ "guest": false,
+ "captured_at": "2026-11-27T20:42:39+0530",
+ "rows": [
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg11"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 2.74,
+   "minRatioOrdinary": 2.74,
+   "failing": [
+    {
+     "t": "PLAYGROUND",
+     "sel": "div.PlaygroundShell > section.EntitlementGate.pg-error > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 1,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg11"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 5.95,
+   "minRatioOrdinary": 5.95,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg11"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 2.74,
+   "minRatioOrdinary": 2.74,
+   "failing": [
+    {
+     "t": "PLAYGROUND",
+     "sel": "div.PlaygroundShell > section.EntitlementGate.pg-error > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 1,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg11"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 5.95,
+   "minRatioOrdinary": 5.95,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  }
+ ]
+}
