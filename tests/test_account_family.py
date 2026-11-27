@@ -146,7 +146,9 @@ def test_f01_profile_cards_by_state(tmp_path: Path, state: str) -> None:
         "plus": ("RecallC Plus", "Change plan", "/billing/subscriptions", "RecallC Plus · Playground included"),
         "pro": ("RecallC Pro", "Manage plan", "/billing/subscriptions", "RecallC Pro · Playground included"),
         "max": ("RecallC Max", "Manage plan", "/billing/subscriptions", "RecallC Max · Playground included"),
-        "paused": ("RecallC Plus", "Resume Playground", "/billing/subscriptions", "RecallC Free · Constitution learning included"),
+        # M8-Ra (owner 2026-11-27), G3: the header names the paused subscription, so the identity line is
+        # the sign-in line, as for halted and expired. It was "RecallC Free · Constitution learning included".
+        "paused": ("RecallC Plus", "Resume Playground", "/billing/subscriptions", "Signed in with Google"),
         "pending": ("RecallC Plus", "Manage subscription", "/billing/subscriptions", "RecallC Plus · Playground included"),
         "expired": ("RecallC Plus", "Resume Playground", "/billing/subscriptions", "Signed in with Google"),
         "halted": ("RecallC Plus", "Manage subscription", "/billing/subscriptions", "Signed in with Google"),
@@ -155,6 +157,8 @@ def test_f01_profile_cards_by_state(tmp_path: Path, state: str) -> None:
     assert f"<h2>{title}</h2>" in card
     assert f'href="{href}">{cta}</a>' in card, card
     assert meta in main
+    if state == "paused":
+        assert "RecallC Free" not in main
     assert "Devices<span class=\"pg-account-meta\">0 of 2 ›</span>" in main
     for phrase in LEGACY:
         assert phrase not in main, (state, phrase)
@@ -202,7 +206,8 @@ def test_f03_settings_identity_and_auto_plan_by_tier(tmp_path: Path, state: str,
     main = _main(html)
     status = _text(main.split('class="settings-account-status">', 1)[1].split("</span>", 1)[0])
     label = {"free": "RecallC Free", "plus": "RecallC Plus", "pro": "RecallC Pro", "max": "RecallC Max",
-             "paused": "RecallC Free", "pending": "RecallC Plus"}.get(state)
+             # M8-Ra (owner 2026-11-27), G3: paused was "RecallC Free"
+             "paused": "Playground subscription paused", "pending": "RecallC Plus"}.get(state)
     if state == "expired":
         assert status == "Your Playground is paused"
     elif state == "halted":
@@ -292,9 +297,12 @@ def test_f05_devices_guest_redirects_and_free_sees_the_designed_empty_state(tmp_
     html = _client(tmp_path, "free").get("/profile/security/devices").text
     main = _main(html)
     assert "<h1 class=\"display\">Devices</h1>" in main
-    assert "Your plan supports the Playground on up to 2 registered devices." in main
-    assert "while a paid plan is active" in main
-    assert "0 of 2 devices" in main
+    # M8-Ra (owner 2026-11-27), Q8: the lede says what the registry does for this account — a Free account
+    # registers no device — and promises no allowance; the count is not shown to it.
+    assert "A device is registered only when the Playground is used on it while a subscription gives Playground access." in main
+    assert "This account has no such subscription now, so no device is being registered." in main
+    assert "Your plan supports" not in main and "while a paid plan is active" not in main
+    assert "of 2 devices" not in main and "data-device-count" not in main
     assert "data-devices-empty" in main and "No devices registered yet." in main
     assert "Your devices" not in main and "Security" not in main.split("<h1", 1)[0]
     assert 'href="/profile"' in main

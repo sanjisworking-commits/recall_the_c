@@ -627,7 +627,10 @@ def test_guest_free_plus_halted_paused_pending_are_not_expired_today(
     )
     paused_html = paused.get("/dashboard").text
     assert 'data-expired-today="desktop"' not in paused_html
-    assert 'data-today-source="playground"' not in paused_html
+    # M8-Ra (owner 2026-11-27), G3: a paused account keeps its Playground items on Today, as links
+    # to the existing Resume flow only — never a Learn link — without this cohort's marker.
+    assert 'data-today-source="playground"' in paused_html
+    assert "/playground/laws/" not in paused_html and 'href="/billing/subscriptions"' in paused_html
 
     pending = TestClient(_mu_app(tmp_path / "pending"))
     _sign_in(pending)

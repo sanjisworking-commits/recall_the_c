@@ -165,7 +165,8 @@ def test_authenticated_users_can_open_devices_regardless_of_billing(tmp_path: Pa
     free = client.get(DEVICES_PATH)
     assert free.status_code == 200
     assert ">Devices</h1>" in free.text  # M5 Q6
-    assert "0 of 2 devices" in free.text
+    # M8-Ra (owner 2026-11-27), Q8: no allowance count for an account that registers no device
+    assert "of 2 devices" not in free.text and "No devices registered yet." in free.text
     created = _add_subscription(client, status="active")
     assert client.get(DEVICES_PATH).status_code == 200
     client.app.state.subscriptions.update_subscription_state(

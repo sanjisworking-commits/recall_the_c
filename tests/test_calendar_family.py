@@ -153,9 +153,19 @@ def test_f04_create_entry_points_follow_the_capability(tmp_path: Path, state: st
         assert not pts["add_task"] and pts["cells"] == 0 and not pts["day_add"] and not pts["editor"], (state, tier_model, pts)
         assert pts["gated"] == 2 and pts["sheet"]  # toolbar entry + day-panel entry
         sheet = html.split('id="cal-si-upgrade"', 1)[1].split("</dialog>", 1)[0]
-        assert "Personal tasks are part of Plus" in sheet
-        assert 'href="/playground?stage=plans">See plans ›</a>' in sheet
-        assert "₹" not in sheet and "/billing" not in sheet and "/pricing" not in sheet
+        if state == "free":
+            assert "Personal tasks are part of Plus" in sheet
+            assert 'href="/playground?stage=plans">See plans ›</a>' in sheet
+            assert "/billing" not in sheet
+        else:
+            # M8-Ra (owner 2026-11-27), G4: a paused, halted or ended subscription is named as such and
+            # offered its own Resume / Manage link, not "part of Plus" with a plans link it
+            # cannot reach.
+            assert "Personal tasks need an active subscription" in sheet
+            assert "Personal tasks are part of Plus" not in sheet and "stage=plans" not in sheet
+            label = "Manage subscription" if state == "halted" else "Resume Playground"
+            assert f'href="/billing/subscriptions" data-cal-lock-resume>{label}</a>' in sheet
+        assert "₹" not in sheet and "/pricing" not in sheet
         assert 'aria-labelledby="cal-si-upgrade-title"' in sheet and "data-study-close" in sheet
         assert 'aria-haspopup="dialog" aria-controls="cal-si-upgrade"' in _main(html)
     # existing material stays readable regardless (5-6a): the viewer dialog and the script render for every signed-in account

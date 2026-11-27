@@ -496,7 +496,7 @@ def test_t28_new_only_playground_http(
         assert int(ring.group(2)) == 0 or 'data-today-kind="review"' in html
 
 
-def test_t28_paused_lists_nothing_playground(
+def test_t28_paused_lists_playground_items_only_as_resume_links(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(
@@ -524,10 +524,17 @@ def test_t28_paused_lists_nothing_playground(
     client.app.state.subscriptions.update_subscription_state(
         USER, sub.id, status="paused"
     )
+    # M8-Ra (owner 2026-11-27), G3 / Q5: T28 used to pin that a paused account lists nothing from the
+    # Playground. The owner approved showing the items as halted and expired accounts see
+    # them: links to the existing Resume flow only. What T28 protected still holds — a
+    # paused account is given no way into Learn from Today.
     page = client.get("/dashboard")
     assert page.status_code == 200
-    assert "data-today-source=\"playground\"" not in page.text
-    assert "Day 1 → 3 · Playground" not in page.text
+    assert "data-today-source=\"playground\"" in page.text
+    assert "/playground/laws/" not in page.text
+    assert 'href="/billing/subscriptions"' in page.text and "Resume Playground" in page.text
+    learn = client.get("/playground/laws/ndps/sections/8/learn/read", follow_redirects=False)
+    assert "data-pg-learn" not in learn.text
 
 
 def test_t30_clause_citation_and_playground_marker(
