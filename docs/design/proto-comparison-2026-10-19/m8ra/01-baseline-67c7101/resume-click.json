@@ -1,0 +1,17 @@
+{
+ "base": "http://127.0.0.1:8934",
+ "path": "/laws/pss",
+ "captured_at": "2026-11-27T22:00:09+0530",
+ "link": {
+  "text": "Resume Playground",
+  "href": "/billing/subscriptions",
+  "opener": true,
+  "kind": "resume"
+ },
+ "sheet_fetches_before_navigation": [
+  "/billing/subscriptions"
+ ],
+ "busy_state_was_set": false,
+ "landed_on": "/billing/subscriptions",
+ "dialog_open": false
+}

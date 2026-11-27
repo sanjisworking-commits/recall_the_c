@@ -7,7 +7,7 @@
 | Carried items closed here | the plans-stage title for paid holders (M5); the expired Act head's billing link marked as a sheet opener (M2 B12); the device-blocked Add sheet's heading (M2 observation) |
 | Baseline | M8-S head (edge-state source identical to `079257e`) — `m8ra/01-baseline-67c7101/` |
 | Candidate | source `2270d77`; tests `97edd4e` — `m8ra/02-candidate-2270d77/` |
-| Tooling | `m8/tools/readback_m8.py`, `diff_readback_m8.py`, `serve_states_m8.py`, `billing_matrix_m8.py`, `probe_style_m8s.py` |
+| Tooling | `m8/tools/readback_m8.py`, `diff_readback_m8.py`, `serve_states_m8.py`, `billing_matrix_m8.py`, `probe_style_m8s.py`, `click_resume_m8.py` |
 | Flags | `PLAYGROUND_TIER_MODEL` `monthly` (default); `choices` exercised without activating it. No provider configured |
 
 **Status: candidate with local evidence. Not accepted.** M8-Rb (transitions) and every billing-action change stay held. No merge, deployment, staging write, payment operation or `choices` activation.
@@ -30,10 +30,11 @@ The record, the evidence and the read-back are in this one file (as for M7b); th
 | # | Change | Where |
 |---|---|---|
 | G1 | **Plans stage for a current subscriber.** Title "Change your Playground plan" and one line "You’re on RecallC {Plan}." instead of the Free gate's "Your RecallC account already includes the complete Constitution." Nothing about timing. A legacy Max holder sees a disabled "Max · Current plan" card with no price. A pending holder sees "Plan changes are not available while a payment retry is in progress." and "Manage subscription" instead of the form. The Free title and the create form are unchanged | `playground/access.py` `_gate_page`; `playground_gate.html` |
-| G2 | **One rule for sheet openers.** A link is marked `data-pg-sheet` only when it leads to an Act's Add dialog (`is_add_sheet_href`). "Resume Playground" → billing on the Act head, the Playground partial and read-only home cards is now an ordinary link: no "Opening…" flash, no failed sheet fetch | `playground/urls.py`; `playground/view.py` (`_state`, `LawCardView.opens_sheet`); `partials/playground.html` |
+| G2 | **One rule for sheet openers.** A link is marked `data-pg-sheet` only when it leads to an Act's Add dialog (`is_add_sheet_href`). "Resume Playground" → billing on the Act head, the Playground partial and read-only home cards is now an ordinary link. Measured in a browser on a paused account's Act head (`resume-click.json`): at baseline the click first fetched `/billing/subscriptions` as a sheet and then navigated; on the candidate it navigates directly, with no such fetch | `playground/urls.py`; `playground/view.py` (`_state`, `LawCardView.opens_sheet`); `partials/playground.html` |
 | G3a | **Paused header.** "Playground subscription paused" instead of "RecallC Free" (status-based, also once the stored period has elapsed, as for halted) | `entitlements/dependencies.py` `snapshot_is_paused_subscriber`; `web/shell.py` |
 | G3b | **Paused Add sheet.** The gate's title and line ("Playground subscription paused" / "Your laws and learning progress are saved.") instead of "Add {Act} to {Month}?" and a capacity line above a Resume button | `playground/routes.py` `_add_page_context` |
-| G3c | **Paused Today and Calendar.** The Playground items a halted or expired account already sees, bound by the same binder: each is a link to `/billing/subscriptions` labelled "Resume Playground" | `playground/schedule.py`; `auth/routes.py` (Today); `web/app.py` (Calendar) |
+| G3c | **Paused Today and Calendar.** The Playground items a halted or expired account already sees. Today: the expired cohort's binder — each item is a link to `/billing/subscriptions` labelled "Resume Playground". Calendar: **every** Playground chip that points into the Playground is rewritten to that link (`reconcile_paused_playground_calendar_chips`). That is stricter than the halted / expired reconcile, which rewrites due and revision chips and leaves the others on the Act-progress page (itself gated) | `playground/schedule.py`; `auth/routes.py` (Today); `web/app.py` (Calendar) |
+| G3d | **Paused Profile identity line.** "Signed in with Google", as for halted and expired, instead of "RecallC Free · Constitution learning included". Settings prints the shell label: "Playground subscription paused · Signed in with Google" | `auth/routes.py` (Profile) |
 | G4 | **`?stage=plans` for paused / halted / ended accounts** redirects (303) to `/billing/subscriptions` instead of being silently ignored. Under `choices`, the Calendar's locked entry for these accounts reads "Personal tasks need an active subscription" with the account's own Resume / Manage link, instead of "Personal tasks are part of Plus · See plans ›" | `playground/routes.py`; `web/app.py`; `calendar.html` |
 | G6 | **No month wording under `choices`** on the Profile card ("Your Playground is open.", "n laws in your Playground", "Resume to keep learning your laws.") and on the billing page (the explanatory paragraph; "Unlimited Playground laws"). `monthly` strings unchanged | `playground/view.py`; `subscriptions/routes.py` (strings only) |
 | G7 | **Device limit.** The gate, the Act-head note and the Add sheet state the configured limit carried by the snapshot (2 today). The device-blocked Add sheet shows the gate's title ("Device limit reached") instead of an add confirmation over a "Manage devices" button | `playground/view.py` `gate_view(device_limit=)`; `playground/access.py`; `playground/routes.py` |
@@ -45,7 +46,7 @@ Proposed copy that is new in this batch, for review (Q12): every quoted string i
 ### Left as it was, on purpose
 
 - `snapshot_is_free_account` still counts a paused account as Free (Browse's Free-only copy, M3). The header no longer does. Changing it would alter accepted Browse pages; recorded as an open point.
-- The billing page and all four subscription routes.
+- The billing page and every subscription route.
 - The expired, halted and paused read-only pages beyond these defects (no prototype restyle while 5-20 may turn all three into Free).
 
 ## 3. Findings recorded, not fixed
@@ -67,6 +68,7 @@ Proposed copy that is new in this batch, for review (Q12): every quoted string i
 
 **Other observations:**
 
+- For halted and expired accounts, Calendar chips that are not due or revision chips still link to `/playground/laws/{law}` (Act progress), which serves the gate page. Unchanged here; only the paused account's chips were made Resume links throughout, because that was the condition of its approval.
 - The order of law cards on a read-only home is not stable between two renders of the same account (a tie the page does not break); seen as a difference between two baseline runs.
 - Body-wide probes of Today, Calendar and the Bare Act reader show the site-wide grey labels under 4.5:1 that `M8-S.md` §5 lists for Profile, Devices and the phone Calendar. Unchanged, outside this batch.
 - **A second date-dependence in existing tests.** The family modules share `tests/test_browse_laws_family.py::STATES`, whose "expired" period ends 80 days before the *real* date, while the suite pins the entitlement clock to 2026-09-16 (`tests/conftest.py`). From 2026-12-06 that period no longer lies in the past of the pinned clock, and the tests that rely on that state resolving as "paid period ended" can be expected to fail. Not changed here; flagged for a separate fix together with the Calendar test of `M8-S.md` §3. The new module of this batch measures every period from the pinned clock.
@@ -79,6 +81,7 @@ New `tests/test_edge_state_family.py` — 100 tests (E01–E07 and the four know
 |---|---|---|
 | Related modules by keyword, local, before the re-pins | working tree | 2735 passed / 168 skipped / 21 failed — 20 assertions of the old behaviour (re-pinned) and the date-dependent test below. The keyword selection missed one affected test, found by the full run |
 | Full suite, local | `97edd4e` | **4425 passed / 177 skipped / 1 failed** (991.8 s) |
+| Full suite, local, on the pull-request head | `8f555b8` (records and tools only since `97edd4e`) | 4425 passed / 177 skipped / 1 failed (1009.9 s) — the same test |
 | CI `workflow_dispatch` | `97edd4e` tree | __CI__ |
 
 The one local failure is `tests/test_phone_plus_calendar_screen5.py::test_phone_plus_calendar_overdue_done_and_future_constitution`, the date-dependent test described in `M8-S.md` §3: it fails on the untouched M7b head too from the 24th of the month. Counting it, this batch adds 100 tests and changes no other result: 4325 passed at M8-S → 4425 passed, the same 1 failing.
@@ -166,9 +169,20 @@ Today and Calendar fade in; a frame taken beyond the viewport restarts the fade 
 - M2's owed hosted checks for Plus, Max, expired and halted heads: NOT RUN.
 - Screenshots of the expired and halted homes after M7a's capacity-line change: still not taken, except the frames listed in §7.
 - The prototype's `viewer=expired|halted|paused|deviceLimit|deviceRevoked|replacementLimit` and `notice=…` frames were not compared (Q9: no restyle while 5-20 is open); DV-18 stays **U** locally for those rows too.
-- The "sheet opener" fix is verified by markup (no `data-pg-sheet` on a billing link) and by tests; the absence of the "Opening…" flash was not filmed.
+- The "sheet opener" fix is verified by markup and tests over every state, and by one browser click on a paused account's Act head at baseline and on the candidate (`resume-click.json`: the sheet fetch before navigation is gone). The script's "Opening…" busy state was not observed in either run by that check, so nothing is claimed about it.
 - Device states were produced with separate signed-in sessions of one account on one machine.
 
 ## 9. Owner sign-off
 
 None recorded. Sign-off is recorded only against the owner's direct answer.
+
+## 10. Proposed roadmap entry (not applied)
+
+`PLAYGROUND_FIDELITY_ROADMAP.md` lives on the branch of PR #218 and still lists one row, "M8 — Subscription and device edge states · proposed". It is not edited from this branch. Proposed replacement, for the owner to apply or amend there:
+
+| Row | State |
+|---|---|
+| M8-S — shared style (label contrast, back link, Calendar dialog close) | built, draft PR #247, local evidence, not accepted |
+| M8-Ra — edge states, safe presentation (plans-stage title, sheet openers, paused parity, `?stage=plans`, `choices` wording, device copy) | built, draft PR #248, local evidence, not accepted |
+| M8-Rb — transitions and billing actions (5-20 table, paid → Free selection, abandoned checkout, checkout outcomes, notices, billing page for halted / paused / pending and for an elapsed period with an active row) | held: 5-20, 5-24, 5-3, review of `M8-Ra-billing-matrix.md`; after B1 acceptance |
+| Gate DV-18 | **U** — hosted rows not run; the prototype's edge-state viewers not compared (no restyle while 5-20 is open) |
