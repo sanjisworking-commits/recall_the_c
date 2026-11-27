@@ -5,9 +5,14 @@
 :root,
 html[data-theme="light"] {
   --pg-ink: #141414;
-  --pg-muted: #6b6b6b;
-  --pg-faint: #9a9a9a;
-  --pg-mid: #8f8f8d;
+  /* M8-S: the three label greys share one value that clears 5.0:1 on every
+     light surface (5.16:1 on the page colour). Hierarchy between them is
+     carried by size, case and spacing, not by a lighter grey. */
+  --pg-muted: #626262;
+  --pg-faint: #626262;
+  --pg-mid: #626262;
+  /* Genuinely disabled controls only (exempt from text contrast). */
+  --pg-disabled: #9a9a9a;
   --pg-guest-avatar: #e2e2e0;
   --pg-hairline: #dcdcdc;
   --pg-page: #ececea;
@@ -56,8 +61,10 @@ html[data-theme="light"] {
 html[data-theme="dark"] {
   --pg-ink: #ecebe6;
   --pg-muted: #a8a59e;
-  --pg-faint: #7d7a73;
-  --pg-mid: #8f8f8d;
+  /* M8-S: at least 5.0:1 on every dark surface (5.25:1 on the subtle one). */
+  --pg-faint: #96948f;
+  --pg-mid: #96948f;
+  --pg-disabled: #7d7a73;
   --pg-hairline: #34322e;
   --pg-page: #0f0e0d;
   --pg-paper: #1a1917;
@@ -254,7 +261,7 @@ body.playground-app .sheet {
 .pg-btn.is-disabled {
   border-color: var(--pg-control-border);
   background: var(--pg-wash);
-  color: var(--pg-faint);
+  color: var(--pg-disabled);
   box-shadow: none;
   pointer-events: none;
 }
@@ -1687,6 +1694,7 @@ html:has(.pg-surface--fixed-dark) .sheet {
   --pg-muted: #9a9a9a;
   --pg-faint: #8f8f8d;
   --pg-mid: #8f8f8d;
+  --pg-disabled: #8f8f8d;
   --pg-hairline: #333333;
   --pg-page: #141414;
   --pg-paper: #1d1d1d;
@@ -1710,10 +1718,6 @@ html:has(.pg-surface--fixed-dark) .sheet {
 }
 
 @media (min-width: 561px) {
-  .pg-back {
-    min-height: 32px;
-  }
-
   .pg-columns--2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -5100,6 +5104,10 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     pointer-events: none;
   }
 
+  .plus-sub-cta:disabled:not(.is-current) {
+    color: var(--pg-disabled);
+  }
+
   .plus-sub-gst {
     margin: 14px 0 0;
     font-size: 12px;
@@ -8070,4 +8078,22 @@ label.pg-plan-card:has(.pg-plan-radio:focus-visible) {
   gap: 10px;
   min-height: var(--pg-tap);
   padding: 4px 0;
+}
+
+/* M8-S — Learn hints. Their colour comes from the site-wide `--faint` /
+   `--mid`, which fail on the page colour; inside Playground Learn they take
+   the Playground label colour. The site-wide tokens are not changed here. */
+.pg-learn .learn-hint,
+.pg-learn .learn-recite-hint,
+.pg-learn .learn-letters-hint,
+.pg-learn .learn-type-lede,
+.pg-learn .learn-test-lede,
+.pg-learn .learn-stem {
+  color: var(--pg-muted);
+}
+
+/* The unselected practice-style option sits on the control's own track,
+   darker than the page: the site grey gives 4.11:1 there. */
+.pg-learn .learn-letters-view-btn:not(.is-active) {
+  color: var(--pg-muted);
 }

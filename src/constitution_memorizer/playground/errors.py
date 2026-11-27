@@ -79,7 +79,7 @@ def _error_html(
         '<meta name="robots" content="noindex, nofollow">'
         f"<title>{title} · Playground</title>"
         f"{_THEME_BOOT}"
-        '<link rel="stylesheet" href="/static/playground.css?v=pg11">'
+        '<link rel="stylesheet" href="/static/playground.css?v=pg61">'
         "</head><body data-mscreen=\"playground\" class=\"playground-app\">"
         f'<div class="PlaygroundShell" data-hard-gate="{gate_flag}" '
         f'data-playground-error="{status}" data-playground-gate="{reason}">'
