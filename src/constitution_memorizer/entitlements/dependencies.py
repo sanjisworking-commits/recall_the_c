@@ -322,6 +322,33 @@ def request_is_halted_subscriber(request: object, *, now: datetime | None = None
     return snapshot_is_halted_subscriber(get_entitlement_snapshot(request, now=now))
 
 
+def snapshot_is_paused_subscriber(snapshot: EntitlementSnapshot) -> bool:
+    """Paused subscriber (M8-Ra). Status-based, like the Halted cohort.
+
+    An open-period Paused row carries ``subscription_paused`` as the block
+    reason; once the stored period has elapsed the reason is
+    ``paid_period_ended`` but ``subscription_status`` stays ``paused``, so
+    this stays the Paused cohort. Presentation only: it grants nothing.
+    """
+
+    return bool(
+        snapshot.is_authenticated
+        and snapshot.subscription_status == "paused"
+        and snapshot.tier is not None
+        and not snapshot.is_subscribed
+        and not snapshot.can_open_playground
+        and not snapshot.can_consume_new_playground_law
+    )
+
+
+def request_is_paused_subscriber(request: object, *, now: datetime | None = None) -> bool:
+    """Resolve once via ``get_entitlement_snapshot``. Guests are never Paused."""
+
+    if getattr(getattr(request, "state", None), "current_user", None) is None:
+        return False
+    return snapshot_is_paused_subscriber(get_entitlement_snapshot(request, now=now))
+
+
 def snapshot_is_free_account(snapshot: EntitlementSnapshot) -> bool:
     """A signed-in RecallC Free account — the audience of Free-only copy.
 
@@ -329,7 +356,10 @@ def snapshot_is_free_account(snapshot: EntitlementSnapshot) -> bool:
     Free`` label (``web/shell.py``): authenticated, not a halted or expired
     subscriber, and not holding a live subscription of any tier (Plus, Pro
     and legacy Max are never Free, whatever ``request_is_active_plus``
-    says). Paused and pending accounts resolve as Free, as the label does.
+    says). A paused account still resolves as Free here; since M8-Ra the shell
+    label names the paused subscription instead, and this predicate (Browse's
+    Free-only copy) was deliberately left as it was — an open point, recorded
+    in ``M8-Ra.md``.
     """
 
     return bool(

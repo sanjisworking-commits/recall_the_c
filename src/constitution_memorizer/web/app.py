@@ -3013,7 +3013,9 @@ def create_app(
         plus_calendar = False
         halted_calendar = False
         expired_calendar = False
+        paused_calendar = False
         paid_calendar = False
+        cal_lock_action: dict[str, str] | None = None
         can_add_material = False
         halted_header_status = ""
         expired_header_status = ""
@@ -3023,11 +3025,15 @@ def create_app(
                 request_is_active_plus,
                 request_is_expired_subscriber,
                 request_is_halted_subscriber,
+                request_is_paused_subscriber,
             )
 
             plus_calendar = request_is_active_plus(request)
             halted_calendar = request_is_halted_subscriber(request)
             expired_calendar = request_is_expired_subscriber(request)
+            # M8-Ra (G3): a paused account keeps its Playground chips, linked
+            # to the existing Resume flow only.
+            paused_calendar = request_is_paused_subscriber(request) and not halted_calendar
             # M6 (Q3 / Q1, owner 2026-11-11): one paid marker for every active
             # paid tier (Plus keeps its own marker too), and the personal-
             # material capability the create entry points render on. The
@@ -3041,6 +3047,22 @@ def create_app(
                 and not expired_calendar
             )
             can_add_material = bool(getattr(_snap, "can_add_personal_calendar_tasks", True))
+            if not can_add_material and (halted_calendar or expired_calendar or paused_calendar):
+                # M8-Ra (G4): an account whose subscription is halted, paused or
+                # past its paid period is not told "part of Plus" with a link to
+                # plans it cannot reach; the locked entry names its own
+                # Resume / Manage action (the existing billing page).
+                from constitution_memorizer.playground.schedule import (  # noqa: PLC0415
+                    expired_playground_today_action,
+                    halted_playground_today_action,
+                )
+
+                _label, _href = (
+                    halted_playground_today_action(request)
+                    if halted_calendar
+                    else expired_playground_today_action(request)
+                )
+                cal_lock_action = {"label": _label, "href": _href}
             if halted_calendar or expired_calendar:
                 from constitution_memorizer.entitlements.models import BLOCK_PAYMENT_HALTED
                 from constitution_memorizer.playground.view import gate_view
@@ -3059,6 +3081,7 @@ def create_app(
                     playground_calendar_chips,
                     reconcile_expired_playground_calendar_chips,
                     reconcile_halted_playground_calendar_chips,
+                    reconcile_paused_playground_calendar_chips,
                 )
                 from constitution_memorizer.playground.http import playground_user_id
                 from constitution_memorizer.playground.roster.period import (
@@ -3073,7 +3096,7 @@ def create_app(
                     overlay is not None
                     and roster is not None
                     and uid is not None
-                    and (access.can_open or expired_calendar or halted_calendar)
+                    and (access.can_open or expired_calendar or halted_calendar or paused_calendar)
                 ):
                     if week_model is not None:
                         chip_start, chip_end = week_model.start, week_model.end
@@ -3098,6 +3121,10 @@ def create_app(
                         )
                     if expired_calendar:
                         extra = reconcile_expired_playground_calendar_chips(
+                            extra, request
+                        )
+                    if paused_calendar:
+                        extra = reconcile_paused_playground_calendar_chips(
                             extra, request
                         )
                     attach_playground_calendar_chips(view_model, extra)
@@ -3150,6 +3177,7 @@ def create_app(
                 "plus_calendar": plus_calendar,
                 "paid_calendar": paid_calendar,
                 "can_add_material": can_add_material,
+                "cal_lock_action": cal_lock_action,
                 "halted_calendar": halted_calendar,
                 "halted_header_status": halted_header_status,
                 "expired_calendar": expired_calendar,

@@ -381,11 +381,18 @@
    no price. A native modal dialog: focus is contained and Esc closes it. #}
 <dialog id="cal-si-upgrade" class="cal-si-dialog cal-si-upgrade" aria-labelledby="cal-si-upgrade-title" data-cal-upgrade-sheet>
   <div class="cal-si-dialog-head">
-    <h2 id="cal-si-upgrade-title">Personal tasks are part of Plus</h2>
+    {# M8-Ra (G4): a halted, paused or ended subscription is named as such; its
+       one action is the account's own Resume / Manage link. #}
+    <h2 id="cal-si-upgrade-title">{% if cal_lock_action|default(none) %}Personal tasks need an active subscription{% else %}Personal tasks are part of Plus{% endif %}</h2>
     <button type="button" data-study-close aria-label="Close">×</button>
   </div>
+  {% if cal_lock_action|default(none) %}
+  <p class="cal-si-upgrade-body">Your subscription is not active. Everything you already saved stays here — read it, mark it revised, download it.</p>
+  <p class="cal-si-upgrade-actions"><a class="cal-si-upgrade-cta" href="{{ cal_lock_action.href }}" data-cal-lock-resume>{{ cal_lock_action.label }}</a></p>
+  {% else %}
   <p class="cal-si-upgrade-body">Plus and Pro add your own study material to the Calendar. Everything you already saved stays here — read it, mark it revised, download it.</p>
   <p class="cal-si-upgrade-actions"><a class="cal-si-upgrade-cta" href="/playground?stage=plans">See plans ›</a></p>
+  {% endif %}
 </dialog>
 {% endif %}
 {% if current_user and not is_guest|default(false) and study_token|default('') and can_add_material|default(true) %}

@@ -450,11 +450,14 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             request_is_active_plus,
             request_is_expired_subscriber,
             request_is_halted_subscriber,
+            request_is_paused_subscriber,
         )
 
         plus_today = request_is_active_plus(request)
         halted_today = request_is_halted_subscriber(request)
         expired_today = request_is_expired_subscriber(request)
+        # M8-Ra (G3): paused keeps its Playground items as Resume links.
+        paused_today = request_is_paused_subscriber(request) and not halted_today
         halted_header_status = ""
         expired_header_status = ""
         if halted_today or expired_today:
@@ -510,10 +513,10 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             )
             if halted_today:
                 reconcile_halted_playground_today(ctx, request)
-            if expired_today:
+            if expired_today or paused_today:
                 reconcile_expired_playground_today(ctx, request)
             apply_merged_today_hero(ctx)
-            if halted_today or expired_today:
+            if halted_today or expired_today or paused_today:
                 apply_expired_today_hero(ctx)
             ctx["plus_today"] = plus_today
             ctx["halted_today"] = halted_today
@@ -596,6 +599,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             request_is_active_plus,
             request_is_expired_subscriber,
             request_is_halted_subscriber,
+            request_is_paused_subscriber,
         )
         from constitution_memorizer.playground.view import (
             device_count_copy,
@@ -686,8 +690,10 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             identity_meta = "Signed in"
         # M5 (Q1, owner 2026-11-07): the account label the shell prints, with
         # what the account includes. Halted / expired keep the sign-in line —
-        # the header already carries their status title.
-        if not halted_profile and not expired_profile:
+        # the header already carries their status title. Paused joins them
+        # (M8-Ra, G3): its header now names the paused subscription too.
+        paused_profile = bool(user) and request_is_paused_subscriber(request)
+        if not halted_profile and not expired_profile and not paused_profile:
             from constitution_memorizer.web.shell import shell_account_status
 
             label = shell_account_status(request)

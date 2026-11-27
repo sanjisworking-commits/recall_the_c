@@ -14,8 +14,12 @@ from constitution_memorizer.entitlements.dependencies import (
     get_entitlement_snapshot,
     snapshot_is_expired_subscriber,
     snapshot_is_halted_subscriber,
+    snapshot_is_paused_subscriber,
 )
-from constitution_memorizer.entitlements.models import BLOCK_PAYMENT_HALTED
+from constitution_memorizer.entitlements.models import (
+    BLOCK_PAYMENT_HALTED,
+    BLOCK_SUBSCRIPTION_PAUSED,
+)
 
 TIER_LABELS: dict[str, str] = {"plus": "RecallC Plus", "pro": "RecallC Pro", "max": "RecallC Max"}
 FREE_LABEL = "RecallC Free"
@@ -24,8 +28,8 @@ FREE_LABEL = "RecallC Free"
 def account_status_for_snapshot(snapshot: Any) -> str:
     """Label for the header account slot.
 
-    Halted and expired subscribers keep today's status titles (transitions
-    are M8-R / 5-20); an active subscriber shows the tier; everyone else who
+    Halted, paused and expired subscribers show their status titles
+    (transitions are M8-Rb / 5-20); an active subscriber shows the tier; everyone else who
     is signed in is ``RecallC Free`` (a legacy Max holder is ``RecallC Max``).
     """
 
@@ -35,6 +39,11 @@ def account_status_for_snapshot(snapshot: Any) -> str:
         # Elapsed Halted keeps paid_period_ended as the block reason, but the
         # header stays Halted-family (same rule as the retired flag chain).
         return gate_view(reason=BLOCK_PAYMENT_HALTED).title
+    if snapshot_is_paused_subscriber(snapshot):
+        # M8-Ra (G3): a paused paid subscription is not a Free account. Same
+        # rule as Halted: the title follows the status, also once the stored
+        # period has elapsed.
+        return gate_view(reason=BLOCK_SUBSCRIPTION_PAUSED).title
     if snapshot_is_expired_subscriber(snapshot):
         return gate_view(reason=str(snapshot.playground_block_reason or "")).title
     tier = getattr(snapshot, "tier", None)

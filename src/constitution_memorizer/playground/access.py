@@ -80,6 +80,7 @@ from constitution_memorizer.playground.roster.period import playground_month_nam
 from constitution_memorizer.playground.roster.service import roster_full_body
 from constitution_memorizer.playground.urls import add_path, home_path, roster_path
 from constitution_memorizer.playground.view import (
+    GATE_STAGE_PLANS,
     FREE_GATE_HOW_STEPS,
     GATE_STAGE_INTRO,
     PLAYGROUND_PLANS_PATH,
@@ -228,6 +229,13 @@ def playground_access(request: Request) -> PlaygroundAccess:
         can_consume_new_law=snapshot.can_consume_new_playground_law,
         local_owner=False,
     )
+
+
+def device_registration_applies(request: Request, snapshot: EntitlementSnapshot) -> bool:
+    """Public name of the registration predicate, for copy that must describe
+    exactly what the registry does (M8-Ra, the Devices page)."""
+
+    return _device_registration_applies(request, snapshot)
 
 
 def _device_registration_applies(request: Request, snapshot: EntitlementSnapshot) -> bool:
@@ -806,7 +814,16 @@ def _gate_page(
         BLOCK_DEVICE_CONFIG_ERROR,
     }:
         cta_href = MANAGE_DEVICES_PATH if reason != BLOCK_DEVICE_CONFIG_ERROR else CONSTITUTION_HOME_PATH
-    gate = gate_view(reason=reason, consume_blocked=consume_blocked, cta_href=cta_href)
+    snap_now = getattr(getattr(request, "state", None), "entitlement_snapshot", None)
+    gate = gate_view(
+        reason=reason,
+        consume_blocked=consume_blocked,
+        cta_href=cta_href,
+        # M8-Ra (G7, G8): the configured device limit; the support contact as
+        # the revoked gate's second action when one is configured.
+        device_limit=getattr(snap_now, "device_limit", None),
+        secondary_href=(_support_mailto(request) or "") if reason == BLOCK_DEVICE_REVOKED else "",
+    )
     saved = None
     if gate.show_saved:
         overlay = getattr(request.app.state, "playground", None)
@@ -832,10 +849,50 @@ def _gate_page(
         current_tier = ""
         if snap is not None and getattr(snap, "is_subscribed", False):
             current_tier = str(getattr(snap, "tier", None) or "")
+        selector_plans = gate_selector_plan_views()
+        current_unlisted = ""
+        change_blocked = False
+        if stage == GATE_STAGE_PLANS and current_tier:
+            # M8-Ra (G1, owner 2026-11-27): a subscriber changing plan is not
+            # reading the Free gate. Neutral copy: the current plan is named
+            # and nothing is said about when a change takes effect (the
+            # billing period and the Playground month are different clocks,
+            # and the provider's own behaviour is not verified here).
+            from dataclasses import replace as _replace  # noqa: PLC0415
+
+            from constitution_memorizer.subscriptions.catalog import (  # noqa: PLC0415
+                UnknownSubscriptionTier,
+                get_subscription_product,
+            )
+            from constitution_memorizer.subscriptions.service import (  # noqa: PLC0415
+                PLAN_CHANGE_STATUSES,
+            )
+
+            try:
+                plan_name = get_subscription_product(current_tier).display_name
+            except UnknownSubscriptionTier:
+                plan_name = current_tier.capitalize()
+            gate = _replace(
+                gate,
+                title="Change your Playground plan",
+                lines=(f"You’re on RecallC {plan_name}.",),
+            )
+            if current_tier not in {plan.tier for plan in selector_plans}:
+                # A plan that is no longer sold (legacy Max): shown as the
+                # current plan, with no price and no promise.
+                current_unlisted = plan_name
+            # The change route accepts an active subscription only. Any other
+            # subscribed status (a pending payment retry) is not shown a form
+            # the server refuses; the route's own rejection is unchanged.
+            change_blocked = (
+                str(getattr(snap, "subscription_status", "") or "") not in PLAN_CHANGE_STATUSES
+            )
         extra = {
             "pg_gate_stage": stage,
             "selected_tier": selected_tier or "",
-            "gate_selector_plans": gate_selector_plan_views(),
+            "gate_selector_plans": selector_plans,
+            "current_plan_unlisted": current_unlisted,
+            "plan_change_blocked": change_blocked,
             "gate_continue_label": gate_plan_continue_label(
                 selected_tier=selected_tier,
                 current_tier=current_tier or None,

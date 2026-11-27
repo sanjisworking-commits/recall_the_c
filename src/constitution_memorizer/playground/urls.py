@@ -33,6 +33,23 @@ def add_path(law_id: str) -> str:
     return f"{PREFIX}/laws/{law_id}/add"
 
 
+def is_add_sheet_href(href: str | None) -> bool:
+    """True when ``href`` is an Act's Add dialog — the one target a law's
+    primary action can open as an in-page sheet (M8-Ra, carried from M2 B12).
+
+    A link to billing, plans or Devices is an ordinary navigation: marking it
+    as a sheet opener makes the page fetch it, find no sheet and only then
+    navigate.
+    """
+
+    path = str(href or "").split("?", 1)[0].split("#", 1)[0]
+    prefix = f"{PREFIX}/laws/"
+    if not path.startswith(prefix) or not path.endswith("/add"):
+        return False
+    law = path[len(prefix):-len("/add")]
+    return bool(law) and "/" not in law
+
+
 def remove_path(law_id: str) -> str:
     return f"{PREFIX}/roster/{law_id}/remove"
 

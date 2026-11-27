@@ -150,8 +150,10 @@ from constitution_memorizer.entitlements.dependencies import (
     request_is_halted_subscriber,
 )
 from constitution_memorizer.entitlements.models import (
+    BLOCK_DEVICE_LIMIT,
     BLOCK_PAID_PERIOD_ENDED,
     BLOCK_PAYMENT_HALTED,
+    BLOCK_SUBSCRIPTION_PAUSED,
 )
 from constitution_memorizer.playground.stage_timer import time_playground_stage
 from constitution_memorizer.playground.view import (
@@ -583,6 +585,16 @@ def _add_page_context(
         gate = gate_view(reason=reason)
         title = gate.title
         lines = gate.lines
+    elif kind in {"resume", "device_blocked"}:
+        # M8-Ra (G3, G7): a paused or device-blocked account is not confirming
+        # an add. The sheet states why in the gate's own words instead of the
+        # add-confirm heading and capacity line; its action is unchanged.
+        snapshot = access.snapshot
+        fallback = BLOCK_SUBSCRIPTION_PAUSED if kind == "resume" else BLOCK_DEVICE_LIMIT
+        reason = (snapshot.playground_block_reason if snapshot is not None else "") or fallback
+        gate = gate_view(reason=reason, device_limit=getattr(snapshot, "device_limit", None))
+        title = gate.title
+        lines = gate.lines
     # The Add sheet is a dialog over the Act page, so every render of it —
     # direct URL or the in-page fetch that lifts the panel out — carries the
     # Act head's own context underneath (M2 Q4: deterministic presentation).
@@ -686,6 +698,15 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             from constitution_memorizer.playground.access import plans_stage_page
 
             return plans_stage_page(request, templates)  # type: ignore[return-value]
+        if (request.query_params.get("stage") or "").strip().lower() == "plans":
+            # M8-Ra (G4, owner 2026-11-27): a paused, halted or expired account
+            # has no plans stage (M5 Q8 stands). "See plans" links used to be
+            # ignored here and landed on the read-only home; they now go to
+            # the page this account's own Resume / Manage links open. That
+            # page and its actions are unchanged.
+            from constitution_memorizer.playground.view import PLAYGROUND_BILLING_PATH
+
+            return RedirectResponse(url=PLAYGROUND_BILLING_PATH, status_code=303)  # type: ignore[return-value]
         overlay = require_playground_repo(request)
         roster = require_roster_service(request)
         with time_playground_stage("playground_home_build"):
