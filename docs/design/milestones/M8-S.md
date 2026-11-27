@@ -56,9 +56,13 @@ Re-pinned, none weakened: `playground.css?v=pg60` → `pg61` in 58 modules, `sty
 |---|---|---|
 | Template-, static-, Playground-, Learn-, account- and Calendar-related modules, local (stops at the first failure) | `67c7101` tree | 797 passed / 52 skipped / **1 failed** — the test named below |
 | Full suite, local | `67c7101` | **4325 passed / 177 skipped / 1 failed** (965.5 s) |
-| CI `workflow_dispatch` | `67c7101` | __CI__ |
+| CI `workflow_dispatch` 46026253567, attempt 1 | `6668f50` (source and tests of `67c7101`) | **failure — pytest executed: 4323 passed / 164 skipped / 14 deselected / 2 failed** (1314.4 s) |
+| CI `workflow_dispatch` 46030354524 — **control on the parent branch** | `079257e` | failure — pytest executed: 4314 passed / 164 skipped / 14 deselected / 1 failed (1311.7 s) |
+| CI 46026253567, attempt 2 (re-run of the failed job) | `6668f50` | failure — pytest executed: **4324 passed / 164 skipped / 14 deselected / 1 failed** (1343.8 s): the date-dependent test only |
 
-**The one failure is not caused by this batch.** `tests/test_phone_plus_calendar_screen5.py::test_phone_plus_calendar_overdue_done_and_future_constitution` seeds a Constitution revision seven days after the real current date and then reads the current month's Calendar. From the 24th of a 30-day month the revision falls in the next month and the assertion fails. It fails identically on the untouched M7b head `079257e` when run on 2026-11-27, and passed there on 2026-11-21. It is a date-dependent test, left as it is here and flagged for a separate fix; until it is fixed or the month turns, no run of the suite is fully green. Counting it, the batch adds 10 tests and changes no other result: 4316 passed at M7b → 4325 passed + this 1.
+**The local failure, and the first of the two CI failures, is not caused by this batch.** `tests/test_phone_plus_calendar_screen5.py::test_phone_plus_calendar_overdue_done_and_future_constitution` seeds a Constitution revision seven days after the real current date and then reads the current month's Calendar. From the 24th of a 30-day month the revision falls in the next month and the assertion fails. It fails identically on the untouched M7b head `079257e` when run on 2026-11-27, and passed there on 2026-11-21. It is a date-dependent test, left as it is here and flagged for a separate fix; until it is fixed or the month turns, no run of the suite is fully green. Counting it, the batch adds 10 tests and changes no other local result: 4316 passed at M7b → 4325 passed + this 1. The control run on the untouched parent shows the same single failure in CI (4315 passed there on 2026-11-21 → 4314 + this 1).
+
+**The second CI failure** is `tests/test_auto_roadmap.py::test_reconcile_does_not_persist_the_projected_theme_chain`: two reconciles of the automatic roadmap for a fixed date (2026-09-03) gave different fingerprints. It failed in attempt 1 of the run on this branch only. It passed in attempt 2 of the same run on the same commit, did not fail in the control run on the parent, nor locally on this branch (in the full suite, alone, under `TZ=UTC`, or under five hash seeds). This batch changes two stylesheets, two cache pins and the error page's pin; nothing in it is read by the roadmap. It is recorded as an intermittent failure of unknown cause — the same commit failed it once and passed it once — and flagged for investigation with the date-dependent test. No CI run of this batch is green: every one carries the date-dependent failure.
 
 Skipped locally: the Playwright-gated screen tests and the Postgres integration tests; counted as skipped, not passed.
 
@@ -133,6 +137,7 @@ Accepted screenshots of the Playground pages (M7a, M7b and the Playground rows o
 - The probe measures the colour of text against the first opaque background behind it. It does not measure text over images or gradients, focus indicators, or non-text contrast.
 - One Plus account under `monthly`, a Free account under `monthly`, a Free account under `choices` (Calendar sheet only) and a signed-out visitor were probed. The paused, halted and expired Playground pages use the same tokens and were not probed here; they are in M8-Ra's matrix.
 - Devices was probed with one registered device; Profile and billing with the Plus fixture.
+- Of M7b's route list, the Act progress page of a law with no progress (`law-new`) was not probed; of M7a's, the Manage-laws Add and re-add confirms were probed only through the Act's Add sheet. They use the same tokens.
 
 ## 8. Owner sign-off
 
