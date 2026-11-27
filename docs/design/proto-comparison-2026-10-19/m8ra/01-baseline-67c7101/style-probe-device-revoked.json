@@ -1,0 +1,2100 @@
+{
+ "label": "device-revoked",
+ "base": "http://127.0.0.1:8936",
+ "guest": false,
+ "captured_at": "2026-11-27T21:17:24+0530",
+ "rows": [
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "This device no longer has Playground access. \u00b7 Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 3,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "This device no longer has Playground access. \u00b7 Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 3,
+   "minRatio": 6.36,
+   "minRatioOrdinary": 6.36,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "This device no longer has Playground access. \u00b7 Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 3,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "This device no longer has Playground access. \u00b7 Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 3,
+   "minRatio": 6.36,
+   "minRatioOrdinary": 6.36,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "add-sheet",
+   "path": "/playground/laws/pss/add",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 3,
+   "smallTargets": [],
+   "texts": 6,
+   "minRatio": 6.1,
+   "minRatioOrdinary": 6.1,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-sheet-close",
+     "t": "\u2715",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-sheet",
+   "path": "/playground/laws/pss/add",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 3,
+   "smallTargets": [],
+   "texts": 6,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-sheet-close",
+     "t": "\u2715",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-sheet",
+   "path": "/playground/laws/pss/add",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 3,
+   "smallTargets": [],
+   "texts": 6,
+   "minRatio": 6.1,
+   "minRatioOrdinary": 6.1,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-sheet-close",
+     "t": "\u2715",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-sheet",
+   "path": "/playground/laws/pss/add",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 3,
+   "smallTargets": [],
+   "texts": 6,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-sheet-close",
+     "t": "\u2715",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "head-out",
+   "path": "/laws/pss",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "The Payment and Settlement Systems Act, 2007 | Recall the C",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 58,
+   "smallTargets": [
+    {
+     "t": "\u2190 Laws",
+     "sel": "section.panel.ActHead.bareact-page > div.ActHead-band > a.ActHead-back",
+     "w": 43,
+     "h": 44,
+     "viaLabel": false
+    }
+   ],
+   "texts": 163,
+   "minRatio": 2.81,
+   "minRatioOrdinary": 2.81,
+   "failing": [
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 84,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "head-out",
+   "path": "/laws/pss",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "The Payment and Settlement Systems Act, 2007 | Recall the C",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 58,
+   "smallTargets": [
+    {
+     "t": "\u2190 Laws",
+     "sel": "section.panel.ActHead.bareact-page > div.ActHead-band > a.ActHead-back",
+     "w": 43,
+     "h": 44,
+     "viaLabel": false
+    }
+   ],
+   "texts": 163,
+   "minRatio": 3.25,
+   "minRatioOrdinary": 3.25,
+   "failing": [
+    {
+     "t": "ABOUT THIS ACT",
+     "sel": "section.panel.ActHead.bareact-page > div.ActHead-band > button.bareact-info-toggle.ActHead-about",
+     "r": 3.25,
+     "fg": "#0e7569",
+     "bg": "#161615",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 1,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "head-out",
+   "path": "/laws/pss",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "The Payment and Settlement Systems Act, 2007 | Recall the C",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 69,
+   "smallTargets": [
+    {
+     "t": "Recall the C",
+     "sel": "div.sheet > header.site-header > a.brand",
+     "w": 131,
+     "h": 30,
+     "viaLabel": false
+    },
+    {
+     "t": "\u2190 Laws",
+     "sel": "section.panel.ActHead.bareact-page > div.ActHead-band > a.ActHead-back",
+     "w": 43,
+     "h": 44,
+     "viaLabel": false
+    },
+    {
+     "t": "Tables",
+     "sel": "footer.site-footer > nav.footer-nav.footer-tools > a.footer-link",
+     "w": 35,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Relevant laws",
+     "sel": "footer.site-footer > nav.footer-nav.footer-tools > a.footer-link.is-active",
+     "w": 74,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Playground",
+     "sel": "footer.site-footer > nav.footer-nav.footer-tools > a.footer-link",
+     "w": 62,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Settings",
+     "sel": "footer.site-footer > nav.footer-nav.footer-tools > a.footer-link",
+     "w": 44,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Contact us",
+     "sel": "footer.site-footer > nav.footer-nav.footer-tools > button.footer-link.footer-link-button",
+     "w": 57,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Terms",
+     "sel": "footer.site-footer > nav.footer-nav.footer-legal > a.footer-link",
+     "w": 33,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Privacy",
+     "sel": "footer.site-footer > nav.footer-nav.footer-legal > a.footer-link",
+     "w": 40,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Grievance",
+     "sel": "footer.site-footer > nav.footer-nav.footer-legal > a.footer-link",
+     "w": 53,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "\u25d0 Auto",
+     "sel": "div.sheet > footer.site-footer > button.theme-toggle",
+     "w": 64,
+     "h": 33,
+     "viaLabel": false
+    }
+   ],
+   "texts": 185,
+   "minRatio": 2.81,
+   "minRatioOrdinary": 2.81,
+   "failing": [
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "a.bareact-section-row > span.bareact-section-copy > span.bareact-section-tag",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "",
+     "sel": "div.bareact-section-list > a.bareact-section-row > span.bareact-section-chevron",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "Bare Act text verbatim \u00b7 Constitution 1\u21923\u21927\u219215\u21923",
+     "sel": "body.is-authed > div.page-wrap > p.sheet-footnote",
+     "r": 2.81,
+     "fg": "#9a9a9a",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 85,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "head-out",
+   "path": "/laws/pss",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "The Payment and Settlement Systems Act, 2007 | Recall the C",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 69,
+   "smallTargets": [
+    {
+     "t": "Recall the C",
+     "sel": "div.sheet > header.site-header > a.brand",
+     "w": 131,
+     "h": 30,
+     "viaLabel": false
+    },
+    {
+     "t": "\u2190 Laws",
+     "sel": "section.panel.ActHead.bareact-page > div.ActHead-band > a.ActHead-back",
+     "w": 43,
+     "h": 44,
+     "viaLabel": false
+    },
+    {
+     "t": "Tables",
+     "sel": "footer.site-footer > nav.footer-nav.footer-tools > a.footer-link",
+     "w": 35,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Relevant laws",
+     "sel": "footer.site-footer > nav.footer-nav.footer-tools > a.footer-link.is-active",
+     "w": 74,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Playground",
+     "sel": "footer.site-footer > nav.footer-nav.footer-tools > a.footer-link",
+     "w": 62,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Settings",
+     "sel": "footer.site-footer > nav.footer-nav.footer-tools > a.footer-link",
+     "w": 44,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Contact us",
+     "sel": "footer.site-footer > nav.footer-nav.footer-tools > button.footer-link.footer-link-button",
+     "w": 57,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Terms",
+     "sel": "footer.site-footer > nav.footer-nav.footer-legal > a.footer-link",
+     "w": 33,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Privacy",
+     "sel": "footer.site-footer > nav.footer-nav.footer-legal > a.footer-link",
+     "w": 40,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "Grievance",
+     "sel": "footer.site-footer > nav.footer-nav.footer-legal > a.footer-link",
+     "w": 53,
+     "h": 19,
+     "viaLabel": false
+    },
+    {
+     "t": "\u25d0 Auto",
+     "sel": "div.sheet > footer.site-footer > button.theme-toggle",
+     "w": 64,
+     "h": 33,
+     "viaLabel": false
+    }
+   ],
+   "texts": 185,
+   "minRatio": 2.99,
+   "minRatioOrdinary": 2.99,
+   "failing": [
+    {
+     "t": "S",
+     "sel": "div.account-menu > button.account-menu-btn > span.account-avatar.account-avatar-fallback",
+     "r": 2.99,
+     "fg": "#0e7569",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "ABOUT THIS ACT",
+     "sel": "section.panel.ActHead.bareact-page > div.ActHead-band > button.bareact-info-toggle.ActHead-about",
+     "r": 3.25,
+     "fg": "#0e7569",
+     "bg": "#161615",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 2,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  }
+ ]
+}

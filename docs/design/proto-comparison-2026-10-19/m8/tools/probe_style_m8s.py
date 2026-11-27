@@ -13,7 +13,8 @@
     back link and the two sheet close controls);
   * a route may carry its own `scope` (a sheet opened by its URL is measured
     inside `dialog[open]`) and `open` (a selector clicked before measuring);
-  * `--guest` skips the dev sign-in.
+  * `--guest` skips the dev sign-in;
+  * `--pre revoke-own-device` (M8-Ra) has the session remove its own device and sign in again first.
 
 Headless Chrome over CDP with the dev fake Google sign-in of
 `m1r/tools/capture_m1r.py`; the browser profile lives in a temporary directory
@@ -91,7 +92,20 @@ async def run(args) -> int:
     routes = json.loads(pathlib.Path(args.routes).read_text())
     cookies = []
     if not args.guest:
-        cookies = m1r.signin(httpx.Client(base_url=args.base, timeout=20))
+        client = httpx.Client(base_url=args.base, timeout=20)
+        cookies = m1r.signin(client)
+        if args.pre == "revoke-own-device":
+            # M8-Ra: this browser registers on the Playground, removes its own device through
+            # the Devices page's confirm step (which signs it out, keeping the device cookie),
+            # and signs in again — the stored state a self-removed device is left in.
+            import re as _re
+
+            client.get("/playground")
+            listing = client.get("/profile/security/devices").text
+            device = _re.search(r"/profile/security/devices\?confirm=([0-9a-f-]{8,})", listing).group(1)
+            removed = client.post(f"/profile/security/devices/{device}/remove", data={"csrf_token": client.cookies.get("rtc_csrf") or ""}, follow_redirects=False)
+            assert removed.status_code == 303, removed.status_code
+            cookies = m1r.signin(client)
     prof = pathlib.Path(tempfile.mkdtemp(prefix="m8s-probe-profile-"))
     proc = subprocess.Popen([m1r.CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-first-run",
                              f"--remote-debugging-port={args.debug_port}", f"--user-data-dir={prof}", "--window-size=1280,900", "about:blank"],
@@ -142,8 +156,18 @@ async def run(args) -> int:
                         if shots and f"{w}-{theme}" in route.get("shot", []):
                             metrics = await m1r.cdp(ws, st, "Page.getLayoutMetrics")
                             size_css = metrics.get("cssContentSize") or metrics["contentSize"]
-                            clip = {"x": 0, "y": 0, "width": w, "height": min(int(size_css["height"]) + 1, 6000), "scale": 1}
-                            png = await m1r.cdp(ws, st, "Page.captureScreenshot", {"format": "png", "clip": clip, "captureBeyondViewport": True})
+                            full = min(int(size_css["height"]) + 1, 6000)
+                            if args.settle:
+                                # Pages with an entry animation (Today, Calendar): capturing beyond the
+                                # viewport re-lays the page out and restarts the fade, so the frame comes
+                                # out washed. Give the window the page's full height, let the animation
+                                # finish, then take an ordinary frame.
+                                await m1r.cdp(ws, st, "Emulation.setDeviceMetricsOverride", {"width": w, "height": max(full, h), "deviceScaleFactor": 1, "mobile": w < 561})
+                                await asyncio.sleep(args.settle)
+                                png = await m1r.cdp(ws, st, "Page.captureScreenshot", {"format": "png"})
+                            else:
+                                clip = {"x": 0, "y": 0, "width": w, "height": full, "scale": 1}
+                                png = await m1r.cdp(ws, st, "Page.captureScreenshot", {"format": "png", "clip": clip, "captureBeyondViewport": True})
                             (shots / f'{args.label}-{route["key"]}-{w}-{theme}.png').write_bytes(base64.b64decode(png["data"]))
                         print(f'{route["key"]:14} {w:4} {theme:5} hScroll={probe["hScroll"]} small={len(probe["smallTargets"])} '
                               f'FAIL={probe["failingCount"]} minOrdinary={probe["minRatioOrdinary"]} exemptDisabled={len(probe["exemptDisabled"])} '
@@ -162,4 +186,6 @@ if __name__ == "__main__":
     ap.add_argument("--themes", default="light,dark"); ap.add_argument("--debug-port", type=int, default=9343)
     ap.add_argument("--scope", default="main"); ap.add_argument("--guest", action="store_true"); ap.add_argument("--shots", default="")
     ap.add_argument("--measure", default=".pg-back,.pg-sheet-close,.cal-si-dialog-head button")
+    ap.add_argument("--settle", type=float, default=0.0, help="extra seconds to wait before each frame")
+    ap.add_argument("--pre", default="", choices=("", "revoke-own-device"), help="a step the signed-in session performs before the probe")
     raise SystemExit(asyncio.run(run(ap.parse_args())))
