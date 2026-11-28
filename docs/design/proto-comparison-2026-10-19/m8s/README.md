@@ -13,3 +13,5 @@ Record: `docs/design/milestones/M8-S.md`. Local evidence only.
 Frames are named `<label>-<route>-<width>-<theme>.png`. Each baseline frame has a candidate frame of the same name.
 
 The populated server is `m7/tools/serve_populated_m7.py` (throwaway SQLite database, fixture subscription row, no provider). A paid account registers a device per new session with a limit of two, so the server is restarted between probe runs.
+
+**Test corrections of 2026-11-28** (`M8-S.md` §3.1): `../m8/tools/fakedate_plugin.py` shifts the Python clock for a run of the suite; `../m8/tools/tickstamp_plugin.py` makes every repository write stamp one second later than the last. `../m8/date-sweep/date-sweep.md` and `.json` hold the suite's results at nine simulated dates before the corrections and five after. The sweep ran on the M8-Ra tree, which contains every test of this batch.
