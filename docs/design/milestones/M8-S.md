@@ -10,7 +10,7 @@
 | Tooling | `m8/tools/probe_style_m8s.py`; `m7/tools/serve_populated_m7.py` |
 | Flags | `PLAYGROUND_TIER_MODEL` `monthly` (default). No template, route, view or script changed |
 
-**Status: candidate with local evidence, verified green on 2026-11-28 and presented for the owner's local acceptance (§8). Not accepted.** No merge, deployment or `choices` activation.
+**Status: accepted (local) by the owner on 2026-11-29 (§9), at PR head `5916390` — source `ecf84ed`, tests `a226c7f`.** Local acceptance only: hosted acceptance, merge, deployment and `choices` activation remain separate and are not given. The open findings of §5 and the NOT RUN entries of §7 stand.
 
 ## 1. Bounds (from the approved plan)
 
@@ -199,4 +199,11 @@ The pull-request head adds this record and the sweep evidence to `a226c7f`; it c
 
 ## 9. Owner sign-off
 
-None recorded. Sign-off is recorded only against the owner's direct answer.
+**Accepted (local), 2026-11-29.** Asked directly whether to accept M8-S as the local baseline — with the question stating the green runs on `a226c7f`, the grey labels still open on Profile, Devices and the phone Calendar, and browser zoom, the accessibility scan and hosted checks NOT RUN — the owner answered: "Accept M8-S locally".
+
+| | |
+|---|---|
+| Accepted head | `5916390` (PR #247) — source `ecf84ed`, tests `a226c7f`; records and evidence only after `a226c7f` |
+| Includes | the two departures from the plan's wording named in §8 |
+| Does not close | §5 (open findings), §6 (superseded frames not retaken), §7 (NOT RUN) |
+| Does not give | hosted acceptance, merge, deployment, `choices` activation |
