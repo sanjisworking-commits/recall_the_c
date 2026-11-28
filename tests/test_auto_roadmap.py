@@ -92,13 +92,20 @@ def _window_ids(engine: ReminderEngine, as_of: date) -> list[str]:
     return ids
 
 
-def _fingerprint(engine: ReminderEngine, as_of: date):
+def _fingerprint(engine: ReminderEngine, as_of: date, *, write_stamps: bool = True):
+    """The stored window. ``write_stamps`` includes each day's ``updated_at``.
+
+    Keep the stamp when the claim is "nothing was written" (a GET, a fresh
+    window). Drop it when the code under test is a reconcile, which rewrites
+    the window with a new one-second stamp every time: two reconciles either
+    side of a second boundary then differ in the stamp alone.
+    """
     horizon = roadmap_horizon(as_of)
     return [
         (
             day.plan_date,
             day.daily_target,
-            day.updated_at,
+            *((day.updated_at,) if write_stamps else ()),
             tuple((item.learning_unit_id, item.position) for item in day.items),
         )
         for day in engine.list_auto_plan_window(as_of, horizon)
@@ -1350,7 +1357,9 @@ def test_reconcile_does_not_persist_the_projected_theme_chain(tmp_path: Path):
     today = date(2026, 9, 3)
     _reconcile(engine, today, target=5)
     before = engine.get_learning_plan().last_anchor_theme
-    first = _fingerprint(engine, today)
+    first = _fingerprint(engine, today, write_stamps=False)
     _reconcile(engine, today, target=5)
     assert engine.get_learning_plan().last_anchor_theme == before
-    assert _fingerprint(engine, today) == first
+    # The second reconcile rewrites the window, so its write stamp may be a
+    # second later; the claim here is the anchor and the window's content.
+    assert _fingerprint(engine, today, write_stamps=False) == first
