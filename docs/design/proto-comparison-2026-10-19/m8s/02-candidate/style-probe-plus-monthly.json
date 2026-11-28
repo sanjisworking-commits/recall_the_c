@@ -1,0 +1,4894 @@
+{
+ "label": "plus-monthly",
+ "base": "http://127.0.0.1:8931",
+ "guest": false,
+ "captured_at": "2026-11-27T20:36:40+0530",
+ "rows": [
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 6,
+   "smallTargets": [],
+   "texts": 13,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 6,
+   "smallTargets": [],
+   "texts": 13,
+   "minRatio": 5.29,
+   "minRatioOrdinary": 5.29,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 11,
+   "smallTargets": [],
+   "texts": 46,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "home",
+   "path": "/playground",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 11,
+   "smallTargets": [],
+   "texts": 46,
+   "minRatio": 5.29,
+   "minRatioOrdinary": 5.29,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "roster",
+   "path": "/playground/roster",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "November Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 9,
+   "smallTargets": [],
+   "texts": 35,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "roster",
+   "path": "/playground/roster",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "November Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 9,
+   "smallTargets": [],
+   "texts": 35,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "roster",
+   "path": "/playground/roster",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "November Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 9,
+   "smallTargets": [],
+   "texts": 35,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "roster",
+   "path": "/playground/roster",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "November Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 9,
+   "smallTargets": [],
+   "texts": 35,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "roster-next",
+   "path": "/playground/roster/next",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Your December Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 12,
+   "smallTargets": [],
+   "texts": 31,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "roster-next",
+   "path": "/playground/roster/next",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Your December Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 12,
+   "smallTargets": [],
+   "texts": 31,
+   "minRatio": 6.36,
+   "minRatioOrdinary": 6.36,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "roster-next",
+   "path": "/playground/roster/next",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Your December Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 12,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "roster-next",
+   "path": "/playground/roster/next",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Your December Playground \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 12,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "remove",
+   "path": "/playground/roster/ndps/remove",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Remove from November \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 6,
+   "minRatio": 6.1,
+   "minRatioOrdinary": 6.1,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "remove",
+   "path": "/playground/roster/ndps/remove",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Remove from November \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 6,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "remove",
+   "path": "/playground/roster/ndps/remove",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Remove from November \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 6,
+   "minRatio": 6.1,
+   "minRatioOrdinary": 6.1,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "remove",
+   "path": "/playground/roster/ndps/remove",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Remove from November \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 6,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "law",
+   "path": "/playground/laws/bns",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 5,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 3.3,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [
+    {
+     "t": "Section 1 \u00b7 Learning",
+     "sel": "div.pg-waffle > span.pg-waffle-cell.is-learning > span.visually-hidden",
+     "r": 3.3,
+     "fg": "#141414",
+     "bg": "#0e7569",
+     "disabled": false,
+     "hidden": "visually-hidden"
+    }
+   ],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    },
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "law",
+   "path": "/playground/laws/bns",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 5,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 2.78,
+   "minRatioOrdinary": 5.03,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [
+    {
+     "t": "Section 1 \u00b7 Learning",
+     "sel": "div.pg-waffle > span.pg-waffle-cell.is-learning > span.visually-hidden",
+     "r": 2.78,
+     "fg": "#ecebe6",
+     "bg": "#2a9d8f",
+     "disabled": false,
+     "hidden": "visually-hidden"
+    }
+   ],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    },
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "law",
+   "path": "/playground/laws/bns",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 10,
+   "smallTargets": [],
+   "texts": 56,
+   "minRatio": 3.3,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [
+    {
+     "t": "Section 1 \u00b7 Learning",
+     "sel": "div.pg-waffle > span.pg-waffle-cell.is-learning > span.visually-hidden",
+     "r": 3.3,
+     "fg": "#141414",
+     "bg": "#0e7569",
+     "disabled": false,
+     "hidden": "visually-hidden"
+    }
+   ],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 1008,
+     "h": 44,
+     "inert": false
+    },
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "law",
+   "path": "/playground/laws/bns",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 10,
+   "smallTargets": [],
+   "texts": 56,
+   "minRatio": 2.78,
+   "minRatioOrdinary": 5.03,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [
+    {
+     "t": "Section 1 \u00b7 Learning",
+     "sel": "div.pg-waffle > span.pg-waffle-cell.is-learning > span.visually-hidden",
+     "r": 2.78,
+     "fg": "#ecebe6",
+     "bg": "#2a9d8f",
+     "disabled": false,
+     "hidden": "visually-hidden"
+    }
+   ],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 1008,
+     "h": 44,
+     "inert": false
+    },
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 Playground",
+     "w": 78,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "picker",
+   "path": "/playground/laws/bns/sections",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 872,
+   "smallTargets": [],
+   "texts": 2364,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 The BNS, 2023",
+     "w": 93,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "picker",
+   "path": "/playground/laws/bns/sections",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 872,
+   "smallTargets": [],
+   "texts": 2364,
+   "minRatio": 5.29,
+   "minRatioOrdinary": 5.29,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 The BNS, 2023",
+     "w": 93,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "picker",
+   "path": "/playground/laws/bns/sections",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 872,
+   "smallTargets": [],
+   "texts": 2373,
+   "minRatio": 4.71,
+   "minRatioOrdinary": 4.71,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 The BNS, 2023",
+     "w": 93,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "picker",
+   "path": "/playground/laws/bns/sections",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Choose what to learn \u00b7 The BNS, 2023 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 872,
+   "smallTargets": [],
+   "texts": 2373,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-back",
+     "t": "\u2190 The BNS, 2023",
+     "w": 93,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "learn-read",
+   "path": "/playground/laws/bns/sections/1/learn/read",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Read \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 12,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-read",
+   "path": "/playground/laws/bns/sections/1/learn/read",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Read \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 12,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-read",
+   "path": "/playground/laws/bns/sections/1/learn/read",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Read \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 12,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-read",
+   "path": "/playground/laws/bns/sections/1/learn/read",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Read \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 12,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-recite",
+   "path": "/playground/laws/bns/sections/1/learn/recite",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Recite \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 15,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 4.51,
+   "minRatioOrdinary": 4.51,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-recite",
+   "path": "/playground/laws/bns/sections/1/learn/recite",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Recite \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 15,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-recite",
+   "path": "/playground/laws/bns/sections/1/learn/recite",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Recite \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 15,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 4.51,
+   "minRatioOrdinary": 4.51,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-recite",
+   "path": "/playground/laws/bns/sections/1/learn/recite",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Recite \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 15,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-cloze",
+   "path": "/playground/laws/bns/sections/1/learn/cloze",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Cloze \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 16,
+   "smallTargets": [],
+   "texts": 314,
+   "minRatio": 4.51,
+   "minRatioOrdinary": 4.51,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-cloze",
+   "path": "/playground/laws/bns/sections/1/learn/cloze",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Cloze \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 16,
+   "smallTargets": [],
+   "texts": 314,
+   "minRatio": 1.09,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [
+    {
+     "t": "called",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Bharatiya",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Central",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Government",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "notification",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Official",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Gazette,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "appoint,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "different",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "appointed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "different",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita.",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "person",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "liable",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "punishment",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "otherwise",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "omission",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "contrary",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "thereof,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "guilty",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "within",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "person",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "liable,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "offence",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "beyond",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "according",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "beyond",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "manner",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "within",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "offence",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "citizen",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "without",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "beyond",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "person",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "aircraft",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "registered",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "wherever",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "person",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "without",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "beyond",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committing",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "offence",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "targeting",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "computer",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "resource",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "located",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "section,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "\u201coffence\u201d",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "includes",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "outside",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "punishable",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita.",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "citizen",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "commits",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "murder",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "without",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "beyond",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "convicted",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "murder",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Nothing",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "affect",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "punishing",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "mutiny",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "desertion",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "officers,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "soldiers,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "sailors",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "airmen",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "service",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Government",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "special",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    }
+   ],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-cloze",
+   "path": "/playground/laws/bns/sections/1/learn/cloze",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Cloze \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 16,
+   "smallTargets": [],
+   "texts": 314,
+   "minRatio": 4.51,
+   "minRatioOrdinary": 4.51,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-cloze",
+   "path": "/playground/laws/bns/sections/1/learn/cloze",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Cloze \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 16,
+   "smallTargets": [],
+   "texts": 314,
+   "minRatio": 1.09,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [
+    {
+     "t": "called",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Bharatiya",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Central",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Government",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "notification",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Official",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Gazette,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "appoint,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "different",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "appointed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "different",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita.",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "person",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "liable",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "punishment",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "otherwise",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "omission",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "contrary",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "thereof,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "guilty",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "within",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "person",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "liable,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "offence",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "beyond",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "according",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "beyond",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "manner",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "within",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "offence",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "citizen",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "without",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "beyond",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "person",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "aircraft",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "registered",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "wherever",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "person",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "without",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "beyond",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committing",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "offence",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "targeting",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "computer",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "resource",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "located",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "section,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "\u201coffence\u201d",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "includes",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "outside",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "committed",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "punishable",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita.",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "citizen",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "commits",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "murder",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "without",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "beyond",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "convicted",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "murder",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Nothing",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Sanhita",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "affect",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "punishing",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "mutiny",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "desertion",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "officers,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "soldiers,",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "sailors",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "airmen",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "service",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "Government",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "provisions",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    },
+    {
+     "t": "special",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-cloze-text > span.learn-cloze-word.is-blank",
+     "r": 1.09,
+     "fg": "#000000",
+     "bg": "#0f0e0d",
+     "disabled": false,
+     "hidden": "same-as-background"
+    }
+   ],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-letters",
+   "path": "/playground/laws/bns/sections/1/learn/letters",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Letters \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 18,
+   "smallTargets": [],
+   "texts": 36,
+   "minRatio": 4.11,
+   "minRatioOrdinary": 4.11,
+   "failing": [
+    {
+     "t": "Just read",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-letters-viewswitch.segmented.is-on-page > button.segmented-btn.learn-letters-view-btn",
+     "r": 4.11,
+     "fg": "#6b6b6b",
+     "bg": "#e2e2e0",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 1,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-letters",
+   "path": "/playground/laws/bns/sections/1/learn/letters",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Letters \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 18,
+   "smallTargets": [],
+   "texts": 36,
+   "minRatio": 5.11,
+   "minRatioOrdinary": 5.11,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-letters",
+   "path": "/playground/laws/bns/sections/1/learn/letters",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Letters \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 18,
+   "smallTargets": [],
+   "texts": 36,
+   "minRatio": 4.11,
+   "minRatioOrdinary": 4.11,
+   "failing": [
+    {
+     "t": "Just read",
+     "sel": "div.learn-body.pg-learn-panel > div.learn-letters-viewswitch.segmented.is-on-page > button.segmented-btn.learn-letters-view-btn",
+     "r": 4.11,
+     "fg": "#6b6b6b",
+     "bg": "#e2e2e0",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 1,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-letters",
+   "path": "/playground/laws/bns/sections/1/learn/letters",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Letters \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 18,
+   "smallTargets": [],
+   "texts": 36,
+   "minRatio": 5.11,
+   "minRatioOrdinary": 5.11,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-type",
+   "path": "/playground/laws/bns/sections/1/learn/type",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Type \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 13,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 4.51,
+   "minRatioOrdinary": 4.51,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-type",
+   "path": "/playground/laws/bns/sections/1/learn/type",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Type \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 13,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-type",
+   "path": "/playground/laws/bns/sections/1/learn/type",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Type \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 13,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 4.51,
+   "minRatioOrdinary": 4.51,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-type",
+   "path": "/playground/laws/bns/sections/1/learn/type",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Type \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 13,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-test",
+   "path": "/playground/laws/bns/sections/1/learn/test",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Test \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 26,
+   "smallTargets": [],
+   "texts": 47,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-test",
+   "path": "/playground/laws/bns/sections/1/learn/test",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Test \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 26,
+   "smallTargets": [],
+   "texts": 47,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-test",
+   "path": "/playground/laws/bns/sections/1/learn/test",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Test \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 26,
+   "smallTargets": [],
+   "texts": 47,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learn-test",
+   "path": "/playground/laws/bns/sections/1/learn/test",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Test \u00b7 Section 1 \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 26,
+   "smallTargets": [],
+   "texts": 47,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learned",
+   "path": "/playground/laws/bns/sections/3/learned",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Section learned. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 26,
+   "minRatio": 6.55,
+   "minRatioOrdinary": 6.55,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learned",
+   "path": "/playground/laws/bns/sections/3/learned",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Section learned. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 26,
+   "minRatio": 6.55,
+   "minRatioOrdinary": 6.55,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learned",
+   "path": "/playground/laws/bns/sections/3/learned",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Section learned. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 26,
+   "minRatio": 6.55,
+   "minRatioOrdinary": 6.55,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "learned",
+   "path": "/playground/laws/bns/sections/3/learned",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Section learned. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 26,
+   "minRatio": 6.55,
+   "minRatioOrdinary": 6.55,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "mastered",
+   "path": "/playground/laws/bns/sections/2/mastered",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Mastered, verbatim. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 6.55,
+   "minRatioOrdinary": 6.55,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "mastered",
+   "path": "/playground/laws/bns/sections/2/mastered",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Mastered, verbatim. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 6.55,
+   "minRatioOrdinary": 6.55,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "mastered",
+   "path": "/playground/laws/bns/sections/2/mastered",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Mastered, verbatim. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 6.55,
+   "minRatioOrdinary": 6.55,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "mastered",
+   "path": "/playground/laws/bns/sections/2/mastered",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Mastered, verbatim. \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 33,
+   "minRatio": 6.55,
+   "minRatioOrdinary": 6.55,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "add-sheet",
+   "path": "/playground/laws/pss/add",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 3,
+   "smallTargets": [],
+   "texts": 8,
+   "minRatio": 6.1,
+   "minRatioOrdinary": 6.1,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-sheet-close",
+     "t": "\u2715",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-sheet",
+   "path": "/playground/laws/pss/add",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 3,
+   "smallTargets": [],
+   "texts": 8,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-sheet-close",
+     "t": "\u2715",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-sheet",
+   "path": "/playground/laws/pss/add",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 3,
+   "smallTargets": [],
+   "texts": 8,
+   "minRatio": 6.1,
+   "minRatioOrdinary": 6.1,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-sheet-close",
+     "t": "\u2715",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "add-sheet",
+   "path": "/playground/laws/pss/add",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Add to Playground \u00b7 The Payment and Settlement Systems Act, 2007",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 3,
+   "smallTargets": [],
+   "texts": 8,
+   "minRatio": 5.8,
+   "minRatioOrdinary": 5.8,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".pg-sheet-close",
+     "t": "\u2715",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "profile",
+   "path": "/profile",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Profile \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 9,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 2.74,
+   "minRatioOrdinary": 2.74,
+   "failing": [
+    {
+     "t": "RecallC Plus \u00b7 Playground included",
+     "sel": "article.profile-card.pg-profile-identity > div.pg-profile-identity-copy > p.muted",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "SUBSCRIPTION",
+     "sel": "div.pg-profile-grid > div > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "ACCOUNT",
+     "sel": "div.pg-profile-grid > div.si-profile-account > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "G",
+     "sel": "form.profile-form > div.signin-method-row.si-profile-desk-hide > span.provider-badge.is-google",
+     "r": 3.2,
+     "fg": "#4285f4",
+     "bg": "#eef3fe",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 4,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "profile",
+   "path": "/profile",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Profile \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 9,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 2.54,
+   "minRatioOrdinary": 2.54,
+   "failing": [
+    {
+     "t": "Sign out",
+     "sel": "div.si-profile-account > div.pg-account-list > button.pg-account-row.si-profile-desk-only.si-profile-account-signout",
+     "r": 2.54,
+     "fg": "#b42318",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "G",
+     "sel": "form.profile-form > div.signin-method-row.si-profile-desk-hide > span.provider-badge.is-google",
+     "r": 3.2,
+     "fg": "#4285f4",
+     "bg": "#eef3fe",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "Delete account\u2026",
+     "sel": "li > button.account-action.is-delete > span.account-action-label",
+     "r": 2.54,
+     "fg": "#b42318",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 3,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "profile",
+   "path": "/profile",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Profile \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 6,
+   "smallTargets": [
+    {
+     "t": "Change plan",
+     "sel": "div > article.pg-sub-card > a.pg-btn.pg-btn--ghost",
+     "w": 99,
+     "h": 38,
+     "viaLabel": false
+    }
+   ],
+   "texts": 21,
+   "minRatio": 2.74,
+   "minRatioOrdinary": 2.74,
+   "failing": [
+    {
+     "t": "RecallC Plus \u00b7 Playground included",
+     "sel": "article.profile-card.pg-profile-identity > div.pg-profile-identity-copy > p.muted",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "SUBSCRIPTION",
+     "sel": "div.pg-profile-grid > div > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "ACCOUNT",
+     "sel": "div.pg-profile-grid > div.si-profile-account > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 3,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "profile",
+   "path": "/profile",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Profile \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 6,
+   "smallTargets": [
+    {
+     "t": "Change plan",
+     "sel": "div > article.pg-sub-card > a.pg-btn.pg-btn--ghost",
+     "w": 99,
+     "h": 38,
+     "viaLabel": false
+    }
+   ],
+   "texts": 21,
+   "minRatio": 2.54,
+   "minRatioOrdinary": 2.54,
+   "failing": [
+    {
+     "t": "Sign out",
+     "sel": "div.si-profile-account > div.pg-account-list > button.pg-account-row.si-profile-desk-only.si-profile-account-signout",
+     "r": 2.54,
+     "fg": "#b42318",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 1,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "billing",
+   "path": "/billing/subscriptions",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Change your plan \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 13,
+   "minRatio": 4.51,
+   "minRatioOrdinary": 4.51,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "billing",
+   "path": "/billing/subscriptions",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Change your plan \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 13,
+   "minRatio": 5.93,
+   "minRatioOrdinary": 5.93,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "billing",
+   "path": "/billing/subscriptions",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Change your plan \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 22,
+   "minRatio": 4.71,
+   "minRatioOrdinary": 4.71,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "billing",
+   "path": "/billing/subscriptions",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Change your plan \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 22,
+   "minRatio": 4.78,
+   "minRatioOrdinary": 4.78,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "devices",
+   "path": "/profile/security/devices",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Devices \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 10,
+   "minRatio": 2.74,
+   "minRatioOrdinary": 2.74,
+   "failing": [
+    {
+     "t": "Your plan supports the Playground on up to 2 reg",
+     "sel": "main.main > section.panel.profile-panel.devices-panel > p.lede.pg-devices-lede",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "REGISTERED",
+     "sel": "div.devices-grid > section.devices-section > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "This device",
+     "sel": "div.device-main > p.device-name > span.device-current-chip",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "Web \u00b7 Last seen 27 Nov 2026 15:06 \u00b7 Registered 2",
+     "sel": "article.pg-sub-card.device-card.is-current > div.device-main > p.device-meta",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "Web",
+     "sel": "div.device-main > p.device-meta > span",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 5,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "devices",
+   "path": "/profile/security/devices",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Devices \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 10,
+   "minRatio": 5.15,
+   "minRatioOrdinary": 5.15,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "devices",
+   "path": "/profile/security/devices",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Devices \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 10,
+   "minRatio": 4.51,
+   "minRatioOrdinary": 4.51,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "devices",
+   "path": "/profile/security/devices",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Devices \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 10,
+   "minRatio": 5.93,
+   "minRatioOrdinary": 5.93,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 6.36,
+   "minRatioOrdinary": 6.36,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 6.36,
+   "minRatioOrdinary": 6.36,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "calendar-dialog",
+   "path": "/calendar",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "November 2026 \u00b7 Calendar",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 32,
+   "smallTargets": [],
+   "texts": 49,
+   "minRatio": 1.66,
+   "minRatioOrdinary": 1.66,
+   "failing": [
+    {
+     "t": "S",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "M",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "T",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "W",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "T",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "F",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "S",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "1",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "2",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "3",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "4",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "5",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "6",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "7",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "8",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "9",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "10",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "11",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "12",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "13",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "14",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "15",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "16",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "17",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "18",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "19",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "20",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "21",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "22",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "23",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "24",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "25",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "26",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "TODAY \u00b7 NOTHING DUE",
+     "sel": "div.revisions-mobile > div.cal-m-today-card > p.revisions-eyebrow",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 ",
+     "sel": "section.panel.calendar > div.revisions-mobile > p.revisions-note",
+     "r": 2.38,
+     "fg": "#9a9a9a",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 35,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "calendar-dialog",
+   "path": "/calendar",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "November 2026 \u00b7 Calendar",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 32,
+   "smallTargets": [],
+   "texts": 49,
+   "minRatio": 1.88,
+   "minRatioOrdinary": 1.88,
+   "failing": [
+    {
+     "t": "1",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "2",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "3",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "4",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "5",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "6",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "7",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "8",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "9",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "10",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "11",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "12",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "13",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "14",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "15",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "16",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "17",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "18",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "19",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "20",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "21",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "22",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "23",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "24",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "25",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "26",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 26,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "calendar-dialog",
+   "path": "/calendar",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "November 2026 \u00b7 Calendar",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 9,
+   "smallTargets": [
+    {
+     "t": "",
+     "sel": "form > label > input",
+     "w": 584,
+     "h": 41,
+     "viaLabel": false
+    },
+    {
+     "t": "",
+     "sel": "div.cal-si-fields > label > input",
+     "w": 285,
+     "h": 43,
+     "viaLabel": false
+    },
+    {
+     "t": "Studied Revised",
+     "sel": "div.cal-si-fields > label > select",
+     "w": 285,
+     "h": 42,
+     "viaLabel": false
+    },
+    {
+     "t": "",
+     "sel": "form > label > input",
+     "w": 584,
+     "h": 42,
+     "viaLabel": false
+    },
+    {
+     "t": "Cancel",
+     "sel": "form > div.cal-si-dialog-actions > button.cal-si-cancel",
+     "w": 73,
+     "h": 40,
+     "viaLabel": false
+    },
+    {
+     "t": "Save & schedule",
+     "sel": "form > div.cal-si-dialog-actions > button.cal-si-save",
+     "w": 130,
+     "h": 40,
+     "viaLabel": false
+    }
+   ],
+   "texts": 12,
+   "minRatio": 5.57,
+   "minRatioOrdinary": 5.57,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".cal-si-dialog-head button",
+     "t": "\u00d7",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "calendar-dialog",
+   "path": "/calendar",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "November 2026 \u00b7 Calendar",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 9,
+   "smallTargets": [
+    {
+     "t": "",
+     "sel": "form > label > input",
+     "w": 584,
+     "h": 41,
+     "viaLabel": false
+    },
+    {
+     "t": "",
+     "sel": "div.cal-si-fields > label > input",
+     "w": 285,
+     "h": 43,
+     "viaLabel": false
+    },
+    {
+     "t": "Studied Revised",
+     "sel": "div.cal-si-fields > label > select",
+     "w": 285,
+     "h": 42,
+     "viaLabel": false
+    },
+    {
+     "t": "",
+     "sel": "form > label > input",
+     "w": 584,
+     "h": 42,
+     "viaLabel": false
+    },
+    {
+     "t": "Cancel",
+     "sel": "form > div.cal-si-dialog-actions > button.cal-si-cancel",
+     "w": 73,
+     "h": 40,
+     "viaLabel": false
+    },
+    {
+     "t": "Save & schedule",
+     "sel": "form > div.cal-si-dialog-actions > button.cal-si-save",
+     "w": 130,
+     "h": 40,
+     "viaLabel": false
+    }
+   ],
+   "texts": 12,
+   "minRatio": 3.32,
+   "minRatioOrdinary": 3.32,
+   "failing": [
+    {
+     "t": "Save & schedule",
+     "sel": "form > div.cal-si-dialog-actions > button.cal-si-save",
+     "r": 3.32,
+     "fg": "#ffffff",
+     "bg": "#2a9d8f",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 1,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".cal-si-dialog-head button",
+     "t": "\u00d7",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+[{"key":"gate","path":"/playground","shot":["1280-light"]},
+ {"key":"profile","path":"/profile"},
+ {"key":"add-sheet","path":"/playground/laws/pss/add","scope":"dialog[open]"}]

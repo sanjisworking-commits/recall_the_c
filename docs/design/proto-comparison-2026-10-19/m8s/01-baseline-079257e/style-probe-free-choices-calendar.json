@@ -1,0 +1,703 @@
+{
+ "label": "free-choices-calendar",
+ "base": "http://127.0.0.1:8929",
+ "guest": false,
+ "captured_at": "2026-11-27T20:44:47+0530",
+ "rows": [
+  {
+   "key": "calendar-upgrade",
+   "path": "/calendar",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "November 2026 \u00b7 Calendar",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main94",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg60"
+   ],
+   "controls": 32,
+   "smallTargets": [],
+   "texts": 49,
+   "minRatio": 1.66,
+   "minRatioOrdinary": 1.66,
+   "failing": [
+    {
+     "t": "S",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "M",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "T",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "W",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "T",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "F",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "S",
+     "sel": "div.revisions-mobile > div.cal-m-grid > span.cal-m-dow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "1",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "2",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "3",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "4",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "5",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "6",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "7",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "8",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "9",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "10",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "11",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "12",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "13",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "14",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "15",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "16",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "17",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "18",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "19",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "20",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "21",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "22",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "23",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "24",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "25",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "26",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.66,
+     "fg": "#c9c9c7",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "TODAY \u00b7 NOTHING DUE",
+     "sel": "div.revisions-mobile > div.cal-m-today-card > p.revisions-eyebrow",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "Recall schedules revision for you \u2014 1 \u2192 3 \u2192 7 \u2192 ",
+     "sel": "section.panel.calendar > div.revisions-mobile > p.revisions-note",
+     "r": 2.38,
+     "fg": "#9a9a9a",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 35,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "calendar-upgrade",
+   "path": "/calendar",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "November 2026 \u00b7 Calendar",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main94",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg60"
+   ],
+   "controls": 32,
+   "smallTargets": [],
+   "texts": 49,
+   "minRatio": 1.88,
+   "minRatioOrdinary": 1.88,
+   "failing": [
+    {
+     "t": "1",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "2",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "3",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "4",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "5",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "6",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "7",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "8",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "9",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "10",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "11",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "12",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "13",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "14",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "15",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "16",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "17",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "18",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "19",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "20",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "21",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "22",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "23",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "24",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "25",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "26",
+     "sel": "div.cal-m-grid > button.cal-m-cell.is-past > span.cal-m-num",
+     "r": 1.88,
+     "fg": "#4a4a48",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 26,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "calendar-upgrade",
+   "path": "/calendar",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "November 2026 \u00b7 Calendar",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main94",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg60"
+   ],
+   "controls": 2,
+   "smallTargets": [
+    {
+     "t": "\u00d7",
+     "sel": "dialog.cal-si-dialog.cal-si-upgrade > div.cal-si-dialog-head > button",
+     "w": 33,
+     "h": 36,
+     "viaLabel": false
+    }
+   ],
+   "texts": 4,
+   "minRatio": 5.33,
+   "minRatioOrdinary": 5.33,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".cal-si-dialog-head button",
+     "t": "\u00d7",
+     "w": 33,
+     "h": 36,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "calendar-upgrade",
+   "path": "/calendar",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "November 2026 \u00b7 Calendar",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main94",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg60"
+   ],
+   "controls": 2,
+   "smallTargets": [
+    {
+     "t": "\u00d7",
+     "sel": "dialog.cal-si-dialog.cal-si-upgrade > div.cal-si-dialog-head > button",
+     "w": 33,
+     "h": 36,
+     "viaLabel": false
+    }
+   ],
+   "texts": 4,
+   "minRatio": 6.79,
+   "minRatioOrdinary": 6.79,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".cal-si-dialog-head button",
+     "t": "\u00d7",
+     "w": 33,
+     "h": 36,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  }
+ ]
+}

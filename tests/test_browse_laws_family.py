@@ -39,6 +39,7 @@ from constitution_memorizer.web.bare_acts import BARE_ACTS, get_bare_act
 from constitution_memorizer.web.browse import browse_parts_sections
 from constitution_memorizer.web.law_catalog import card_meta_label, load_catalog
 from constitution_memorizer.web.shell import FREE_LABEL, account_status_for_snapshot
+from tests.conftest import PLAYGROUND_TEST_NOW
 from tests.quiz_helpers import complete_all_modes
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -60,8 +61,11 @@ FREE_SUMMARY = "Free plan — every Article, progress saved."
 FREE_LINK = '<a class="browse-access-unlock" href="/playground">View Playground</a>'
 # Copy that must never appear on either page for any viewer (D19, 5-1, §4.5.5).
 FORBIDDEN = ("3 Articles", "pick any", "Unlock all", "law choices", "₹", "Subscribe to use Playground", "Unlock Playground", "Add to Playground", "Create an account")
-# A live subscription window around today and one that ended months ago.
-_TODAY = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+# A live subscription window around "now" and one that ended months before it.
+# "Now" is the suite's pinned entitlement clock (tests/conftest.py), not the
+# day the suite runs: measured from the real date, the ended window stops
+# being in the pinned clock's past 80 days after it.
+_TODAY = PLAYGROUND_TEST_NOW.replace(hour=0, minute=0, second=0, microsecond=0)
 ACTIVE = (_TODAY - timedelta(days=20), _TODAY + timedelta(days=10))
 EXPIRED = (_TODAY - timedelta(days=110), _TODAY - timedelta(days=80))
 

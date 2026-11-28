@@ -402,7 +402,7 @@ def test_phone_guest_markers_and_pins() -> None:
     assert "data-bareact-tabs" not in bare
     base = BASE.read_text(encoding="utf-8")
     assert "data-guest-phone-tabs" in base
-    assert "styles.css?v=main94" in base
+    assert "styles.css?v=main95" in base
     assert "mobile.css?v=mob113" in base
     assert "styles.css?v=main87" not in base
     assert "mobile.css?v=mob106" not in base

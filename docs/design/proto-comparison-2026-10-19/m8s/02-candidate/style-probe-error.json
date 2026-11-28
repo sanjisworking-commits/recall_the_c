@@ -1,0 +1,104 @@
+{
+ "label": "error",
+ "base": "http://127.0.0.1:8931",
+ "guest": false,
+ "captured_at": "2026-11-27T20:42:41+0530",
+ "rows": [
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 6.36,
+   "minRatioOrdinary": 6.36,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 5.16,
+   "minRatioOrdinary": 5.16,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "error",
+   "path": "/playground/this-page-does-not-exist",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "This Playground page was not found \u00b7 Playground",
+   "scope": "body",
+   "hScroll": false,
+   "stylesheets": [
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 6.36,
+   "minRatioOrdinary": 6.36,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  }
+ ]
+}
