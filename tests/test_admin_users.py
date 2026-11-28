@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -202,12 +202,14 @@ def test_grant_creates_row_and_audit_atomically(tmp_path: Path) -> None:
     client, repo = _admin_client(tmp_path)
     _seed_member(repo)
     csrf = _csrf(client)
+    # A past end date is refused, so the date cannot be a fixed one.
+    ends_on = (date.today() + timedelta(days=120)).isoformat()
     resp = client.post(
         f"/admin/users/{MEMBER}/grants",
         data={
             "csrf_token": csrf,
             "source": "promotion",
-            "ends_on": "2027-03-01",
+            "ends_on": ends_on,
             "reason": "NLU pilot cohort",
         },
         follow_redirects=False,
@@ -218,7 +220,7 @@ def test_grant_creates_row_and_audit_atomically(tmp_path: Path) -> None:
     ).fetchone()
     assert grant["source"] == "promotion"
     # Day granularity stored end-of-day UTC.
-    assert grant["ends_at"].startswith("2027-03-01T23:59:59")
+    assert grant["ends_at"].startswith(f"{ends_on}T23:59:59")
     assert grant["granted_by"] == str(ADMIN)
 
     audit = repo.conn.execute(

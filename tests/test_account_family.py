@@ -42,6 +42,7 @@ from constitution_memorizer.auth.sessions import SESSION_COOKIE_NAME, InMemorySe
 from constitution_memorizer.multiuser.settings import MultiUserSettings, clear_settings_cache
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.entitlements import can_use_auto_plan
+from tests.conftest import PLAYGROUND_TEST_NOW
 from tests.test_browse_laws_family import STATES, UNITS, USER
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -50,7 +51,8 @@ USER_B = UUID("22222222-2222-4222-8222-222222222222")
 GOOGLE = "/auth/google/start?next="
 LEGACY = ("3 Articles", "Free Articles", "pick any", "Unlock every Article", "Recall active", "from ₹", "/login", "/pricing", "No plan yet")
 SIGNED_IN = [s for s in STATES if s != "guest"]
-_TODAY = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+# Measured from the suite's pinned entitlement clock, as STATES is.
+_TODAY = PLAYGROUND_TEST_NOW.replace(hour=0, minute=0, second=0, microsecond=0)
 
 
 def _settings(*, tier_model: str = "monthly", entitlements: bool = False) -> MultiUserSettings:

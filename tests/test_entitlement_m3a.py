@@ -437,7 +437,8 @@ def test_other_period_refund_does_not_end_current_period(tmp_path: Path):
 
 def test_legacy_active_is_not_a_playground_tier(tmp_path: Path):
     client, repo = _authed_client(tmp_path)
-    ends = NOW + timedelta(days=300)
+    # Resolved below against the real clock, so the grant must outlast it.
+    ends = datetime.now(timezone.utc) + timedelta(days=300)
     _seed_legacy(repo, ends_at=ends)
     snap = _service_for_app(client).resolve(USER, now=datetime.now(timezone.utc))
     _assert_full_constitution(snap)
