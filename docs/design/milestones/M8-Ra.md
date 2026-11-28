@@ -10,7 +10,7 @@
 | Tooling | `m8/tools/readback_m8.py`, `diff_readback_m8.py`, `serve_states_m8.py`, `billing_matrix_m8.py`, `probe_style_m8s.py`, `click_resume_m8.py` |
 | Flags | `PLAYGROUND_TIER_MODEL` `monthly` (default); `choices` exercised without activating it. No provider configured |
 
-**Status: candidate with local evidence, verified green on 2026-11-28 and presented for the owner's local acceptance (§9). Not accepted.** M8-Rb (transitions) and every billing-action change stay held; the decisions it waits for are set out in `M8-Rb-decision-table.md`. No merge, deployment, staging write, payment operation or `choices` activation.
+**Status: accepted (local) by the owner on 2026-11-29 (§10), at PR head `105d99a` — source `2270d77`, tests `0f36525`.** Local acceptance only. The activation blockers H2 and H3, the held findings and the NOT RUN entries stand. M8-Rb (transitions) and every billing-action change stay held; the decisions it waits for are set out in `M8-Rb-decision-table.md`. No merge, deployment, staging write, payment operation or `choices` activation.
 
 The record, the evidence and the read-back are in this one file (as for M7b); the test changes are in `M8-Ra-test-changes.md`; the billing matrix asked for in place of a billing change is `M8-Ra-billing-matrix.md`.
 
@@ -227,7 +227,14 @@ The pull-request head adds records to `0f36525`; it changes no test and no sourc
 
 ## 10. Owner sign-off
 
-None recorded. Sign-off is recorded only against the owner's direct answer.
+**Accepted (local), 2026-11-29.** Asked directly whether to accept M8-Ra as the local baseline — with the question stating the green runs on `0f36525`, that accepting includes the reversed T28 rule (paused items shown as Resume links) and the new copy, that H2 and H3 stay activation blockers and that provider behaviour is NOT RUN — the owner answered: "Accept M8-Ra locally". The alternative offered, acceptance with the copy left open, was not chosen.
+
+| | |
+|---|---|
+| Accepted head | `105d99a` (PR #248) — source `2270d77`, tests `0f36525`; records only after `0f36525` |
+| Includes | the four points of §9 that went beyond the plan's wording: the T28 reversal, the stricter paused Calendar links, the paused Profile identity line, the proposed copy |
+| Does not close | H2 and H3 (activation blockers); H1 and H7 (held); the billing-page finding and the observations of §3; the paused Browse wording (M8-Rb); §8 (NOT RUN) |
+| Does not give | hosted acceptance, merge, deployment, `choices` activation, or approval of anything in `M8-Rb-decision-table.md` |
 
 ## 11. Proposed roadmap entry (not applied)
 
@@ -235,7 +242,7 @@ None recorded. Sign-off is recorded only against the owner's direct answer.
 
 | Row | State |
 |---|---|
-| M8-S — shared style (label contrast, back link, Calendar dialog close) | built, draft PR #247, local evidence, not accepted |
-| M8-Ra — edge states, safe presentation (plans-stage title, sheet openers, paused parity, `?stage=plans`, `choices` wording, device copy) | built, draft PR #248, local evidence, not accepted |
+| M8-S — shared style (label contrast, back link, Calendar dialog close) | draft PR #247; **accepted (local) 2026-11-29** at `5916390`; hosted pending |
+| M8-Ra — edge states, safe presentation (plans-stage title, sheet openers, paused parity, `?stage=plans`, `choices` wording, device copy) | draft PR #248; **accepted (local) 2026-11-29** at `105d99a`; hosted pending |
 | M8-Rb — transitions and billing actions (5-20 table, paid → Free selection, abandoned checkout, checkout outcomes, notices, billing page for halted / paused / pending and for an elapsed period with an active row, paused Browse wording) | held: the decisions of `M8-Rb-decision-table.md` (D1–D7), provider verification, B1 acceptance |
 | Gate DV-18 | **U** — hosted rows not run; the prototype's edge-state viewers not compared (no restyle while 5-20 is open) |
