@@ -1,0 +1,80 @@
+{
+ "label": "paused-choices",
+ "base": "http://127.0.0.1:8936",
+ "guest": false,
+ "captured_at": "2026-11-27T21:17:37+0530",
+ "rows": [
+  {
+   "key": "calendar-lock",
+   "path": "/calendar",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "November 2026 \u00b7 Calendar",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 6.1,
+   "minRatioOrdinary": 6.1,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".cal-si-dialog-head button",
+     "t": "\u00d7",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  },
+  {
+   "key": "calendar-lock",
+   "path": "/calendar",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "November 2026 \u00b7 Calendar",
+   "scope": "dialog[open]",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 4,
+   "minRatio": 6.79,
+   "minRatioOrdinary": 6.79,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [
+    {
+     "sel": ".cal-si-dialog-head button",
+     "t": "\u00d7",
+     "w": 44,
+     "h": 44,
+     "inert": false
+    }
+   ],
+   "exceptions": []
+  }
+ ]
+}

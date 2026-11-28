@@ -62,6 +62,36 @@ def create_device_router(templates: Jinja2Templates) -> APIRouter:
             ),
             None,
         )
+        # M8-Ra (Q8, owner 2026-11-27): the lede describes exactly what the
+        # registry does, from the same predicate that decides registration —
+        # a subscription that gives Playground access, which includes one
+        # whose payment is being retried (pending).
+        from constitution_memorizer.entitlements.dependencies import (  # noqa: PLC0415
+            get_entitlement_snapshot,
+        )
+        from constitution_memorizer.playground.access import (  # noqa: PLC0415
+            device_registration_applies,
+        )
+
+        snapshot = get_entitlement_snapshot(request)
+        registers = device_registration_applies(request, snapshot)
+        if registers and snapshot.is_subscribed:
+            device_lede = (
+                f"Your plan supports the Playground on up to {service.device_limit} registered devices. "
+                "A device is registered the first time you use the Playground on it while your "
+                "subscription gives Playground access, including while a payment is being retried."
+            )
+        elif registers:
+            device_lede = (
+                f"The Playground can be used on up to {service.device_limit} registered devices. "
+                "A device is registered the first time you use the Playground on it."
+            )
+        else:
+            device_lede = (
+                "A device is registered only when the Playground is used on it while a subscription "
+                "gives Playground access. This account has no such subscription now, so no device is "
+                "being registered. Devices registered earlier stay listed here and can be removed."
+            )
         return templates.TemplateResponse(
             request,
             "devices.html",
@@ -71,13 +101,10 @@ def create_device_router(templates: Jinja2Templates) -> APIRouter:
                 "revoked_devices": revoked,
                 "active_count": len(active),
                 "device_limit": service.device_limit,
-                # M5 (Q6): the lede states the allowance without promising
-                # registration to Free — a device is registered the first time
-                # the Playground is used on it while a paid plan is active.
-                "device_lede": (
-                    f"Your plan supports the Playground on up to {service.device_limit} registered devices. "
-                    "A device is registered the first time you use the Playground on it while a paid plan is active."
-                ),
+                "device_lede": device_lede,
+                # the allowance count is shown when registration applies or a
+                # device is still listed; never to an account with neither
+                "show_device_count": bool(registers or active),
                 "confirm_current": confirm_current,
                 "removed": request.query_params.get("removed") == "1",
                 "csrf_token": request.cookies.get("rtc_csrf") or "",

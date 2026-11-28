@@ -52,6 +52,7 @@ from constitution_memorizer.playground.stage_timer import time_playground_stage
 from constitution_memorizer.playground.urls import (
     add_path,
     home_path,
+    is_add_sheet_href,
     law_path,
     learn_path,
     learn_path_for_locator,
@@ -333,6 +334,13 @@ class LawCardView:
     home_note: str = ""
     provisions_copy: str = ""
     sections_copy: str = ""
+
+    @property
+    def opens_sheet(self) -> bool:
+        """A sheet opener only when the action leads to the Act's Add dialog;
+        a card rewritten to billing or plans on a read-only home is a link."""
+
+        return self.membership != MEMBERSHIP_IN and is_add_sheet_href(self.primary_href)
     learned_pct: int = 0
 
 
@@ -813,7 +821,11 @@ def playground_subscription_card(snapshot: Any | None) -> PlaygroundSubscription
             title=title,
             chip="PAUSED",
             chip_kind="paused",
-            body="Playground is paused. Resume to keep learning this month’s laws.",
+            body=(
+                "Playground is paused. Resume to keep learning this month’s laws."
+                if playground_month_model(snapshot)
+                else "Playground is paused. Resume to keep learning your laws."
+            ),
             stat_big="",
             stat_label=limit_line,
             cta_label="Resume Playground",
@@ -910,7 +922,13 @@ def playground_subscription_card(snapshot: Any | None) -> PlaygroundSubscription
         next_name = _scheduled_tier_display(scheduled)
         body = f"ACTIVE. Changes to {next_name} at the end of the current paid period."
     else:
-        body = f"This month’s Playground is open.{renew}"
+        # M8-Ra (G6): no month under ``choices`` (5-23); ``monthly`` unchanged.
+        opening = (
+            "This month’s Playground is open."
+            if playground_month_model(snapshot)
+            else "Your Playground is open."
+        )
+        body = f"{opening}{renew}"
     return PlaygroundSubscriptionCard(
         title=title or "Playground",
         chip="ACTIVE",
@@ -956,6 +974,16 @@ def plus_profile_subscription_card(
     month_name = playground_month_name(start)
     next_open = format_plan_end(end)
     used_n = max(0, int(used))
+    if not playground_month_model(snapshot):
+        # M8-Ra (G6): under ``choices`` there is no month and no reopening of
+        # spaces (5-23); the card counts the laws in the Playground.
+        noun = "law" if used_n == 1 else "laws"
+        return replace(
+            card,
+            stat_big=str(used_n),
+            stat_label=f"{noun} in your Playground",
+            cta_label="Change plan",
+        )
     if law_limit is None:
         noun = "law" if used_n == 1 else "laws"
         stat_big = str(used_n)
@@ -1325,7 +1353,8 @@ def law_membership(
             secondary_copy=secondary_copy,
             secondary_label=secondary_label,
             secondary_href=secondary_href,
-            opens_sheet=opens_sheet,
+            # M8-Ra: one rule — an opener only when the target is this Act's Add dialog.
+            opens_sheet=bool(opens_sheet and is_add_sheet_href(primary_href)),
             skip_confirm=skip,
         )
 
@@ -1390,7 +1419,6 @@ def law_membership(
             primary_label="Resume Playground",
             primary_href=gate.cta_href or PLAYGROUND_BILLING_PATH,
             secondary_copy=_gate_sentences(gate),
-            opens_sheet=True,
         )
     if blocked == KIND_DEVICE_BLOCKED:
         reason = (
@@ -1398,7 +1426,10 @@ def law_membership(
             if snapshot is not None
             else BLOCK_DEVICE_LIMIT
         )
-        gate = gate_view(reason=reason or BLOCK_DEVICE_LIMIT)
+        gate = gate_view(
+            reason=reason or BLOCK_DEVICE_LIMIT,
+            device_limit=getattr(snapshot, "device_limit", None),
+        )
         return _state(
             KIND_DEVICE_BLOCKED,
             primary_label=gate.cta_label,
@@ -1607,6 +1638,7 @@ def gate_view(
     cta_href: str = "",
     secondary_href: str = "",
     month_name: str = "",
+    device_limit: int | None = None,
 ) -> PlaygroundGateView:
     if consume_blocked or reason == RESULT_NEW_BLOCKED:
         return PlaygroundGateView(
@@ -1655,7 +1687,9 @@ def gate_view(
             eyebrow="Playground on this device",
             title="Device limit reached",
             lines=(
-                "Your subscription supports Playground on up to 2 registered devices.",
+                # M8-Ra (G7): the number is the configured limit the snapshot
+                # carries (2 for every tier today), not a constant.
+                f"Your subscription supports Playground on up to {int(device_limit or 2)} registered devices.",
             ),
             cta_label="Manage devices",
             cta_href=cta_href or MANAGE_DEVICES_PATH,
@@ -1667,9 +1701,17 @@ def gate_view(
             reason=reason,
             eyebrow="Playground on this device",
             title="This device no longer has Playground access.",
-            lines=(),
+            # M8-Ra (G8): say what happened. Nothing here promises that the
+            # device can be registered again, and nothing tells the reader to
+            # clear data; Manage devices lists it under "Removed devices".
+            lines=(
+                "It was removed from this account’s registered devices.",
+                "Your Constitution access and saved progress are unaffected.",
+            ),
             cta_label="Manage devices",
             cta_href=cta_href or MANAGE_DEVICES_PATH,
+            secondary_label="Contact support" if secondary_href else "Back to Constitution",
+            secondary_href=secondary_href or CONSTITUTION_HOME_PATH,
         )
     if reason == BLOCK_DEVICE_REPLACEMENT_LIMIT:
         return PlaygroundGateView(

@@ -15,6 +15,7 @@ from constitution_memorizer.entitlements.models import (
     BLOCK_PAID_PERIOD_ENDED,
     BLOCK_PAYMENT_HALTED,
 )
+from constitution_memorizer.entitlements.tier_model import current_tier_model, is_choice_model
 from constitution_memorizer.playground.view import gate_view
 from constitution_memorizer.subscriptions.catalog import (
     TierNotPurchasable,
@@ -79,6 +80,8 @@ ERROR_MESSAGES = {
 PLUS_DESK_LEDE = "Upgrades take effect immediately; downgrades apply from the 1st of next month. Laws already in your Playground keep working."  # Desktop.dc.html:2662
 PLUS_DESK_GST = "GST inclusive. Renews monthly until you cancel. Your Playground progress is never deleted."  # Desktop.dc.html:1280
 PLUS_DESK_EXPLAIN = "The plan only sets how many laws can be active in your Playground each calendar month. Subscribe on any day and this month's spaces open at once; a new set opens on the 1st. Laws already in your Playground keep working, and your progress is never deleted."  # Desktop.dc.html:1282
+# M8-Ra (G6): the same card under ``choices`` — no calendar-month allowance.
+PLUS_DESK_EXPLAIN_CHOICES = "Laws already in your Playground keep working, and your progress is never deleted."
 PLUS_DESK_INCLUDED = "Every Article · All six recall methods · Free."  # Desktop.dc.html:1286
 _CARD_DESCRIPTIONS = {
     "plus": "A steady pace — enough for one exam’s syllabus of Acts.",  # Desktop.dc.html:2140
@@ -165,7 +168,11 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
                 "expired_header_status": expired_header_status,
                 "plus_plan_lede": PLUS_DESK_LEDE,
                 "plus_plan_gst": PLUS_DESK_GST,
-                "plus_plan_explain": PLUS_DESK_EXPLAIN,
+                "plus_plan_explain": (
+                    PLUS_DESK_EXPLAIN_CHOICES
+                    if is_choice_model(current_tier_model())
+                    else PLUS_DESK_EXPLAIN
+                ),
                 "plus_included_lede": PLUS_DESK_INCLUDED,
             },
         )
@@ -351,7 +358,9 @@ def _price_label(price_inr: int) -> str:
 
 def _limit_label(limit: int | None) -> str:
     if limit is None:
-        return "Unlimited active Playground laws per monthly Playground period"
+        # M8-Ra (G6): ``None`` for a purchasable plan occurs only under
+        # ``choices``, where there is no monthly period (5-23).
+        return "Unlimited Playground laws"
     return f"{limit} active Playground laws per monthly Playground period"
 
 

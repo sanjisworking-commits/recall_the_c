@@ -13,7 +13,7 @@
   <p class="eyebrow">Account</p>
   <h1 class="display">Devices</h1>
   <p class="lede pg-devices-lede" data-device-lede>{{ device_lede }}</p>
-  <p class="devices-count" data-device-count>{{ active_count }} of {{ device_limit }} devices</p>
+  {% if show_device_count|default(true) %}<p class="devices-count" data-device-count>{{ active_count }} of {{ device_limit }} devices</p>{% endif %}
 
   {% if removed %}
   <div class="auth-banner is-ok" role="status">

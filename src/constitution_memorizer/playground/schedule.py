@@ -159,15 +159,23 @@ def playground_today_context(request, *, as_of: date | None = None) -> dict[str,
             return _empty_today_context()
         expired = False
         halted = False
+        paused = False
         if not access.can_open:
             from constitution_memorizer.entitlements.dependencies import (
                 request_is_expired_subscriber,
                 request_is_halted_subscriber,
+                request_is_paused_subscriber,
             )
 
             expired = request_is_expired_subscriber(request)
             halted = request_is_halted_subscriber(request)
-            if not expired and not halted:
+            # M8-Ra (G3, owner 2026-11-27): a paused account keeps its
+            # Playground items on Today, as halted and expired accounts do,
+            # and only as links to the existing Resume flow. Nothing here
+            # opens Learn: every Learn and write route still requires
+            # ``can_open``.
+            paused = request_is_paused_subscriber(request)
+            if not expired and not halted and not paused:
                 return _empty_today_context()
         user_id = access.user_id
         with time_playground_stage("playground_today"):
@@ -176,7 +184,7 @@ def playground_today_context(request, *, as_of: date | None = None) -> dict[str,
             new_unit = playground_new_today_unit(
                 overlay, roster, user_id, as_of=as_of
             )
-            if expired:
+            if expired or (paused and not halted):
                 due_units, new_unit = _bind_expired_playground_units(
                     request, due_units, new_unit
                 )
@@ -283,6 +291,34 @@ def reconcile_expired_playground_calendar_chips(
     return {
         iso: [
             replace(chip, href=href) if _playground_chip_href_is_protected(chip) else chip
+            for chip in chips
+        ]
+        for iso, chips in extra.items()
+    }
+
+
+def reconcile_paused_playground_calendar_chips(
+    extra: dict[str, list[CalendarChip]], request
+) -> dict[str, list[CalendarChip]]:
+    """M8-Ra (G3, owner 2026-11-27): a paused account's Playground chips are
+    links to the existing Resume flow only.
+
+    Stricter than the expired / halted reconcile, which rewrites due and
+    revision chips and leaves the others on the (gated) Act-progress page:
+    here every Playground chip that points into ``/playground`` is rewritten.
+    Scheduled Bare Act reader hrefs stay. Preserves kind, label, title,
+    category and date. Callers must only invoke this for
+    ``request_is_paused_subscriber``.
+    """
+
+    if not extra:
+        return extra
+    _label, href = expired_playground_today_action(request)
+    return {
+        iso: [
+            replace(chip, href=href)
+            if chip.category == "Playground" and (chip.href or "").startswith("/playground")
+            else chip
             for chip in chips
         ]
         for iso, chips in extra.items()
@@ -608,7 +644,9 @@ def reconcile_expired_playground_today(ctx: dict[str, Any], request) -> dict[str
     """Rewrite Playground Today hrefs from live entitlement. Mutates ``ctx``.
 
     Constitution units keep their live href and CTA. Callers must only invoke
-    this for ``request_is_expired_subscriber``.
+    this for ``request_is_expired_subscriber`` or, since M8-Ra,
+    ``request_is_paused_subscriber``: the action is read from the live
+    snapshot's block reason, so a paused account gets its own Resume link.
     """
 
     label, href = expired_playground_today_action(request)

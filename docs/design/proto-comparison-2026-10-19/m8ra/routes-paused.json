@@ -1,0 +1,8 @@
+[{"key":"today","path":"/dashboard","scope":"body"},
+ {"key":"calendar","path":"/calendar"},
+ {"key":"head-in","path":"/laws/ndps","scope":"body","shot":["1280-light","390-light"]},
+ {"key":"head-out","path":"/laws/pss","scope":"body"},
+ {"key":"add-sheet","path":"/playground/laws/pss/add","scope":"dialog[open]","shot":["390-light","1280-light","1280-dark"]},
+ {"key":"home","path":"/playground","shot":["1280-light"]},
+ {"key":"profile","path":"/profile"},
+ {"key":"devices","path":"/profile/security/devices"}]

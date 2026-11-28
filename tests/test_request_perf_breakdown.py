@@ -5612,7 +5612,10 @@ def test_dashboard_free_has_no_t9(tmp_path: Path):
     _assert_t6_absent(snap.counters)
 
 
-def test_dashboard_paused_has_no_t9(tmp_path: Path):
+def test_dashboard_paused_reads_the_playground_today_items_like_halted_and_expired(tmp_path: Path):
+    # M8-Ra (owner 2026-11-27), G3: a paused account's Today shows its Playground items (as
+    # Resume links), so the request now runs the read a halted or expired account's does —
+    # held to the same counts, with no write. It used to be pinned as absent.
     async def _go():
         client, app, _repo = await _async_authed_session(tmp_path)
         try:
@@ -5632,8 +5635,14 @@ def test_dashboard_paused_has_no_t9(tmp_path: Path):
         device_result="skipped_unpaid",
         device_lookups=1,
     )
-    _assert_t9_absent(snap.timings)
-    _assert_t6_absent(snap.counters)
+    _assert_t9_today_only(snap)
+    _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=3,
+        roster_reads=2,
+        revision_reads=1,
+    )
 
 
 @pytest.mark.parametrize(
@@ -5788,7 +5797,10 @@ def test_calendar_guest_and_free_have_no_t9(tmp_path: Path):
     _assert_t6_absent(free_snap.counters)
 
 
-def test_calendar_paused_has_no_t9(tmp_path: Path):
+def test_calendar_paused_reads_the_playground_schedule_like_halted_and_expired(tmp_path: Path):
+    # M8-Ra (owner 2026-11-27), G3: a paused account's Calendar shows its Playground chips (as Resume links),
+    # so the request now runs the same schedule read a halted or expired account's does. It
+    # used to be pinned as absent.
     async def _go():
         client, app, _repo = await _async_authed_session(tmp_path)
         try:
@@ -5800,8 +5812,15 @@ def test_calendar_paused_has_no_t9(tmp_path: Path):
 
     resp, snap = asyncio.run(_go())
     assert resp.status_code == 200
-    _assert_t9_absent(snap.timings)
-    _assert_t6_absent(snap.counters)
+    # exactly what the halted / expired Calendar is held to: two reads, no write
+    _assert_t9_calendar_only(snap)
+    _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=2,
+        roster_reads=1,
+        revision_reads=1,
+    )
 
 
 @pytest.mark.parametrize(

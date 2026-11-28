@@ -725,7 +725,10 @@ def test_guest_free_plus_halted_paused_pending_are_not_expired_calendar(
     )
     paused_html = paused.get("/calendar").text
     assert 'data-expired-calendar="desktop"' not in paused_html
-    assert 'data-cal-source="playground"' not in paused_html
+    # M8-Ra (owner 2026-11-27), G3: a paused account keeps its Playground chips, as links to the
+    # existing Resume flow only — never a Learn link — and without this cohort's marker.
+    paused_hrefs = re.findall(r'href="([^"]+)"[^>]*data-cal-source="playground"', unescape(paused_html))
+    assert paused_hrefs and set(paused_hrefs) == {PLAYGROUND_BILLING_PATH}
 
     pending = TestClient(_mu_app(tmp_path / "pending"))
     _sign_in(pending)

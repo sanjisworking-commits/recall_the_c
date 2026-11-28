@@ -55,7 +55,15 @@
     </div>
   </div>
   {% endif %}
-  {% if gate_stage == 'plans' and gate_selector_plans %}
+  {% if gate_stage == 'plans' and gate_selector_plans and plan_change_blocked|default(false) %}
+  {# M8-Ra (G1): a subscriber whose subscription is not active (a payment
+     retry in progress) cannot change plan — the change route refuses it. The
+     form is not offered; the account's own Manage link is. #}
+  <div class="pg-plan-stage" data-pg-plans data-pg-plan-change="unavailable">
+    <p class="pg-note">Plan changes are not available while a payment retry is in progress.</p>
+    <p class="pg-actions"><a class="pg-btn" href="/billing/subscriptions">Manage subscription</a></p>
+  </div>
+  {% elif gate_stage == 'plans' and gate_selector_plans %}
   {# M5 (Q7 / Q8, owner 2026-11-07): the plan cards are a radio group inside
      one form. Continue posts to the existing subscription routes — create for
      an account without a subscription, change for a current subscriber — which
@@ -65,6 +73,13 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token|default('') }}">
     <fieldset class="pg-plan-fieldset">
     <legend class="pg-eyebrow">Playground plans</legend>
+    {% if current_plan_unlisted|default('') %}
+    {# M8-Ra (G1): a current plan that is no longer sold — named, nothing promised. #}
+    <article class="pg-plan-card is-disabled" data-tier="{{ current_plan_tier }}" data-pg-plan-current aria-current="true">
+      <p class="pg-plan-name">{{ current_plan_unlisted }}</p>
+      <p class="pg-plan-current">Current plan</p>
+    </article>
+    {% endif %}
     {% for plan in gate_selector_plans %}
     {% set is_current = current_plan_tier and plan.tier == current_plan_tier %}
     {% set is_selected = selected_tier and plan.tier == selected_tier %}

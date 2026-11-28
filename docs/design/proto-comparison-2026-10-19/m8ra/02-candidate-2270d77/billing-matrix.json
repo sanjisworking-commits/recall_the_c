@@ -1,0 +1,2594 @@
+{
+ "sha": "97edd4e9",
+ "provider": "MOCKED \u2014 not Razorpay",
+ "rows": [
+  {
+   "tier_model": "monthly",
+   "shape": "no subscription row",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "not_subscribed",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle."
+    ]
+   },
+   "rows_before": [],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "create_subscription(plan=plan_plus)"
+     ],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "create_subscription(plan=plan_pro)"
+     ],
+     "rows_after": [
+      "pro/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": []
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": []
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": []
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "created, reservation (no provider id)",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "not_subscribed",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle."
+    ]
+   },
+   "rows_before": [
+    "plus/created/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=in_progress",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=in_progress",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "created, checkout open",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "not_subscribed",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [],
+    "billing_links": [
+     "Continue checkout \u2192 \u2192 /billing/subscriptions/checkout"
+    ],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle."
+    ]
+   },
+   "rows_before": [
+    "plus/created/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "authenticated",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "not_subscribed",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle."
+    ]
+   },
+   "rows_before": [
+    "plus/authenticated/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/authenticated/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/authenticated/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/authenticated/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/authenticated/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/authenticated/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "active, period open",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": true,
+    "can_open_playground": true,
+    "can_add_new_law": true
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Plus",
+    "h1": [
+     "Change your plan"
+    ],
+    "offers": [
+     "Switch to Pro \u2192 POST /billing/subscriptions/change [pro]",
+     "Cancel at cycle end \u2192 POST /billing/subscriptions/cancel",
+     "Cancel at cycle end \u2192 POST /billing/subscriptions/cancel",
+     "Upgrade to Pro \u00b7 \u20b9399/month \u2192 POST /billing/subscriptions/change [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Upgrades take effect immediately; downgrades apply from the 1st of next month. Laws already in your Playground keep working.",
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Upgrade applies immediately."
+    ]
+   },
+   "rows_before": [
+    "plus/active/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_pro, schedule_change_at=now)"
+     ],
+     "rows_after": [
+      "pro/active/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "cancel_subscription(sub_m8_local, cancel_at_cycle_end=True)"
+     ],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "active, cancel at period end",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": true,
+    "can_open_playground": true,
+    "can_add_new_law": true
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Plus",
+    "h1": [
+     "Change your plan"
+    ],
+    "offers": [
+     "Switch to Pro \u2192 POST /billing/subscriptions/change [pro]",
+     "Upgrade to Pro \u00b7 \u20b9399/month \u2192 POST /billing/subscriptions/change [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Upgrades take effect immediately; downgrades apply from the 1st of next month. Laws already in your Playground keep working.",
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Upgrade applies immediately."
+    ]
+   },
+   "rows_before": [
+    "plus/active/current/cancel-at-end"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_pro, schedule_change_at=now)"
+     ],
+     "rows_after": [
+      "pro/active/current/cancel-at-end"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "cancel_subscription(sub_m8_local, cancel_at_cycle_end=True)"
+     ],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "active Pro, downgrade to Plus scheduled",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": true,
+    "can_open_playground": true,
+    "can_add_new_law": true
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Pro",
+    "h1": [],
+    "offers": [
+     "Cancel at cycle end \u2192 POST /billing/subscriptions/cancel",
+     "Schedule Plus \u00b7 \u20b9199/month \u2192 POST /billing/subscriptions/change [plus]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Downgrade takes effect at the end of the current paid cycle. Your current plan stays active until then."
+    ]
+   },
+   "rows_before": [
+    "pro/active/current/scheduled\u2192plus"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "pro/active/current/scheduled\u2192plus"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "pro/active/current/scheduled\u2192plus"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "pro/active/current/scheduled\u2192plus"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_plus, schedule_change_at=cycle_end)"
+     ],
+     "rows_after": [
+      "pro/active/current/scheduled\u2192plus"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "cancel_subscription(sub_m8_local, cancel_at_cycle_end=True)"
+     ],
+     "rows_after": [
+      "pro/active/current/cancel-at-end/scheduled\u2192plus"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "active, stored period elapsed",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Your Playground is paused",
+    "h1": [],
+    "offers": [
+     "Cancel at cycle end \u2192 POST /billing/subscriptions/cancel",
+     "Upgrade to Pro \u00b7 \u20b9399/month \u2192 POST /billing/subscriptions/change [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Upgrade applies immediately."
+    ]
+   },
+   "rows_before": [
+    "plus/active/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_pro, schedule_change_at=now)"
+     ],
+     "rows_after": [
+      "pro/active/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "cancel_subscription(sub_m8_local, cancel_at_cycle_end=True)"
+     ],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "pending, period open",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": true,
+    "can_open_playground": true,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Plus",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Payment retry in progress"
+    ]
+   },
+   "rows_before": [
+    "plus/pending/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "pending, stored period elapsed",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Payment retry in progress"
+    ]
+   },
+   "rows_before": [
+    "plus/pending/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "halted, period open",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "payment_halted",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Payment retries have stopped",
+    "h1": [
+     "Playground plans"
+    ],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Automatic retries have stopped"
+    ]
+   },
+   "rows_before": [
+    "plus/halted/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "halted, stored period elapsed",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Payment retries have stopped",
+    "h1": [
+     "Playground plans"
+    ],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Automatic retries have stopped"
+    ]
+   },
+   "rows_before": [
+    "plus/halted/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "paused, period open",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "subscription_paused",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Playground subscription paused",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Subscription paused"
+    ]
+   },
+   "rows_before": [
+    "plus/paused/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "paused, stored period elapsed",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Playground subscription paused",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Subscription paused"
+    ]
+   },
+   "rows_before": [
+    "plus/paused/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "cancelled, row still current (fixture)",
+   "reach": "S",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Your Playground is paused",
+    "h1": [
+     "Playground plans"
+    ],
+    "offers": [
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]",
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Previous subscription ended; subscribe again",
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Previous subscription ended; subscribe again"
+    ]
+   },
+   "rows_before": [
+    "plus/cancelled/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "fetch_subscription(sub_m8_local) \u2192 mock returns stored status 'cancelled'",
+      "create_subscription(plan=plan_plus)"
+     ],
+     "rows_after": [
+      "plus/cancelled/not-current",
+      "plus/created/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "fetch_subscription(sub_m8_local) \u2192 mock returns stored status 'cancelled'",
+      "create_subscription(plan=plan_pro)"
+     ],
+     "rows_after": [
+      "plus/cancelled/not-current",
+      "pro/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/cancelled/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/cancelled/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/cancelled/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "expired, row still current (fixture)",
+   "reach": "S",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Your Playground is paused",
+    "h1": [
+     "Playground plans"
+    ],
+    "offers": [
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]",
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Previous subscription ended; subscribe again",
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Previous subscription ended; subscribe again"
+    ]
+   },
+   "rows_before": [
+    "plus/expired/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "fetch_subscription(sub_m8_local) \u2192 mock returns stored status 'expired'",
+      "create_subscription(plan=plan_plus)"
+     ],
+     "rows_after": [
+      "plus/created/current",
+      "plus/expired/not-current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "fetch_subscription(sub_m8_local) \u2192 mock returns stored status 'expired'",
+      "create_subscription(plan=plan_pro)"
+     ],
+     "rows_after": [
+      "plus/expired/not-current",
+      "pro/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "expired, row not current (as the service leaves it)",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "not_subscribed",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Previous subscription ended; subscribe again"
+    ]
+   },
+   "rows_before": [
+    "plus/expired/not-current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "create_subscription(plan=plan_plus)"
+     ],
+     "rows_after": [
+      "plus/created/current",
+      "plus/expired/not-current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "create_subscription(plan=plan_pro)"
+     ],
+     "rows_after": [
+      "plus/expired/not-current",
+      "pro/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/not-current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/not-current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/not-current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "monthly",
+   "shape": "legacy Max, active",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": true,
+    "can_open_playground": true,
+    "can_add_new_law": true
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Max",
+    "h1": [],
+    "offers": [
+     "Cancel at cycle end \u2192 POST /billing/subscriptions/cancel",
+     "Schedule Plus \u00b7 \u20b9199/month \u2192 POST /billing/subscriptions/change [plus]",
+     "Schedule Pro \u00b7 \u20b9399/month \u2192 POST /billing/subscriptions/change [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Downgrade takes effect at the end of the current paid cycle. Your current plan stays active until then."
+    ]
+   },
+   "rows_before": [
+    "max/active/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "max/active/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "max/active/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_pro, schedule_change_at=cycle_end)"
+     ],
+     "rows_after": [
+      "max/active/current/scheduled\u2192pro"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_plus, schedule_change_at=cycle_end)"
+     ],
+     "rows_after": [
+      "max/active/current/scheduled\u2192plus"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "cancel_subscription(sub_m8_local, cancel_at_cycle_end=True)"
+     ],
+     "rows_after": [
+      "max/active/current/cancel-at-end"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "no subscription row",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": false,
+    "can_open_playground": true,
+    "can_add_new_law": true
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle."
+    ]
+   },
+   "rows_before": [],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "create_subscription(plan=plan_plus)"
+     ],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "create_subscription(plan=plan_pro)"
+     ],
+     "rows_after": [
+      "pro/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": []
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": []
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": []
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "created, reservation (no provider id)",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "not_subscribed",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle."
+    ]
+   },
+   "rows_before": [
+    "plus/created/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=in_progress",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=in_progress",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "created, checkout open",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "not_subscribed",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [],
+    "billing_links": [
+     "Continue checkout \u2192 \u2192 /billing/subscriptions/checkout"
+    ],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle."
+    ]
+   },
+   "rows_before": [
+    "plus/created/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/created/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "authenticated",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "not_subscribed",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle."
+    ]
+   },
+   "rows_before": [
+    "plus/authenticated/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/authenticated/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/authenticated/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/authenticated/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/authenticated/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/authenticated/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "active, period open",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": true,
+    "can_open_playground": true,
+    "can_add_new_law": true
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Plus",
+    "h1": [
+     "Change your plan"
+    ],
+    "offers": [
+     "Switch to Pro \u2192 POST /billing/subscriptions/change [pro]",
+     "Cancel at cycle end \u2192 POST /billing/subscriptions/cancel",
+     "Cancel at cycle end \u2192 POST /billing/subscriptions/cancel",
+     "Upgrade to Pro \u00b7 \u20b9399/month \u2192 POST /billing/subscriptions/change [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Upgrades take effect immediately; downgrades apply from the 1st of next month. Laws already in your Playground keep working.",
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Upgrade applies immediately."
+    ]
+   },
+   "rows_before": [
+    "plus/active/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_pro, schedule_change_at=now)"
+     ],
+     "rows_after": [
+      "pro/active/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "cancel_subscription(sub_m8_local, cancel_at_cycle_end=True)"
+     ],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "active, cancel at period end",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": true,
+    "can_open_playground": true,
+    "can_add_new_law": true
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Plus",
+    "h1": [
+     "Change your plan"
+    ],
+    "offers": [
+     "Switch to Pro \u2192 POST /billing/subscriptions/change [pro]",
+     "Upgrade to Pro \u00b7 \u20b9399/month \u2192 POST /billing/subscriptions/change [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Upgrades take effect immediately; downgrades apply from the 1st of next month. Laws already in your Playground keep working.",
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Upgrade applies immediately."
+    ]
+   },
+   "rows_before": [
+    "plus/active/current/cancel-at-end"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_pro, schedule_change_at=now)"
+     ],
+     "rows_after": [
+      "pro/active/current/cancel-at-end"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "cancel_subscription(sub_m8_local, cancel_at_cycle_end=True)"
+     ],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "active Pro, downgrade to Plus scheduled",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": true,
+    "can_open_playground": true,
+    "can_add_new_law": true
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Pro",
+    "h1": [],
+    "offers": [
+     "Cancel at cycle end \u2192 POST /billing/subscriptions/cancel",
+     "Schedule Plus \u00b7 \u20b9199/month \u2192 POST /billing/subscriptions/change [plus]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Downgrade takes effect at the end of the current paid cycle. Your current plan stays active until then."
+    ]
+   },
+   "rows_before": [
+    "pro/active/current/scheduled\u2192plus"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "pro/active/current/scheduled\u2192plus"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "pro/active/current/scheduled\u2192plus"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "pro/active/current/scheduled\u2192plus"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_plus, schedule_change_at=cycle_end)"
+     ],
+     "rows_after": [
+      "pro/active/current/scheduled\u2192plus"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "cancel_subscription(sub_m8_local, cancel_at_cycle_end=True)"
+     ],
+     "rows_after": [
+      "pro/active/current/cancel-at-end/scheduled\u2192plus"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "active, stored period elapsed",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Your Playground is paused",
+    "h1": [],
+    "offers": [
+     "Cancel at cycle end \u2192 POST /billing/subscriptions/cancel",
+     "Upgrade to Pro \u00b7 \u20b9399/month \u2192 POST /billing/subscriptions/change [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Upgrade applies immediately."
+    ]
+   },
+   "rows_before": [
+    "plus/active/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_pro, schedule_change_at=now)"
+     ],
+     "rows_after": [
+      "pro/active/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/active/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "cancel_subscription(sub_m8_local, cancel_at_cycle_end=True)"
+     ],
+     "rows_after": [
+      "plus/active/current/cancel-at-end"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "pending, period open",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": true,
+    "can_open_playground": true,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Plus",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Payment retry in progress"
+    ]
+   },
+   "rows_before": [
+    "plus/pending/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "pending, stored period elapsed",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Payment retry in progress"
+    ]
+   },
+   "rows_before": [
+    "plus/pending/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/pending/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "halted, period open",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "payment_halted",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Payment retries have stopped",
+    "h1": [
+     "Playground plans"
+    ],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Automatic retries have stopped"
+    ]
+   },
+   "rows_before": [
+    "plus/halted/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "halted, stored period elapsed",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Payment retries have stopped",
+    "h1": [
+     "Playground plans"
+    ],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Automatic retries have stopped"
+    ]
+   },
+   "rows_before": [
+    "plus/halted/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/halted/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "paused, period open",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "subscription_paused",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Playground subscription paused",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Subscription paused"
+    ]
+   },
+   "rows_before": [
+    "plus/paused/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "paused, stored period elapsed",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Playground subscription paused",
+    "h1": [],
+    "offers": [],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Subscription paused"
+    ]
+   },
+   "rows_before": [
+    "plus/paused/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/paused/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "cancelled, row still current (fixture)",
+   "reach": "S",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Your Playground is paused",
+    "h1": [
+     "Playground plans"
+    ],
+    "offers": [
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]",
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Previous subscription ended; subscribe again",
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Previous subscription ended; subscribe again"
+    ]
+   },
+   "rows_before": [
+    "plus/cancelled/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "fetch_subscription(sub_m8_local) \u2192 mock returns stored status 'cancelled'",
+      "create_subscription(plan=plan_plus)"
+     ],
+     "rows_after": [
+      "plus/cancelled/not-current",
+      "plus/created/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "fetch_subscription(sub_m8_local) \u2192 mock returns stored status 'cancelled'",
+      "create_subscription(plan=plan_pro)"
+     ],
+     "rows_after": [
+      "plus/cancelled/not-current",
+      "pro/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/cancelled/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/cancelled/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/cancelled/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "expired, row still current (fixture)",
+   "reach": "S",
+   "entitlement": {
+    "block_reason": "paid_period_ended",
+    "is_subscribed": false,
+    "can_open_playground": false,
+    "can_add_new_law": false
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "Your Playground is paused",
+    "h1": [
+     "Playground plans"
+    ],
+    "offers": [
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]",
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Previous subscription ended; subscribe again",
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Previous subscription ended; subscribe again"
+    ]
+   },
+   "rows_before": [
+    "plus/expired/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "fetch_subscription(sub_m8_local) \u2192 mock returns stored status 'expired'",
+      "create_subscription(plan=plan_plus)"
+     ],
+     "rows_after": [
+      "plus/created/current",
+      "plus/expired/not-current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "fetch_subscription(sub_m8_local) \u2192 mock returns stored status 'expired'",
+      "create_subscription(plan=plan_pro)"
+     ],
+     "rows_after": [
+      "plus/expired/not-current",
+      "pro/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=same_tier",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "expired, row not current (as the service leaves it)",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": false,
+    "can_open_playground": true,
+    "can_add_new_law": true
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Free",
+    "h1": [],
+    "offers": [
+     "Subscribe to Plus \u2192 POST /billing/subscriptions/create [plus]",
+     "Subscribe to Pro \u2192 POST /billing/subscriptions/create [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Previous subscription ended; subscribe again"
+    ]
+   },
+   "rows_before": [
+    "plus/expired/not-current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "create_subscription(plan=plan_plus)"
+     ],
+     "rows_after": [
+      "plus/created/current",
+      "plus/expired/not-current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions/checkout",
+     "provider_calls": [
+      "create_subscription(plan=plan_pro)"
+     ],
+     "rows_after": [
+      "plus/expired/not-current",
+      "pro/created/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/not-current"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=state",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/not-current"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=unpaid_cancel",
+     "provider_calls": [],
+     "rows_after": [
+      "plus/expired/not-current"
+     ]
+    }
+   }
+  },
+  {
+   "tier_model": "choices",
+   "shape": "legacy Max, active",
+   "reach": "P",
+   "entitlement": {
+    "block_reason": null,
+    "is_subscribed": true,
+    "can_open_playground": true,
+    "can_add_new_law": true
+   },
+   "billing_page": {
+    "status": 200,
+    "header": "RecallC Max",
+    "h1": [],
+    "offers": [
+     "Cancel at cycle end \u2192 POST /billing/subscriptions/cancel",
+     "Schedule Plus \u00b7 \u20b9199/month \u2192 POST /billing/subscriptions/change [plus]",
+     "Schedule Pro \u00b7 \u20b9399/month \u2192 POST /billing/subscriptions/change [pro]"
+    ],
+    "billing_links": [],
+    "notes": [
+     "Monthly. GST included. Cancel at the end of the current paid cycle.",
+     "Downgrade takes effect at the end of the current paid cycle. Your current plan stays active until then."
+    ]
+   },
+   "rows_before": [
+    "max/active/current"
+   ],
+   "actions": {
+    "subscribe_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "max/active/current"
+     ]
+    },
+    "subscribe_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions?error=change_required",
+     "provider_calls": [],
+     "rows_after": [
+      "max/active/current"
+     ]
+    },
+    "change_to_pro": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_pro, schedule_change_at=cycle_end)"
+     ],
+     "rows_after": [
+      "max/active/current/scheduled\u2192pro"
+     ]
+    },
+    "change_to_plus": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "update_subscription_plan(sub_m8_local, plan=plan_plus, schedule_change_at=cycle_end)"
+     ],
+     "rows_after": [
+      "max/active/current/scheduled\u2192plus"
+     ]
+    },
+    "cancel": {
+     "http": 303,
+     "redirect": "/billing/subscriptions",
+     "provider_calls": [
+      "cancel_subscription(sub_m8_local, cancel_at_cycle_end=True)"
+     ],
+     "rows_after": [
+      "max/active/current/cancel-at-end"
+     ]
+    }
+   }
+  }
+ ]
+}

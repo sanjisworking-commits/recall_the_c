@@ -1,0 +1,4044 @@
+{
+ "baseline_sha": "67c7101a",
+ "candidate_sha": "97edd4e9",
+ "identical_rows": 254,
+ "changed_rows": 108,
+ "rows_in_one_only": [],
+ "changed": [
+  {
+   "row": [
+    "abandoned",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "abandoned",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "cancel_at_end",
+    "choices",
+    "billing"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "cancel_at_end",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "cancel_at_end",
+    "choices",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "title": {
+     "baseline": "Your RecallC account already includes the complete Constitution. \u00b7 Playground \u00b7 Recall the C",
+     "candidate": "Change your Playground plan \u00b7 Playground \u00b7 Recall the C"
+    },
+    "h1": {
+     "baseline": [
+      "Your RecallC account already includes the complete Constitution."
+     ],
+     "candidate": [
+      "Change your Playground plan"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "cancel_at_end",
+    "choices",
+    "profile"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "cancel_at_end",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "cancel_at_end",
+    "monthly",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "title": {
+     "baseline": "Your RecallC account already includes the complete Constitution. \u00b7 Playground \u00b7 Recall the C",
+     "candidate": "Change your Playground plan \u00b7 Playground \u00b7 Recall the C"
+    },
+    "h1": {
+     "baseline": [
+      "Your RecallC account already includes the complete Constitution."
+     ],
+     "candidate": [
+      "Change your Playground plan"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "device_limit",
+    "choices",
+    "add_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "h1": {
+     "baseline": [
+      "The Payment and Settlement Systems Act, 2007",
+      "Add PSS to your Playground?"
+     ],
+     "candidate": [
+      "The Payment and Settlement Systems Act, 2007",
+      "Device limit reached"
+     ]
+    },
+    "add_title": {
+     "baseline": "Add PSS to your Playground?",
+     "candidate": "Device limit reached"
+    }
+   }
+  },
+  {
+   "row": [
+    "device_limit",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "device_limit",
+    "monthly",
+    "add_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "h1": {
+     "baseline": [
+      "The Payment and Settlement Systems Act, 2007",
+      "Add PSS to November?"
+     ],
+     "candidate": [
+      "The Payment and Settlement Systems Act, 2007",
+      "Device limit reached"
+     ]
+    },
+    "add_title": {
+     "baseline": "Add PSS to November?",
+     "candidate": "Device limit reached"
+    }
+   }
+  },
+  {
+   "row": [
+    "device_limit",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "device_revoked",
+    "choices",
+    "add_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "h1": {
+     "baseline": [
+      "The Payment and Settlement Systems Act, 2007",
+      "Add PSS to your Playground?"
+     ],
+     "candidate": [
+      "The Payment and Settlement Systems Act, 2007",
+      "This device no longer has Playground access."
+     ]
+    },
+    "add_title": {
+     "baseline": "Add PSS to your Playground?",
+     "candidate": "This device no longer has Playground access."
+    }
+   }
+  },
+  {
+   "row": [
+    "device_revoked",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "device_revoked",
+    "choices",
+    "head_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "device_revoked",
+    "choices",
+    "home"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "device_revoked",
+    "monthly",
+    "add_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "h1": {
+     "baseline": [
+      "The Payment and Settlement Systems Act, 2007",
+      "Add PSS to November?"
+     ],
+     "candidate": [
+      "The Payment and Settlement Systems Act, 2007",
+      "This device no longer has Playground access."
+     ]
+    },
+    "add_title": {
+     "baseline": "Add PSS to November?",
+     "candidate": "This device no longer has Playground access."
+    }
+   }
+  },
+  {
+   "row": [
+    "device_revoked",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "device_revoked",
+    "monthly",
+    "head_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "device_revoked",
+    "monthly",
+    "home"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "ended_active",
+    "choices",
+    "add_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "ended_active",
+    "choices",
+    "calendar"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "BNS \u00b7 \u00a71 \u00b7 Playground Playground \u00b7 \u2192 /billing/subscriptions",
+      "BNS \u00b7 \u00a71 \u00b7 Playground \u2192 /billing/subscriptions",
+      "BNS \u00b7 Section 1 \u2014 Day 1 revision \u00b7 \u2192 /billing/subscriptions",
+      "See plans \u203a \u2192 /playground?stage=plans"
+     ],
+     "candidate": [
+      "BNS \u00b7 \u00a71 \u00b7 Playground Playground \u00b7 \u2192 /billing/subscriptions",
+      "BNS \u00b7 \u00a71 \u00b7 Playground \u2192 /billing/subscriptions",
+      "BNS \u00b7 Section 1 \u2014 Day 1 revision \u00b7 \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "ended_active",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "ended_active",
+    "choices",
+    "head_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "ended_active",
+    "choices",
+    "home"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Read Bare Act \u2192 /laws/uapa"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "ended_active",
+    "choices",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "status": {
+     "baseline": 200,
+     "candidate": 303
+    },
+    "location": {
+     "baseline": "",
+     "candidate": "/billing/subscriptions"
+    },
+    "header": {
+     "baseline": "Your Playground is paused",
+     "candidate": null
+    },
+    "title": {
+     "baseline": "Playground \u00b7 Recall the C",
+     "candidate": null
+    },
+    "h1": {
+     "baseline": [
+      "Your Playground is paused",
+      "Playground"
+     ],
+     "candidate": null
+    },
+    "add_title": {
+     "baseline": "",
+     "candidate": null
+    },
+    "gate": {
+     "baseline": [],
+     "candidate": null
+    },
+    "pg_kind": {
+     "baseline": [],
+     "candidate": null
+    },
+    "plan_form": {
+     "baseline": "",
+     "candidate": null
+    },
+    "links": {
+     "baseline": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": null
+    },
+    "forms": {
+     "baseline": [],
+     "candidate": null
+    },
+    "law_item_links": {
+     "baseline": [],
+     "candidate": null
+    },
+    "mentions_bns": {
+     "baseline": true,
+     "candidate": null
+    },
+    "device_lede": {
+     "baseline": "",
+     "candidate": null
+    }
+   }
+  },
+  {
+   "row": [
+    "ended_active",
+    "monthly",
+    "add_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "ended_active",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "ended_active",
+    "monthly",
+    "head_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "ended_active",
+    "monthly",
+    "home"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Read Bare Act \u2192 /laws/uapa"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "ended_active",
+    "monthly",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "status": {
+     "baseline": 200,
+     "candidate": 303
+    },
+    "location": {
+     "baseline": "",
+     "candidate": "/billing/subscriptions"
+    },
+    "header": {
+     "baseline": "Your Playground is paused",
+     "candidate": null
+    },
+    "title": {
+     "baseline": "Playground \u00b7 Recall the C",
+     "candidate": null
+    },
+    "h1": {
+     "baseline": [
+      "Your Playground is paused",
+      "Playground"
+     ],
+     "candidate": null
+    },
+    "add_title": {
+     "baseline": "",
+     "candidate": null
+    },
+    "gate": {
+     "baseline": [],
+     "candidate": null
+    },
+    "pg_kind": {
+     "baseline": [],
+     "candidate": null
+    },
+    "plan_form": {
+     "baseline": "",
+     "candidate": null
+    },
+    "links": {
+     "baseline": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": null
+    },
+    "forms": {
+     "baseline": [],
+     "candidate": null
+    },
+    "law_item_links": {
+     "baseline": [],
+     "candidate": null
+    },
+    "mentions_bns": {
+     "baseline": true,
+     "candidate": null
+    },
+    "device_lede": {
+     "baseline": "",
+     "candidate": null
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "choices",
+    "add_out"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "choices",
+    "billing"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "choices",
+    "calendar"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "BNS \u00b7 \u00a71 \u00b7 Playground Playground \u00b7 \u2192 /billing/subscriptions",
+      "BNS \u00b7 \u00a71 \u00b7 Playground \u2192 /billing/subscriptions",
+      "BNS \u00b7 Section 1 \u2014 Day 1 revision \u00b7 \u2192 /billing/subscriptions",
+      "See plans \u203a \u2192 /playground?stage=plans"
+     ],
+     "candidate": [
+      "BNS \u00b7 \u00a71 \u00b7 Playground Playground \u00b7 \u2192 /billing/subscriptions",
+      "BNS \u00b7 \u00a71 \u00b7 Playground \u2192 /billing/subscriptions",
+      "BNS \u00b7 Section 1 \u2014 Day 1 revision \u00b7 \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "choices",
+    "devices"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "choices",
+    "head_out"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "choices",
+    "home"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Read Bare Act \u2192 /laws/uapa"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "choices",
+    "plans"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "status": {
+     "baseline": 200,
+     "candidate": 303
+    },
+    "location": {
+     "baseline": "",
+     "candidate": "/billing/subscriptions"
+    },
+    "header": {
+     "baseline": "Your Playground is paused",
+     "candidate": null
+    },
+    "title": {
+     "baseline": "Playground \u00b7 Recall the C",
+     "candidate": null
+    },
+    "h1": {
+     "baseline": [
+      "Your Playground is paused",
+      "Playground"
+     ],
+     "candidate": null
+    },
+    "add_title": {
+     "baseline": "",
+     "candidate": null
+    },
+    "gate": {
+     "baseline": [],
+     "candidate": null
+    },
+    "pg_kind": {
+     "baseline": [],
+     "candidate": null
+    },
+    "plan_form": {
+     "baseline": "",
+     "candidate": null
+    },
+    "links": {
+     "baseline": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": null
+    },
+    "forms": {
+     "baseline": [],
+     "candidate": null
+    },
+    "law_item_links": {
+     "baseline": [],
+     "candidate": null
+    },
+    "mentions_bns": {
+     "baseline": true,
+     "candidate": null
+    },
+    "device_lede": {
+     "baseline": "",
+     "candidate": null
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "monthly",
+    "add_out"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "monthly",
+    "devices"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "monthly",
+    "head_out"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "monthly",
+    "home"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Read Bare Act \u2192 /laws/uapa"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "expired_fixture",
+    "monthly",
+    "plans"
+   ],
+   "reach": "S",
+   "body_identical": false,
+   "fields": {
+    "status": {
+     "baseline": 200,
+     "candidate": 303
+    },
+    "location": {
+     "baseline": "",
+     "candidate": "/billing/subscriptions"
+    },
+    "header": {
+     "baseline": "Your Playground is paused",
+     "candidate": null
+    },
+    "title": {
+     "baseline": "Playground \u00b7 Recall the C",
+     "candidate": null
+    },
+    "h1": {
+     "baseline": [
+      "Your Playground is paused",
+      "Playground"
+     ],
+     "candidate": null
+    },
+    "add_title": {
+     "baseline": "",
+     "candidate": null
+    },
+    "gate": {
+     "baseline": [],
+     "candidate": null
+    },
+    "pg_kind": {
+     "baseline": [],
+     "candidate": null
+    },
+    "plan_form": {
+     "baseline": "",
+     "candidate": null
+    },
+    "links": {
+     "baseline": [
+      "View Playground plans \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": null
+    },
+    "forms": {
+     "baseline": [],
+     "candidate": null
+    },
+    "law_item_links": {
+     "baseline": [],
+     "candidate": null
+    },
+    "mentions_bns": {
+     "baseline": true,
+     "candidate": null
+    },
+    "device_lede": {
+     "baseline": "",
+     "candidate": null
+    }
+   }
+  },
+  {
+   "row": [
+    "former_paid",
+    "choices",
+    "billing"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "former_paid",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "former_paid",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "free",
+    "choices",
+    "billing"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "free",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "free",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "halted",
+    "choices",
+    "calendar"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "BNS \u00b7 \u00a71 \u00b7 Playground Playground \u00b7 \u2192 /billing/subscriptions",
+      "BNS \u00b7 \u00a71 \u00b7 Playground \u2192 /billing/subscriptions",
+      "BNS \u00b7 Section 1 \u2014 Day 1 revision \u00b7 \u2192 /billing/subscriptions",
+      "See plans \u203a \u2192 /playground?stage=plans"
+     ],
+     "candidate": [
+      "BNS \u00b7 \u00a71 \u00b7 Playground Playground \u00b7 \u2192 /billing/subscriptions",
+      "BNS \u00b7 \u00a71 \u00b7 Playground \u2192 /billing/subscriptions",
+      "BNS \u00b7 Section 1 \u2014 Day 1 revision \u00b7 \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "halted",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "halted",
+    "choices",
+    "home"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Read Bare Act \u2192 /laws/uapa"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "halted",
+    "choices",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "status": {
+     "baseline": 200,
+     "candidate": 303
+    },
+    "location": {
+     "baseline": "",
+     "candidate": "/billing/subscriptions"
+    },
+    "header": {
+     "baseline": "Payment retries have stopped",
+     "candidate": null
+    },
+    "title": {
+     "baseline": "Playground \u00b7 Recall the C",
+     "candidate": null
+    },
+    "h1": {
+     "baseline": [
+      "Payment retries have stopped",
+      "Playground"
+     ],
+     "candidate": null
+    },
+    "add_title": {
+     "baseline": "",
+     "candidate": null
+    },
+    "gate": {
+     "baseline": [],
+     "candidate": null
+    },
+    "pg_kind": {
+     "baseline": [],
+     "candidate": null
+    },
+    "plan_form": {
+     "baseline": "",
+     "candidate": null
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": null
+    },
+    "forms": {
+     "baseline": [],
+     "candidate": null
+    },
+    "law_item_links": {
+     "baseline": [],
+     "candidate": null
+    },
+    "mentions_bns": {
+     "baseline": true,
+     "candidate": null
+    },
+    "device_lede": {
+     "baseline": "",
+     "candidate": null
+    }
+   }
+  },
+  {
+   "row": [
+    "halted",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "halted",
+    "monthly",
+    "home"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Read Bare Act \u2192 /laws/uapa"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "halted",
+    "monthly",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "status": {
+     "baseline": 200,
+     "candidate": 303
+    },
+    "location": {
+     "baseline": "",
+     "candidate": "/billing/subscriptions"
+    },
+    "header": {
+     "baseline": "Payment retries have stopped",
+     "candidate": null
+    },
+    "title": {
+     "baseline": "Playground \u00b7 Recall the C",
+     "candidate": null
+    },
+    "h1": {
+     "baseline": [
+      "Payment retries have stopped",
+      "Playground"
+     ],
+     "candidate": null
+    },
+    "add_title": {
+     "baseline": "",
+     "candidate": null
+    },
+    "gate": {
+     "baseline": [],
+     "candidate": null
+    },
+    "pg_kind": {
+     "baseline": [],
+     "candidate": null
+    },
+    "plan_form": {
+     "baseline": "",
+     "candidate": null
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": null
+    },
+    "forms": {
+     "baseline": [],
+     "candidate": null
+    },
+    "law_item_links": {
+     "baseline": [],
+     "candidate": null
+    },
+    "mentions_bns": {
+     "baseline": true,
+     "candidate": null
+    },
+    "device_lede": {
+     "baseline": "",
+     "candidate": null
+    }
+   }
+  },
+  {
+   "row": [
+    "halted_elapsed",
+    "choices",
+    "calendar"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "BNS \u00b7 \u00a71 \u00b7 Playground Playground \u00b7 \u2192 /billing/subscriptions",
+      "BNS \u00b7 \u00a71 \u00b7 Playground \u2192 /billing/subscriptions",
+      "BNS \u00b7 Section 1 \u2014 Day 1 revision \u00b7 \u2192 /billing/subscriptions",
+      "See plans \u203a \u2192 /playground?stage=plans"
+     ],
+     "candidate": [
+      "BNS \u00b7 \u00a71 \u00b7 Playground Playground \u00b7 \u2192 /billing/subscriptions",
+      "BNS \u00b7 \u00a71 \u00b7 Playground \u2192 /billing/subscriptions",
+      "BNS \u00b7 Section 1 \u2014 Day 1 revision \u00b7 \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "halted_elapsed",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "halted_elapsed",
+    "choices",
+    "home"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Read Bare Act \u2192 /laws/uapa"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "halted_elapsed",
+    "choices",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "status": {
+     "baseline": 200,
+     "candidate": 303
+    },
+    "location": {
+     "baseline": "",
+     "candidate": "/billing/subscriptions"
+    },
+    "header": {
+     "baseline": "Payment retries have stopped",
+     "candidate": null
+    },
+    "title": {
+     "baseline": "Playground \u00b7 Recall the C",
+     "candidate": null
+    },
+    "h1": {
+     "baseline": [
+      "Payment retries have stopped",
+      "Playground"
+     ],
+     "candidate": null
+    },
+    "add_title": {
+     "baseline": "",
+     "candidate": null
+    },
+    "gate": {
+     "baseline": [],
+     "candidate": null
+    },
+    "pg_kind": {
+     "baseline": [],
+     "candidate": null
+    },
+    "plan_form": {
+     "baseline": "",
+     "candidate": null
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": null
+    },
+    "forms": {
+     "baseline": [],
+     "candidate": null
+    },
+    "law_item_links": {
+     "baseline": [],
+     "candidate": null
+    },
+    "mentions_bns": {
+     "baseline": true,
+     "candidate": null
+    },
+    "device_lede": {
+     "baseline": "",
+     "candidate": null
+    }
+   }
+  },
+  {
+   "row": [
+    "halted_elapsed",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "halted_elapsed",
+    "monthly",
+    "home"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Read Bare Act \u2192 /laws/uapa"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "halted_elapsed",
+    "monthly",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "status": {
+     "baseline": 200,
+     "candidate": 303
+    },
+    "location": {
+     "baseline": "",
+     "candidate": "/billing/subscriptions"
+    },
+    "header": {
+     "baseline": "Payment retries have stopped",
+     "candidate": null
+    },
+    "title": {
+     "baseline": "Playground \u00b7 Recall the C",
+     "candidate": null
+    },
+    "h1": {
+     "baseline": [
+      "Payment retries have stopped",
+      "Playground"
+     ],
+     "candidate": null
+    },
+    "add_title": {
+     "baseline": "",
+     "candidate": null
+    },
+    "gate": {
+     "baseline": [],
+     "candidate": null
+    },
+    "pg_kind": {
+     "baseline": [],
+     "candidate": null
+    },
+    "plan_form": {
+     "baseline": "",
+     "candidate": null
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Manage subscription \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": null
+    },
+    "forms": {
+     "baseline": [],
+     "candidate": null
+    },
+    "law_item_links": {
+     "baseline": [],
+     "candidate": null
+    },
+    "mentions_bns": {
+     "baseline": true,
+     "candidate": null
+    },
+    "device_lede": {
+     "baseline": "",
+     "candidate": null
+    }
+   }
+  },
+  {
+   "row": [
+    "max",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "max",
+    "choices",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "title": {
+     "baseline": "Your RecallC account already includes the complete Constitution. \u00b7 Playground \u00b7 Recall the C",
+     "candidate": "Change your Playground plan \u00b7 Playground \u00b7 Recall the C"
+    },
+    "h1": {
+     "baseline": [
+      "Your RecallC account already includes the complete Constitution."
+     ],
+     "candidate": [
+      "Change your Playground plan"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "max",
+    "choices",
+    "profile"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "max",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "max",
+    "monthly",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "title": {
+     "baseline": "Your RecallC account already includes the complete Constitution. \u00b7 Playground \u00b7 Recall the C",
+     "candidate": "Change your Playground plan \u00b7 Playground \u00b7 Recall the C"
+    },
+    "h1": {
+     "baseline": [
+      "Your RecallC account already includes the complete Constitution."
+     ],
+     "candidate": [
+      "Change your Playground plan"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "add_in"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "h1": {
+     "baseline": [
+      "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+      "Add NDPS Act to your Playground?"
+     ],
+     "candidate": [
+      "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+      "Playground subscription paused"
+     ]
+    },
+    "add_title": {
+     "baseline": "Add NDPS Act to your Playground?",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/ndps"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/ndps"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "add_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "h1": {
+     "baseline": [
+      "The Payment and Settlement Systems Act, 2007",
+      "Add PSS to your Playground?"
+     ],
+     "candidate": [
+      "The Payment and Settlement Systems Act, 2007",
+      "Playground subscription paused"
+     ]
+    },
+    "add_title": {
+     "baseline": "Add PSS to your Playground?",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "billing"
+   ],
+   "reach": "P",
+   "body_identical": true,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "calendar"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "See plans \u203a \u2192 /playground?stage=plans"
+     ],
+     "candidate": [
+      "BNS \u00b7 \u00a71 \u00b7 Playground Playground \u00b7 \u2192 /billing/subscriptions",
+      "BNS \u00b7 \u00a71 \u00b7 Playground \u2192 /billing/subscriptions",
+      "BNS \u00b7 Section 1 \u2014 Day 1 revision \u00b7 \u2192 /billing/subscriptions",
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    },
+    "mentions_bns": {
+     "baseline": false,
+     "candidate": true
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "head_in"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "head_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "home"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Read Bare Act \u2192 /laws/uapa"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "status": {
+     "baseline": 200,
+     "candidate": 303
+    },
+    "location": {
+     "baseline": "",
+     "candidate": "/billing/subscriptions"
+    },
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": null
+    },
+    "title": {
+     "baseline": "Playground \u00b7 Recall the C",
+     "candidate": null
+    },
+    "h1": {
+     "baseline": [
+      "Playground"
+     ],
+     "candidate": null
+    },
+    "add_title": {
+     "baseline": "",
+     "candidate": null
+    },
+    "gate": {
+     "baseline": [],
+     "candidate": null
+    },
+    "pg_kind": {
+     "baseline": [],
+     "candidate": null
+    },
+    "plan_form": {
+     "baseline": "",
+     "candidate": null
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": null
+    },
+    "forms": {
+     "baseline": [],
+     "candidate": null
+    },
+    "law_item_links": {
+     "baseline": [],
+     "candidate": null
+    },
+    "mentions_bns": {
+     "baseline": true,
+     "candidate": null
+    },
+    "device_lede": {
+     "baseline": "",
+     "candidate": null
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "profile"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "roster"
+   ],
+   "reach": "P",
+   "body_identical": true,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "settings"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "choices",
+    "today"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    },
+    "mentions_bns": {
+     "baseline": false,
+     "candidate": true
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "add_in"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "h1": {
+     "baseline": [
+      "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+      "Add NDPS Act to November?"
+     ],
+     "candidate": [
+      "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+      "Playground subscription paused"
+     ]
+    },
+    "add_title": {
+     "baseline": "Add NDPS Act to November?",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/ndps"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/ndps"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "add_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "h1": {
+     "baseline": [
+      "The Payment and Settlement Systems Act, 2007",
+      "Add PSS to November?"
+     ],
+     "candidate": [
+      "The Payment and Settlement Systems Act, 2007",
+      "Playground subscription paused"
+     ]
+    },
+    "add_title": {
+     "baseline": "Add PSS to November?",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Cancel \u2192 /laws/pss"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "billing"
+   ],
+   "reach": "P",
+   "body_identical": true,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "calendar"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [],
+     "candidate": [
+      "BNS \u00b7 \u00a71 \u00b7 Playground Playground \u00b7 \u2192 /billing/subscriptions",
+      "BNS \u00b7 \u00a71 \u00b7 Playground \u2192 /billing/subscriptions",
+      "BNS \u00b7 Section 1 \u2014 Day 1 revision \u00b7 \u2192 /billing/subscriptions"
+     ]
+    },
+    "mentions_bns": {
+     "baseline": false,
+     "candidate": true
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "A device is registered only when the Playground is used on it while a subscription gives Playground access. This account has no such subscription now, so no device is being registered. Devices registered earlier stay listed here and can be removed."
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "head_in"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "head_out"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "home"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Read Bare Act \u2192 /laws/uapa"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "status": {
+     "baseline": 200,
+     "candidate": 303
+    },
+    "location": {
+     "baseline": "",
+     "candidate": "/billing/subscriptions"
+    },
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": null
+    },
+    "title": {
+     "baseline": "Playground \u00b7 Recall the C",
+     "candidate": null
+    },
+    "h1": {
+     "baseline": [
+      "Playground"
+     ],
+     "candidate": null
+    },
+    "add_title": {
+     "baseline": "",
+     "candidate": null
+    },
+    "gate": {
+     "baseline": [],
+     "candidate": null
+    },
+    "pg_kind": {
+     "baseline": [],
+     "candidate": null
+    },
+    "plan_form": {
+     "baseline": "",
+     "candidate": null
+    },
+    "links": {
+     "baseline": [
+      "Resume Playground \u2192 /billing/subscriptions",
+      "Read Bare Act \u2192 /laws/bns",
+      "Manage \u2192 /playground/roster",
+      "Read Bare Act \u2192 /laws/ndps",
+      "Resume Playground \u2192 /billing/subscriptions [sheet-opener]",
+      "Read Bare Act \u2192 /laws/uapa"
+     ],
+     "candidate": null
+    },
+    "forms": {
+     "baseline": [],
+     "candidate": null
+    },
+    "law_item_links": {
+     "baseline": [],
+     "candidate": null
+    },
+    "mentions_bns": {
+     "baseline": true,
+     "candidate": null
+    },
+    "device_lede": {
+     "baseline": "",
+     "candidate": null
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "profile"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "roster"
+   ],
+   "reach": "P",
+   "body_identical": true,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "settings"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    }
+   }
+  },
+  {
+   "row": [
+    "paused",
+    "monthly",
+    "today"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "header": {
+     "baseline": "RecallC Free",
+     "candidate": "Playground subscription paused"
+    },
+    "links": {
+     "baseline": [],
+     "candidate": [
+      "Resume Playground \u2192 /billing/subscriptions"
+     ]
+    },
+    "mentions_bns": {
+     "baseline": false,
+     "candidate": true
+    }
+   }
+  },
+  {
+   "row": [
+    "pending",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "pending",
+    "choices",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "title": {
+     "baseline": "Your RecallC account already includes the complete Constitution. \u00b7 Playground \u00b7 Recall the C",
+     "candidate": "Change your Playground plan \u00b7 Playground \u00b7 Recall the C"
+    },
+    "h1": {
+     "baseline": [
+      "Your RecallC account already includes the complete Constitution."
+     ],
+     "candidate": [
+      "Change your Playground plan"
+     ]
+    },
+    "plan_form": {
+     "baseline": "change",
+     "candidate": ""
+    },
+    "links": {
+     "baseline": [],
+     "candidate": [
+      "Manage subscription \u2192 /billing/subscriptions"
+     ]
+    },
+    "forms": {
+     "baseline": [
+      "/billing/subscriptions/change"
+     ],
+     "candidate": []
+    }
+   }
+  },
+  {
+   "row": [
+    "pending",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "pending",
+    "monthly",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "title": {
+     "baseline": "Your RecallC account already includes the complete Constitution. \u00b7 Playground \u00b7 Recall the C",
+     "candidate": "Change your Playground plan \u00b7 Playground \u00b7 Recall the C"
+    },
+    "h1": {
+     "baseline": [
+      "Your RecallC account already includes the complete Constitution."
+     ],
+     "candidate": [
+      "Change your Playground plan"
+     ]
+    },
+    "plan_form": {
+     "baseline": "change",
+     "candidate": ""
+    },
+    "links": {
+     "baseline": [],
+     "candidate": [
+      "Manage subscription \u2192 /billing/subscriptions"
+     ]
+    },
+    "forms": {
+     "baseline": [
+      "/billing/subscriptions/change"
+     ],
+     "candidate": []
+    }
+   }
+  },
+  {
+   "row": [
+    "plus",
+    "choices",
+    "billing"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "plus",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "plus",
+    "choices",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "title": {
+     "baseline": "Your RecallC account already includes the complete Constitution. \u00b7 Playground \u00b7 Recall the C",
+     "candidate": "Change your Playground plan \u00b7 Playground \u00b7 Recall the C"
+    },
+    "h1": {
+     "baseline": [
+      "Your RecallC account already includes the complete Constitution."
+     ],
+     "candidate": [
+      "Change your Playground plan"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "plus",
+    "choices",
+    "profile"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {}
+  },
+  {
+   "row": [
+    "plus",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "plus",
+    "monthly",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "title": {
+     "baseline": "Your RecallC account already includes the complete Constitution. \u00b7 Playground \u00b7 Recall the C",
+     "candidate": "Change your Playground plan \u00b7 Playground \u00b7 Recall the C"
+    },
+    "h1": {
+     "baseline": [
+      "Your RecallC account already includes the complete Constitution."
+     ],
+     "candidate": [
+      "Change your Playground plan"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "scheduled_downgrade",
+    "choices",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "scheduled_downgrade",
+    "choices",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "title": {
+     "baseline": "Your RecallC account already includes the complete Constitution. \u00b7 Playground \u00b7 Recall the C",
+     "candidate": "Change your Playground plan \u00b7 Playground \u00b7 Recall the C"
+    },
+    "h1": {
+     "baseline": [
+      "Your RecallC account already includes the complete Constitution."
+     ],
+     "candidate": [
+      "Change your Playground plan"
+     ]
+    }
+   }
+  },
+  {
+   "row": [
+    "scheduled_downgrade",
+    "monthly",
+    "devices"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "device_lede": {
+     "baseline": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while a paid plan is active.",
+     "candidate": "Your plan supports the Playground on up to 2 registered devices. A device is registered the first time you use the Playground on it while your subscription gives Playground access, including while a payment is being retried."
+    }
+   }
+  },
+  {
+   "row": [
+    "scheduled_downgrade",
+    "monthly",
+    "plans"
+   ],
+   "reach": "P",
+   "body_identical": false,
+   "fields": {
+    "title": {
+     "baseline": "Your RecallC account already includes the complete Constitution. \u00b7 Playground \u00b7 Recall the C",
+     "candidate": "Change your Playground plan \u00b7 Playground \u00b7 Recall the C"
+    },
+    "h1": {
+     "baseline": [
+      "Your RecallC account already includes the complete Constitution."
+     ],
+     "candidate": [
+      "Change your Playground plan"
+     ]
+    }
+   }
+  }
+ ],
+ "identical": [
+  [
+   "abandoned",
+   "choices",
+   "add_in"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "add_out"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "billing"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "calendar"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "head_in"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "head_out"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "home"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "plans"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "profile"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "roster"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "settings"
+  ],
+  [
+   "abandoned",
+   "choices",
+   "today"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "add_out"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "billing"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "home"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "plans"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "profile"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "roster"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "settings"
+  ],
+  [
+   "abandoned",
+   "monthly",
+   "today"
+  ],
+  [
+   "cancel_at_end",
+   "choices",
+   "add_in"
+  ],
+  [
+   "cancel_at_end",
+   "choices",
+   "add_out"
+  ],
+  [
+   "cancel_at_end",
+   "choices",
+   "calendar"
+  ],
+  [
+   "cancel_at_end",
+   "choices",
+   "head_in"
+  ],
+  [
+   "cancel_at_end",
+   "choices",
+   "head_out"
+  ],
+  [
+   "cancel_at_end",
+   "choices",
+   "home"
+  ],
+  [
+   "cancel_at_end",
+   "choices",
+   "roster"
+  ],
+  [
+   "cancel_at_end",
+   "choices",
+   "settings"
+  ],
+  [
+   "cancel_at_end",
+   "choices",
+   "today"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "add_out"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "billing"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "home"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "profile"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "roster"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "settings"
+  ],
+  [
+   "cancel_at_end",
+   "monthly",
+   "today"
+  ],
+  [
+   "device_limit",
+   "choices",
+   "calendar"
+  ],
+  [
+   "device_limit",
+   "choices",
+   "head_out"
+  ],
+  [
+   "device_limit",
+   "choices",
+   "home"
+  ],
+  [
+   "device_limit",
+   "choices",
+   "today"
+  ],
+  [
+   "device_limit",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "device_limit",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "device_limit",
+   "monthly",
+   "home"
+  ],
+  [
+   "device_limit",
+   "monthly",
+   "today"
+  ],
+  [
+   "device_revoked",
+   "choices",
+   "calendar"
+  ],
+  [
+   "device_revoked",
+   "choices",
+   "today"
+  ],
+  [
+   "device_revoked",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "device_revoked",
+   "monthly",
+   "today"
+  ],
+  [
+   "ended_active",
+   "choices",
+   "add_in"
+  ],
+  [
+   "ended_active",
+   "choices",
+   "billing"
+  ],
+  [
+   "ended_active",
+   "choices",
+   "head_in"
+  ],
+  [
+   "ended_active",
+   "choices",
+   "profile"
+  ],
+  [
+   "ended_active",
+   "choices",
+   "roster"
+  ],
+  [
+   "ended_active",
+   "choices",
+   "settings"
+  ],
+  [
+   "ended_active",
+   "choices",
+   "today"
+  ],
+  [
+   "ended_active",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "ended_active",
+   "monthly",
+   "billing"
+  ],
+  [
+   "ended_active",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "ended_active",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "ended_active",
+   "monthly",
+   "profile"
+  ],
+  [
+   "ended_active",
+   "monthly",
+   "roster"
+  ],
+  [
+   "ended_active",
+   "monthly",
+   "settings"
+  ],
+  [
+   "ended_active",
+   "monthly",
+   "today"
+  ],
+  [
+   "expired_fixture",
+   "choices",
+   "add_in"
+  ],
+  [
+   "expired_fixture",
+   "choices",
+   "head_in"
+  ],
+  [
+   "expired_fixture",
+   "choices",
+   "profile"
+  ],
+  [
+   "expired_fixture",
+   "choices",
+   "roster"
+  ],
+  [
+   "expired_fixture",
+   "choices",
+   "settings"
+  ],
+  [
+   "expired_fixture",
+   "choices",
+   "today"
+  ],
+  [
+   "expired_fixture",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "expired_fixture",
+   "monthly",
+   "billing"
+  ],
+  [
+   "expired_fixture",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "expired_fixture",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "expired_fixture",
+   "monthly",
+   "profile"
+  ],
+  [
+   "expired_fixture",
+   "monthly",
+   "roster"
+  ],
+  [
+   "expired_fixture",
+   "monthly",
+   "settings"
+  ],
+  [
+   "expired_fixture",
+   "monthly",
+   "today"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "add_in"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "add_out"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "calendar"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "head_in"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "head_out"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "home"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "plans"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "profile"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "roster"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "settings"
+  ],
+  [
+   "former_paid",
+   "choices",
+   "today"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "add_out"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "billing"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "home"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "plans"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "profile"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "roster"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "settings"
+  ],
+  [
+   "former_paid",
+   "monthly",
+   "today"
+  ],
+  [
+   "free",
+   "choices",
+   "add_in"
+  ],
+  [
+   "free",
+   "choices",
+   "add_out"
+  ],
+  [
+   "free",
+   "choices",
+   "calendar"
+  ],
+  [
+   "free",
+   "choices",
+   "head_in"
+  ],
+  [
+   "free",
+   "choices",
+   "head_out"
+  ],
+  [
+   "free",
+   "choices",
+   "home"
+  ],
+  [
+   "free",
+   "choices",
+   "plans"
+  ],
+  [
+   "free",
+   "choices",
+   "profile"
+  ],
+  [
+   "free",
+   "choices",
+   "roster"
+  ],
+  [
+   "free",
+   "choices",
+   "settings"
+  ],
+  [
+   "free",
+   "choices",
+   "today"
+  ],
+  [
+   "free",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "free",
+   "monthly",
+   "add_out"
+  ],
+  [
+   "free",
+   "monthly",
+   "billing"
+  ],
+  [
+   "free",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "free",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "free",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "free",
+   "monthly",
+   "home"
+  ],
+  [
+   "free",
+   "monthly",
+   "plans"
+  ],
+  [
+   "free",
+   "monthly",
+   "profile"
+  ],
+  [
+   "free",
+   "monthly",
+   "roster"
+  ],
+  [
+   "free",
+   "monthly",
+   "settings"
+  ],
+  [
+   "free",
+   "monthly",
+   "today"
+  ],
+  [
+   "halted",
+   "choices",
+   "add_in"
+  ],
+  [
+   "halted",
+   "choices",
+   "add_out"
+  ],
+  [
+   "halted",
+   "choices",
+   "billing"
+  ],
+  [
+   "halted",
+   "choices",
+   "head_in"
+  ],
+  [
+   "halted",
+   "choices",
+   "head_out"
+  ],
+  [
+   "halted",
+   "choices",
+   "profile"
+  ],
+  [
+   "halted",
+   "choices",
+   "roster"
+  ],
+  [
+   "halted",
+   "choices",
+   "settings"
+  ],
+  [
+   "halted",
+   "choices",
+   "today"
+  ],
+  [
+   "halted",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "halted",
+   "monthly",
+   "add_out"
+  ],
+  [
+   "halted",
+   "monthly",
+   "billing"
+  ],
+  [
+   "halted",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "halted",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "halted",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "halted",
+   "monthly",
+   "profile"
+  ],
+  [
+   "halted",
+   "monthly",
+   "roster"
+  ],
+  [
+   "halted",
+   "monthly",
+   "settings"
+  ],
+  [
+   "halted",
+   "monthly",
+   "today"
+  ],
+  [
+   "halted_elapsed",
+   "choices",
+   "add_in"
+  ],
+  [
+   "halted_elapsed",
+   "choices",
+   "add_out"
+  ],
+  [
+   "halted_elapsed",
+   "choices",
+   "billing"
+  ],
+  [
+   "halted_elapsed",
+   "choices",
+   "head_in"
+  ],
+  [
+   "halted_elapsed",
+   "choices",
+   "head_out"
+  ],
+  [
+   "halted_elapsed",
+   "choices",
+   "profile"
+  ],
+  [
+   "halted_elapsed",
+   "choices",
+   "roster"
+  ],
+  [
+   "halted_elapsed",
+   "choices",
+   "settings"
+  ],
+  [
+   "halted_elapsed",
+   "choices",
+   "today"
+  ],
+  [
+   "halted_elapsed",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "halted_elapsed",
+   "monthly",
+   "add_out"
+  ],
+  [
+   "halted_elapsed",
+   "monthly",
+   "billing"
+  ],
+  [
+   "halted_elapsed",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "halted_elapsed",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "halted_elapsed",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "halted_elapsed",
+   "monthly",
+   "profile"
+  ],
+  [
+   "halted_elapsed",
+   "monthly",
+   "roster"
+  ],
+  [
+   "halted_elapsed",
+   "monthly",
+   "settings"
+  ],
+  [
+   "halted_elapsed",
+   "monthly",
+   "today"
+  ],
+  [
+   "max",
+   "choices",
+   "add_in"
+  ],
+  [
+   "max",
+   "choices",
+   "add_out"
+  ],
+  [
+   "max",
+   "choices",
+   "billing"
+  ],
+  [
+   "max",
+   "choices",
+   "calendar"
+  ],
+  [
+   "max",
+   "choices",
+   "head_in"
+  ],
+  [
+   "max",
+   "choices",
+   "head_out"
+  ],
+  [
+   "max",
+   "choices",
+   "home"
+  ],
+  [
+   "max",
+   "choices",
+   "roster"
+  ],
+  [
+   "max",
+   "choices",
+   "settings"
+  ],
+  [
+   "max",
+   "choices",
+   "today"
+  ],
+  [
+   "max",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "max",
+   "monthly",
+   "add_out"
+  ],
+  [
+   "max",
+   "monthly",
+   "billing"
+  ],
+  [
+   "max",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "max",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "max",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "max",
+   "monthly",
+   "home"
+  ],
+  [
+   "max",
+   "monthly",
+   "profile"
+  ],
+  [
+   "max",
+   "monthly",
+   "roster"
+  ],
+  [
+   "max",
+   "monthly",
+   "settings"
+  ],
+  [
+   "max",
+   "monthly",
+   "today"
+  ],
+  [
+   "pending",
+   "choices",
+   "add_in"
+  ],
+  [
+   "pending",
+   "choices",
+   "add_out"
+  ],
+  [
+   "pending",
+   "choices",
+   "billing"
+  ],
+  [
+   "pending",
+   "choices",
+   "calendar"
+  ],
+  [
+   "pending",
+   "choices",
+   "head_in"
+  ],
+  [
+   "pending",
+   "choices",
+   "head_out"
+  ],
+  [
+   "pending",
+   "choices",
+   "home"
+  ],
+  [
+   "pending",
+   "choices",
+   "profile"
+  ],
+  [
+   "pending",
+   "choices",
+   "roster"
+  ],
+  [
+   "pending",
+   "choices",
+   "settings"
+  ],
+  [
+   "pending",
+   "choices",
+   "today"
+  ],
+  [
+   "pending",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "pending",
+   "monthly",
+   "add_out"
+  ],
+  [
+   "pending",
+   "monthly",
+   "billing"
+  ],
+  [
+   "pending",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "pending",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "pending",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "pending",
+   "monthly",
+   "home"
+  ],
+  [
+   "pending",
+   "monthly",
+   "profile"
+  ],
+  [
+   "pending",
+   "monthly",
+   "roster"
+  ],
+  [
+   "pending",
+   "monthly",
+   "settings"
+  ],
+  [
+   "pending",
+   "monthly",
+   "today"
+  ],
+  [
+   "plus",
+   "choices",
+   "add_in"
+  ],
+  [
+   "plus",
+   "choices",
+   "add_out"
+  ],
+  [
+   "plus",
+   "choices",
+   "calendar"
+  ],
+  [
+   "plus",
+   "choices",
+   "head_in"
+  ],
+  [
+   "plus",
+   "choices",
+   "head_out"
+  ],
+  [
+   "plus",
+   "choices",
+   "home"
+  ],
+  [
+   "plus",
+   "choices",
+   "roster"
+  ],
+  [
+   "plus",
+   "choices",
+   "settings"
+  ],
+  [
+   "plus",
+   "choices",
+   "today"
+  ],
+  [
+   "plus",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "plus",
+   "monthly",
+   "add_out"
+  ],
+  [
+   "plus",
+   "monthly",
+   "billing"
+  ],
+  [
+   "plus",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "plus",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "plus",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "plus",
+   "monthly",
+   "home"
+  ],
+  [
+   "plus",
+   "monthly",
+   "profile"
+  ],
+  [
+   "plus",
+   "monthly",
+   "roster"
+  ],
+  [
+   "plus",
+   "monthly",
+   "settings"
+  ],
+  [
+   "plus",
+   "monthly",
+   "today"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "add_in"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "add_out"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "billing"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "calendar"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "head_in"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "head_out"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "home"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "profile"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "roster"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "settings"
+  ],
+  [
+   "scheduled_downgrade",
+   "choices",
+   "today"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "add_in"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "add_out"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "billing"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "calendar"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "head_in"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "head_out"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "home"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "profile"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "roster"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "settings"
+  ],
+  [
+   "scheduled_downgrade",
+   "monthly",
+   "today"
+  ]
+ ]
+}

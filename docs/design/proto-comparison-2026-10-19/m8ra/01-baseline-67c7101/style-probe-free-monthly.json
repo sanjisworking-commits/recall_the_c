@@ -1,0 +1,148 @@
+{
+ "label": "free-monthly",
+ "base": "http://127.0.0.1:8936",
+ "guest": false,
+ "captured_at": "2026-11-27T21:17:28+0530",
+ "rows": [
+  {
+   "key": "devices",
+   "path": "/profile/security/devices",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Devices \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 7,
+   "minRatio": 2.74,
+   "minRatioOrdinary": 2.74,
+   "failing": [
+    {
+     "t": "Your plan supports the Playground on up to 2 reg",
+     "sel": "main.main > section.panel.profile-panel.devices-panel > p.lede.pg-devices-lede",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "REGISTERED",
+     "sel": "div.devices-grid > section.devices-section > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "Your plan supports the Playground on up to 2 reg",
+     "sel": "section.devices-section > article.pg-sub-card.device-card.is-empty > p.device-meta",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 3,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "devices",
+   "path": "/profile/security/devices",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Devices \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 7,
+   "minRatio": 5.15,
+   "minRatioOrdinary": 5.15,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "devices",
+   "path": "/profile/security/devices",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Devices \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 0,
+   "smallTargets": [],
+   "texts": 7,
+   "minRatio": 4.51,
+   "minRatioOrdinary": 4.51,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "devices",
+   "path": "/profile/security/devices",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Devices \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 0,
+   "smallTargets": [],
+   "texts": 7,
+   "minRatio": 5.93,
+   "minRatioOrdinary": 5.93,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  }
+ ]
+}

@@ -268,6 +268,12 @@ def test_f03_free_predicate_matches_the_shell_label(tmp_path: Path) -> None:
             continue
         client = _client(tmp_path, state)
         snap = _snapshot(client)
+        if state == "paused":
+            # M8-Ra (owner 2026-11-27), G3: the shell label names the paused subscription; the Free predicate
+            # (Browse's Free-only copy) was deliberately left as it was. Recorded as an open
+            # point in M8-Ra.md §2 — the two agree for every other state.
+            assert snapshot_is_free_account(snap) and account_status_for_snapshot(snap) == "Playground subscription paused"
+            continue
         assert snapshot_is_free_account(snap) == (account_status_for_snapshot(snap) == FREE_LABEL), state
         if state in SUBSCRIBERS:
             assert not snapshot_is_free_account(snap)

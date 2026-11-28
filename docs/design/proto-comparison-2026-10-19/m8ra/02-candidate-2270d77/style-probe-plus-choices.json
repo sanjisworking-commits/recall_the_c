@@ -1,0 +1,351 @@
+{
+ "label": "plus-choices",
+ "base": "http://127.0.0.1:8937",
+ "guest": false,
+ "captured_at": "2026-11-27T21:51:21+0530",
+ "rows": [
+  {
+   "key": "profile",
+   "path": "/profile",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Profile \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 9,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 2.74,
+   "minRatioOrdinary": 2.74,
+   "failing": [
+    {
+     "t": "RecallC Plus \u00b7 Playground included",
+     "sel": "article.profile-card.pg-profile-identity > div.pg-profile-identity-copy > p.muted",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "SUBSCRIPTION",
+     "sel": "div.pg-profile-grid > div > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "ACCOUNT",
+     "sel": "div.pg-profile-grid > div.si-profile-account > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "G",
+     "sel": "form.profile-form > div.signin-method-row.si-profile-desk-hide > span.provider-badge.is-google",
+     "r": 3.2,
+     "fg": "#4285f4",
+     "bg": "#eef3fe",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 4,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "profile",
+   "path": "/profile",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Profile \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 9,
+   "smallTargets": [],
+   "texts": 30,
+   "minRatio": 2.54,
+   "minRatioOrdinary": 2.54,
+   "failing": [
+    {
+     "t": "Sign out",
+     "sel": "div.si-profile-account > div.pg-account-list > button.pg-account-row.si-profile-desk-only.si-profile-account-signout",
+     "r": 2.54,
+     "fg": "#b42318",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "G",
+     "sel": "form.profile-form > div.signin-method-row.si-profile-desk-hide > span.provider-badge.is-google",
+     "r": 3.2,
+     "fg": "#4285f4",
+     "bg": "#eef3fe",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "Delete account\u2026",
+     "sel": "li > button.account-action.is-delete > span.account-action-label",
+     "r": 2.54,
+     "fg": "#b42318",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 3,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "profile",
+   "path": "/profile",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Profile \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 6,
+   "smallTargets": [
+    {
+     "t": "Change plan",
+     "sel": "div > article.pg-sub-card > a.pg-btn.pg-btn--ghost",
+     "w": 99,
+     "h": 38,
+     "viaLabel": false
+    }
+   ],
+   "texts": 21,
+   "minRatio": 2.74,
+   "minRatioOrdinary": 2.74,
+   "failing": [
+    {
+     "t": "RecallC Plus \u00b7 Playground included",
+     "sel": "article.profile-card.pg-profile-identity > div.pg-profile-identity-copy > p.muted",
+     "r": 3.24,
+     "fg": "#8f8f8d",
+     "bg": "#ffffff",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "SUBSCRIPTION",
+     "sel": "div.pg-profile-grid > div > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    },
+    {
+     "t": "ACCOUNT",
+     "sel": "div.pg-profile-grid > div.si-profile-account > p.pg-eyebrow",
+     "r": 2.74,
+     "fg": "#8f8f8d",
+     "bg": "#ececea",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 3,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "profile",
+   "path": "/profile",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Profile \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 6,
+   "smallTargets": [
+    {
+     "t": "Change plan",
+     "sel": "div > article.pg-sub-card > a.pg-btn.pg-btn--ghost",
+     "w": 99,
+     "h": 38,
+     "viaLabel": false
+    }
+   ],
+   "texts": 21,
+   "minRatio": 2.54,
+   "minRatioOrdinary": 2.54,
+   "failing": [
+    {
+     "t": "Sign out",
+     "sel": "div.si-profile-account > div.pg-account-list > button.pg-account-row.si-profile-desk-only.si-profile-account-signout",
+     "r": 2.54,
+     "fg": "#b42318",
+     "bg": "#1e1e1d",
+     "disabled": false,
+     "hidden": ""
+    }
+   ],
+   "failingCount": 1,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "billing",
+   "path": "/billing/subscriptions",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "title": "Change your plan \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 13,
+   "minRatio": 4.51,
+   "minRatioOrdinary": 4.51,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "billing",
+   "path": "/billing/subscriptions",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "title": "Change your plan \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 1,
+   "smallTargets": [],
+   "texts": 13,
+   "minRatio": 5.93,
+   "minRatioOrdinary": 5.93,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "billing",
+   "path": "/billing/subscriptions",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "title": "Change your plan \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 22,
+   "minRatio": 4.71,
+   "minRatioOrdinary": 4.71,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  },
+  {
+   "key": "billing",
+   "path": "/billing/subscriptions",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "title": "Change your plan \u00b7 Recall the C",
+   "scope": "main",
+   "hScroll": false,
+   "stylesheets": [
+    "css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap",
+    "styles.css?v=main95",
+    "visual-explainer.css?v=ve1",
+    "mobile.css?v=mob113",
+    "playground.css?v=pg61"
+   ],
+   "controls": 2,
+   "smallTargets": [],
+   "texts": 22,
+   "minRatio": 4.78,
+   "minRatioOrdinary": 4.78,
+   "failing": [],
+   "failingCount": 0,
+   "exemptDisabled": [],
+   "exemptHidden": [],
+   "measured": [],
+   "exceptions": []
+  }
+ ]
+}

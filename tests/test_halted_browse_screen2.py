@@ -348,7 +348,10 @@ def test_guest_free_plus_expired_paused_pending_pro_max_are_not_halted_browse(
     assert 'data-expired-browse="desktop"' not in paused_html
     assert "data-signed-in-browse-strip" in paused_html
     assert "View Playground" in paused_html
-    assert "RecallC Free" in _header(paused_html)
+    # M8-Ra (owner 2026-11-27), G3: the header names the paused subscription (it was "RecallC Free"). The
+    # Free summary above is unchanged: Browse's Free predicate was left as it was.
+    assert "Playground subscription paused" in _header(paused_html)
+    assert "RecallC Free" not in _header(paused_html)
     assert LIVE_HALTED_STATUS not in _header(paused_html)
 
     # Pending inside a live billing period (the frozen test clock) resolves as

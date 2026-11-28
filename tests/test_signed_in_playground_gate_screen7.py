@@ -427,9 +427,12 @@ def test_guest_plus_expired_halted_paused_pending_stay_separate(
     assert "Your Playground is paused" in expired_html
     assert ">View Playground plans<" in expired_html
     assert INTRO_TITLE not in expired_html
-    expired_plans = unescape(expired.get("/playground?stage=plans").text)
-    assert 'data-expired-playground="desktop"' in expired_plans
-    assert "data-signed-in-pg-gate" not in expired_plans
+    # M8-Ra (owner 2026-11-27), G4: an account that cannot open the Playground has no plans
+    # stage (M5 Q8 stands); the request used to be ignored and served the read-only home.
+    # It now goes to the page this account's own Resume / Manage links open.
+    expired_plans = expired.get("/playground?stage=plans", follow_redirects=False)
+    assert expired_plans.status_code == 303 and expired_plans.headers["location"] == "/billing/subscriptions"
+    assert "data-signed-in-pg-gate" not in expired.get("/playground?stage=plans").text
 
     halted = TestClient(_mu_app(tmp_path / "halted"))
     _sign_in(halted)
@@ -443,9 +446,9 @@ def test_guest_plus_expired_halted_paused_pending_stay_separate(
     assert "Payment retries have stopped" in halted_html
     assert "Manage subscription" in halted_html
     assert INTRO_TITLE not in halted_html
-    halted_plans = unescape(halted.get("/playground?stage=plans").text)
-    assert 'data-halted-playground="desktop"' in halted_plans
-    assert "data-signed-in-pg-gate" not in halted_plans
+    halted_plans = halted.get("/playground?stage=plans", follow_redirects=False)
+    assert halted_plans.status_code == 303 and halted_plans.headers["location"] == "/billing/subscriptions"
+    assert "data-signed-in-pg-gate" not in halted.get("/playground?stage=plans").text
 
     paused = TestClient(_mu_app(tmp_path / "paused"))
     _sign_in(paused)
