@@ -6,11 +6,11 @@
 | Authority | M8-R plan approved by the owner on 2026-11-27 after two forwarded reviews, with the boundaries of §1. **The approval authorises implementation; it is not an acceptance of this batch** |
 | Carried items closed here | the plans-stage title for paid holders (M5); the expired Act head's billing link marked as a sheet opener (M2 B12); the device-blocked Add sheet's heading (M2 observation) |
 | Baseline | M8-S head (edge-state source identical to `079257e`) — `m8ra/01-baseline-67c7101/` |
-| Candidate | source `2270d77`; tests `97edd4e` — `m8ra/02-candidate-2270d77/` |
+| Candidate | source `2270d77`; tests `97edd4e`, then the test corrections of `M8-S.md` §3.1 merged at `0f36525` (tests only) — `m8ra/02-candidate-2270d77/` |
 | Tooling | `m8/tools/readback_m8.py`, `diff_readback_m8.py`, `serve_states_m8.py`, `billing_matrix_m8.py`, `probe_style_m8s.py`, `click_resume_m8.py` |
 | Flags | `PLAYGROUND_TIER_MODEL` `monthly` (default); `choices` exercised without activating it. No provider configured |
 
-**Status: candidate with local evidence. Not accepted.** M8-Rb (transitions) and every billing-action change stay held. No merge, deployment, staging write, payment operation or `choices` activation.
+**Status: candidate with local evidence, verified green on 2026-11-28 and presented for the owner's local acceptance (§9). Not accepted.** M8-Rb (transitions) and every billing-action change stay held; the decisions it waits for are set out in `M8-Rb-decision-table.md`. No merge, deployment, staging write, payment operation or `choices` activation.
 
 The record, the evidence and the read-back are in this one file (as for M7b); the test changes are in `M8-Ra-test-changes.md`; the billing matrix asked for in place of a billing change is `M8-Ra-billing-matrix.md`.
 
@@ -45,7 +45,7 @@ Proposed copy that is new in this batch, for review (Q12): every quoted string i
 
 ### Left as it was, on purpose
 
-- `snapshot_is_free_account` still counts a paused account as Free (Browse's Free-only copy, M3). The header no longer does. Changing it would alter accepted Browse pages; recorded as an open point.
+- `snapshot_is_free_account` still counts a paused account as Free (Browse's Free-only copy, M3). The header no longer does. Changing it would alter accepted Browse pages; recorded as an open point. *2026-11-28: routed to M8-Rb, where what a paused account is entitled to is decided (`M8-Rb-decision-table.md` D3, D9).*
 - The billing page and every subscription route.
 - The expired, halted and paused read-only pages beyond these defects (no prototype restyle while 5-20 may turn all three into Free).
 
@@ -71,7 +71,7 @@ Proposed copy that is new in this batch, for review (Q12): every quoted string i
 - For halted and expired accounts, Calendar chips that are not due or revision chips still link to `/playground/laws/{law}` (Act progress), which serves the gate page. Unchanged here; only the paused account's chips were made Resume links throughout, because that was the condition of its approval.
 - The order of law cards on a read-only home is not stable between two renders of the same account (a tie the page does not break); seen as a difference between two baseline runs.
 - Body-wide probes of Today, Calendar and the Bare Act reader show the site-wide grey labels under 4.5:1 that `M8-S.md` §5 lists for Profile, Devices and the phone Calendar. Unchanged, outside this batch.
-- **A second date-dependence in existing tests.** The family modules share `tests/test_browse_laws_family.py::STATES`, whose "expired" period ends 80 days before the *real* date, while the suite pins the entitlement clock to 2026-09-16 (`tests/conftest.py`). From 2026-12-06 that period no longer lies in the past of the pinned clock, and the tests that rely on that state resolving as "paid period ended" can be expected to fail. Not changed here; flagged for a separate fix together with the Calendar test of `M8-S.md` §3. The new module of this batch measures every period from the pinned clock.
+- **A second date-dependence in existing tests.** The family modules share `tests/test_browse_laws_family.py::STATES`, whose "expired" period ends 80 days before the *real* date, while the suite pins the entitlement clock to 2026-09-16 (`tests/conftest.py`). From 2026-12-06 that period no longer lies in the past of the pinned clock, and the tests that rely on that state resolving as "paid period ended" can be expected to fail. Not changed here; flagged for a separate fix together with the Calendar test of `M8-S.md` §3. The new module of this batch measures every period from the pinned clock. *Corrected on 2026-11-28 — `M8-S.md` §3.1: a sweep of the suite at simulated dates confirmed the expectation (13 `[expired]` cases fail from 2026-12-06) and found seven more date-dependent tests besides the Calendar one already known; all are corrected, and this batch's own module showed none.*
 
 ## 4. Tests
 
@@ -83,6 +83,8 @@ New `tests/test_edge_state_family.py` — 100 tests (E01–E07 and the four know
 | Full suite, local | `97edd4e` | **4425 passed / 177 skipped / 1 failed** (991.8 s) |
 | Full suite, local, on the pull-request head | `8f555b8` (records and tools only since `97edd4e`) | 4425 passed / 177 skipped / 1 failed (1009.9 s) — the same test |
 | CI `workflow_dispatch` 46033900403 | `8f555b8` (source and tests of `97edd4e`) | **failure — pytest executed: 4424 passed / 164 skipped / 14 deselected / 1 failed** (1374.8 s): the date-dependent test only. No run of this batch is green while that test fails; against M8-S's re-run on its own head (4324 passed / 1 failed) this batch adds 100 passing tests and no failure |
+| **Full suite, local, after the test corrections** (`M8-S.md` §3.1) | `0f36525` | **4426 passed / 177 skipped / 0 failed** (1909.4 s; run beside other suites, hence the time) |
+| **CI `workflow_dispatch` 46151181640, after the corrections** | `0f36525` | **success — pytest executed: 4425 passed / 164 skipped / 14 deselected / 0 failed** (1392.6 s) |
 
 The one local failure is `tests/test_phone_plus_calendar_screen5.py::test_phone_plus_calendar_overdue_done_and_future_constitution`, the date-dependent test described in `M8-S.md` §3: it fails on the untouched M7b head too from the 24th of the month. Counting it, this batch adds 100 tests and changes no other result: 4325 passed at M8-S → 4425 passed, the same 1 failing.
 
@@ -172,11 +174,62 @@ Today and Calendar fade in; a frame taken beyond the viewport restarts the fade 
 - The "sheet opener" fix is verified by markup and tests over every state, and by one browser click on a paused account's Act head at baseline and on the candidate (`resume-click.json`: the sheet fetch before navigation is gone). The script's "Opening…" busy state was not observed in either run by that check, so nothing is claimed about it.
 - Device states were produced with separate signed-in sessions of one account on one machine.
 
-## 9. Owner sign-off
+## 9. Review for local acceptance (2026-11-28)
+
+Prepared for the owner's decision. Green runs support acceptance; they are not acceptance.
+
+**Scope against the approved plan (M8-Ra: G1–G4, G6–G9, the billing matrix, the characterisation tests).**
+
+| Approved item | Delivered | Evidence |
+|---|---|---|
+| G1 plans stage: neutral title and line for a subscriber; Max as the current plan, no price; a pending account sees a notice and Manage instead of the form; the server's refusal unchanged | yes | E01 (direct change request refused, stored values identical); frames |
+| G2 one rule for sheet openers; Resume → billing a plain link | yes | E03 over every state and both models; `resume-click.json` |
+| G3 paused parity: header; Add sheet; Today and Calendar items as links to the existing Resume flow only; no learning or completion write | yes | E04; E05 — direct requests refused with a full before / after comparison of stored values |
+| G4 `?stage=plans` redirects for paused / halted / ended accounts; the Calendar's locked entry | yes | E02 |
+| G6 no month wording under `choices`; `monthly` strings unchanged | yes | E06 |
+| G7, G8, Q8 device limit from the configuration; device-blocked sheet title; revoked gate; Devices lede from the registration predicate (active or pending) | yes | E07 |
+| G9 coverage of states no test produced before | yes | 100 tests; read-back of 13 subscription and 2 device states × 2 models × 13 pages, each tagged P or S |
+| Q7 withdrawn: a billing state / action matrix for review instead of a change | yes | `M8-Ra-billing-matrix.md` |
+| H1, H2, H3, H7 characterised as defects, not as desired behaviour | yes | four `test_known_defect_*` tests |
+| Billing-action boundary; `monthly` byte-identical outside the listed changes | held | read-back: the billing page's forms and links identical in every row (§5) |
+
+**Narrower than planned (two cells, §6):** the fixture-expired home was captured at 1280 px only; the device-revoked Add sheet has a capture and a read-back row but no test of its own.
+
+**Went beyond the plan's wording — to accept or reject with the batch:**
+
+1. **T28 reversed.** The older rule "a paused account's Today lists nothing from the Playground" is replaced by the approved Q5(c); the test was renamed and re-pinned. What it protected — no way into Learn — is still asserted.
+2. **Paused Calendar chips are all rewritten to the Resume link**, stricter than the halted and expired accounts (whose non-due chips still lead to the gated Act-progress page).
+3. **Paused Profile identity line** reads "Signed in with Google", as for halted and expired.
+4. **New copy (Q12)** — every quoted string of §2 rows G1, G4, G6, G8 and Q8 is proposed wording.
+
+**Verification on exact commits.**
+
+| Check | Commit | Result |
+|---|---|---|
+| Full suite, local | `0f36525` | 4426 passed / 177 skipped / 0 failed |
+| CI, pytest executed | `0f36525` (run 46151181640) | 4425 passed / 164 skipped / 14 deselected / 0 failed |
+| Read-back and its diff, billing matrix, 38 paired frames, probes, the Resume click (§5–§7) | taken on source `2270d77` at tests `97edd4e` | **carried**: no file under `src/` has changed since `2270d77` (`git diff 2270d77 0f36525 -- src` is empty). The test changes since `97edd4e` are the date and stamp corrections in ten modules; in the two modules this batch had re-pinned (`test_account_family.py`, `test_browse_laws_family.py`) only the shared subscription period's anchor changed, no assertion |
+| Earlier runs (§4) | `97edd4e`, `8f555b8` | superseded as results; kept as the record |
+
+The pull-request head adds records to `0f36525`; it changes no test and no source file.
+
+**Retained as open — acceptance would not close them:**
+
+- **H2 and H3: activation blockers.** `choices` cannot be activated while a former payer keeps every law with three fresh choices, or while an abandoned checkout removes a Free account's Playground.
+- **H1 and H7: held.** No billing action was changed.
+- Halted, paused, pending and authenticated accounts are offered no action on the billing page their Resume / Manage links lead to (§3).
+- Browse still shows a paused account the Free-only copy — bundled into M8-Rb.
+- The other observations of §3: non-due chips of halted and expired accounts; the card-order tie; site-wide grey labels on Today, Calendar and the Bare Act reader.
+
+**Retained as NOT RUN:** every entry of §8 — provider behaviour, hosted comparison (gate DV-18 stays U), browser zoom, accessibility scan, screen reader, the Playwright-gated tests, live speech, Google Calendar connect / disconnect, M2's owed hosted checks, the prototype's edge-state viewers.
+
+**What local acceptance would mean:** this head becomes the local baseline for how the listed edge states are presented under both models. It would not be hosted acceptance, a merge, a deployment, an activation of `choices`, or approval of anything in `M8-Rb-decision-table.md`.
+
+## 10. Owner sign-off
 
 None recorded. Sign-off is recorded only against the owner's direct answer.
 
-## 10. Proposed roadmap entry (not applied)
+## 11. Proposed roadmap entry (not applied)
 
 `PLAYGROUND_FIDELITY_ROADMAP.md` lives on the branch of PR #218 and still lists one row, "M8 — Subscription and device edge states · proposed". It is not edited from this branch. Proposed replacement, for the owner to apply or amend there:
 
@@ -184,5 +237,5 @@ None recorded. Sign-off is recorded only against the owner's direct answer.
 |---|---|
 | M8-S — shared style (label contrast, back link, Calendar dialog close) | built, draft PR #247, local evidence, not accepted |
 | M8-Ra — edge states, safe presentation (plans-stage title, sheet openers, paused parity, `?stage=plans`, `choices` wording, device copy) | built, draft PR #248, local evidence, not accepted |
-| M8-Rb — transitions and billing actions (5-20 table, paid → Free selection, abandoned checkout, checkout outcomes, notices, billing page for halted / paused / pending and for an elapsed period with an active row) | held: 5-20, 5-24, 5-3, review of `M8-Ra-billing-matrix.md`; after B1 acceptance |
+| M8-Rb — transitions and billing actions (5-20 table, paid → Free selection, abandoned checkout, checkout outcomes, notices, billing page for halted / paused / pending and for an elapsed period with an active row, paused Browse wording) | held: the decisions of `M8-Rb-decision-table.md` (D1–D7), provider verification, B1 acceptance |
 | Gate DV-18 | **U** — hosted rows not run; the prototype's edge-state viewers not compared (no restyle while 5-20 is open) |

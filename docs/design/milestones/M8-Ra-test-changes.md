@@ -51,3 +51,7 @@ These pin what happens today so that a later change is visible. **They are not p
 ## 4. Not weakened
 
 No test was deleted, skipped or marked expected-to-fail. The two request-timing tests were made stricter than a bare "stage present": they hold the paused account to the read counts of the halted and expired accounts, with no write.
+
+## 5. Corrections of 2026-11-28 (not changes of this batch's behaviour)
+
+The date-dependent and stamp-dependent tests found on 2026-11-28 were corrected on the M8-S branch and merged here at `0f36525`; the list, the cause of each and the evidence are in `M8-S.md` §3.1 and `m8/date-sweep/`. Two modules this batch had re-pinned are among those touched — `test_browse_laws_family.py` and `test_account_family.py` — and only in one respect: the shared subscription periods are measured from the suite's pinned clock instead of the real date. No assertion listed in §2 changed. The new module of §1 showed no failure at any simulated date.
