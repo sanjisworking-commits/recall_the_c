@@ -306,6 +306,19 @@ def _today_card(phone: str) -> str:
     )[0]
 
 
+def _day_list(phone: str, day: date) -> str:
+    """The phone list for one day, and nothing after it.
+
+    The lists run in date order and the today card follows the last one, so a
+    fixed-width slice from a late-month day reaches into the today card.
+    """
+    marker = f'data-day-list="{day.isoformat()}"'
+    idx = phone.find(marker)
+    assert idx != -1, marker
+    rest = phone[idx + len(marker) :]
+    return marker + re.split(r'data-day-list="|data-today-list', rest, maxsplit=1)[0]
+
+
 def _tabs(html: str) -> str:
     return html.split(
         'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1
@@ -418,10 +431,7 @@ def test_phone_expired_calendar_mixed_due_today_keeps_constitution_today_card(
     assert "cal-m-today-continue" not in phone.split("data-today-list", 1)[0]
     assert 'href="/learn/clause-1"' in card
     assert 'href="/learn/clause-2"' in card
-    marker = f'data-day-list="{day.isoformat()}"'
-    idx = phone.find(marker)
-    assert idx != -1
-    day_html = phone[idx : idx + 3500]
+    day_html = _day_list(phone, day)
     assert "NDPS Act · §8(a) · Playground" in day_html
     billing_href = re.search(
         rf'href="({re.escape(PLAYGROUND_BILLING_PATH)})"', day_html

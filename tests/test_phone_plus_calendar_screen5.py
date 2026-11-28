@@ -235,6 +235,19 @@ def _today_card(phone: str) -> str:
     )[0]
 
 
+def _day_list(phone: str, day: date) -> str:
+    """The phone list for one day, and nothing after it.
+
+    The lists run in date order and the today card follows the last one, so a
+    fixed-width slice from a late-month day reaches into the today card.
+    """
+    marker = f'data-day-list="{day.isoformat()}"'
+    idx = phone.find(marker)
+    assert idx != -1, marker
+    rest = phone[idx + len(marker) :]
+    return marker + re.split(r'data-day-list="|data-today-list', rest, maxsplit=1)[0]
+
+
 def _tabs(html: str) -> str:
     return html.split(
         'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1
@@ -333,10 +346,7 @@ def test_phone_plus_calendar_mixed_due_today_keeps_constitution_today_card(
     assert "cal-m-today-continue" not in phone.split("data-today-list", 1)[0]
     assert 'href="/learn/clause-1"' in card
     assert 'href="/learn/clause-2"' in card
-    marker = f'data-day-list="{day.isoformat()}"'
-    idx = phone.find(marker)
-    assert idx != -1
-    day_html = phone[idx : idx + 3500]
+    day_html = _day_list(phone, day)
     assert "NDPS Act · §8(a) · Playground" in day_html
     playground_href = re.search(r'href="([^"]*playground[^"]*)"', day_html)
     assert playground_href
@@ -449,19 +459,24 @@ def test_phone_plus_calendar_overdue_done_and_future_constitution(
 
     client_future = _plus_client(tmp_path / "future")
     day_future = user_today(_engine(client_future))
+    due = day_future + timedelta(days=7)
     _upsert_constitution(
         client_future,
         "clause-1",
         as_of=day_future,
         interval_days=15,
-        next_revision=day_future + timedelta(days=7),
+        next_revision=due,
     )
-    future_html = unescape(client_future.get("/calendar").text)
-    future_phone = _phone(future_html)
+    future_phone = _phone(unescape(client_future.get("/calendar").text))
     assert "Nothing due today" in future_phone
     assert "cal-m-today-continue" not in future_phone
-    assert "15-day review" in future_phone
-    assert 'data-cal-source="constitution"' in future_html
+    # The review is listed on its own day. In the last week of a month that
+    # day is on the next month's page, so ask for the month that holds it.
+    due_html = unescape(
+        client_future.get(f"/calendar?year={due.year}&month={due.month}").text
+    )
+    assert "15-day review" in _day_list(_phone(due_html), due)
+    assert 'data-cal-source="constitution"' in due_html
 
 
 def test_phone_plus_calendar_month_nav_is_real_get_links(tmp_path: Path) -> None:

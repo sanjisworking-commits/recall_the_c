@@ -581,7 +581,8 @@ def test_paid_period_ended_blocks_all_playground_surfaces(tmp_path: Path):
 
 def test_legacy_active_gets_subscribe_gate_not_a_tier(tmp_path: Path):
     client, repo = _authed_client(tmp_path)
-    ends = NOW + timedelta(days=300)
+    # Resolved below against the real clock, so the grant must outlast it.
+    ends = datetime.now(timezone.utc) + timedelta(days=300)
     _seed_legacy(repo, ends_at=ends)
     home = client.get("/playground")
     _assert_subscribe_gate(home)

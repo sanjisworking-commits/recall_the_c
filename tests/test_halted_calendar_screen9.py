@@ -441,6 +441,16 @@ def test_halted_calendar_canonical_month_uses_live_state(
     assert "Handwritten notes" in html
     assert "Mark revised" in html
     chips = _playground_chips(html)
+    # On the last day of a month the scheduled chip (tomorrow) is on the
+    # next month's page; read that page too so the chip is still checked.
+    next_html = ""
+    if scheduled.month != day.month:
+        next_html = unescape(
+            client.get(
+                f"/calendar?year={scheduled.year}&month={scheduled.month}"
+            ).text
+        )
+        chips = chips + _playground_chips(next_html)
     assert chips
     kinds = {cls for cls, _href, _title, _label in chips}
     hrefs = {href for _cls, href, _title, _label in chips}
@@ -479,6 +489,11 @@ def test_halted_calendar_canonical_month_uses_live_state(
     assert PLAYGROUND_BILLING_PATH in today_chunk
     assert 'data-cal-source="playground"' in today_chunk
     panel_hrefs = [unescape(m.group(1)) for m in PANEL_PLAYGROUND_RE.finditer(panel)]
+    if next_html:
+        next_panel = next_html.split("data-cal-panel", 1)[1]
+        panel_hrefs += [
+            unescape(m.group(1)) for m in PANEL_PLAYGROUND_RE.finditer(next_panel)
+        ]
     assert PLAYGROUND_BILLING_PATH in panel_hrefs
     assert law_path("ndps") in panel_hrefs
     assert all("/learn/" not in href for href in panel_hrefs)
